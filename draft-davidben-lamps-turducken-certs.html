@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Embedded Alternate Issuers</title>
+<meta content="David Benjamin" name="author">
+<meta content="
+       This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. Each alternate certificate is constrained to certify the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. 
+    " name="description">
+<meta content="xml2rfc 3.34.1" name="generator">
+<meta content="draft-davidben-lamps-turducken-certs-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.34.1
+    Python 3.14.8
+    ConfigArgParse 1.8.0
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.12.2
+    pycountry 24.6.1
+    PyYAML 6.0.3
+    requests 2.33.1
+    wcwidth 0.9.1
+-->
+<link href="draft-davidben-lamps-turducken-certs.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
+}
+svg {
+  display: block;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
+}
+.alignCenter {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+      float: none;
+    }
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a {
+  text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+}
+.iref + a[href].internal {
+  color: var(--text-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
+  }
+  @media print {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+  & .prepared {
+    float: right;
+  }
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
+  }
+}
+
+/* Comments */
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
+      }
+    }
+    & a.toplink {
+      float: right;
+    }
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
+    }
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc {
+    page-break-before: always;
+    border-top: none;
+    padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">Embedded Alternate Issuers</td>
+<td class="right">October 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Benjamin</td>
+<td class="center">Expires 8 April 2027</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Limited Additional Mechanisms for PKIX and SMIME</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-davidben-lamps-turducken-certs-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-10-05" class="published">5 October 2026</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2027-04-08">8 April 2027</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">D. Benjamin</div>
+<div class="org">Google LLC</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Embedded Alternate Issuers</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. Each alternate certificate is constrained to certify the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://davidben.github.io/turducken-certs/draft-davidben-lamps-turducken-certs.html">https://davidben.github.io/turducken-certs/draft-davidben-lamps-turducken-certs.html</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-davidben-lamps-turducken-certs/">https://datatracker.ietf.org/doc/draft-davidben-lamps-turducken-certs/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">
+        Discussion of this document takes place on the
+        Limited Additional Mechanisms for PKIX and SMIME Working Group mailing list (<span><a href="mailto:spasm@ietf.org">mailto:spasm@ietf.org</a></span>),
+        which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/spasm/">https://mailarchive.ietf.org/arch/browse/spasm/</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/spasm/">https://www.ietf.org/mailman/listinfo/spasm/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+<p id="section-note.1-4">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/davidben/turducken-certs">https://github.com/davidben/turducken-certs</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 8 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2026 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-subject-and-issuer-transiti" class="internal xref">Subject and Issuer Transitions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-combining-multiple-issuers" class="internal xref">Combining Multiple Issuers</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-overview" class="internal xref">Overview</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-issuing-certificates" class="internal xref">Issuing Certificates</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-verifying-certificates" class="internal xref">Verifying Certificates</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-certification-authorities" class="internal xref">Certification Authorities</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-extension-types" class="internal xref">Extension Types</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-alternate-certificate-infor" class="internal xref">Alternate Certificate Information</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-outer-certificate-binding" class="internal xref">Outer Certificate Binding</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-relying-parties" class="internal xref">Relying Parties</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-reconstructing-the-alternat" class="internal xref">Reconstructing the Alternate Certificate</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-known-subject-extensions" class="internal xref">Known Subject Extensions</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-deployment-considerations" class="internal xref">Deployment Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-legacy-services" class="internal xref">Legacy Services</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-certificate-transparency-lo" class="internal xref">Certificate Transparency Log Sizes</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-certificate-mismatch" class="internal xref">Certificate Mismatch</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-pkix-module-identifier" class="internal xref">PKIX Module Identifier</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-pkix-certificate-extension" class="internal xref">PKIX Certificate Extension</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-extension-types-for-embedde" class="internal xref">Extension Types for Embedded Alternate Issuers</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-asn1-module" class="internal xref">ASN.1 Module</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">An X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> relates two entities in a PKI: a <em>subject</em> described by the certificate and an <em>issuer</em> who has certified that information. If a relying party trusts the issuer to only certify correct subject information, it can trust the subject information in the certificate.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Security transitions in a PKI must coordinate certificate changes across this system. For example, securing a PKI application against a Cryptographically Relevant Quantum Computer (CRQC) requires issuers to issue some form of post-quantum certificate, services to deploy those certificates, and relying parties to require these certificates.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Until the final step, post-quantum certificates do not prevent attacks. Suppose <code>example.com</code> has deployed post-quantum certificates, but <code>legacy.example</code> has not. A relying party must trust both post-quantum and traditional CAs to support both services. However, this enables a downgrade attack against <code>example.com</code>. A CRQC can simply break the traditional CA's key and forge a certificate for <code>example.com</code>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">That is, in order to protect services against CRQC, relying parties must remove support for existing traditional, quantum-vulnerable CAs. This poses a compatibility challenge for PKIs with a large number of existing services.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<div id="subject-and-issuer-transitions">
+<section id="section-1.1">
+        <h3 id="name-subject-and-issuer-transiti">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-subject-and-issuer-transiti" class="section-name selfRef">Subject and Issuer Transitions</a>
+        </h3>
+<p id="section-1.1-1">A PKI transition might change the subject information (e.g. new subject key algorithms), the issuer (e.g. new issuer key algorithms or new issuers entirely), or both. When both change, as in the post-quantum transition, the two changes can still complete on separate timelines, with different parties taking action:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.1-2.1">
+            <p id="section-1.1-2.1.1">Subject transitions often require changes to a service's software stack and key management. For example, to authenticate with an ML-DSA <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> end-entity key, TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> serving software must support ML-DSA, and the operator must maintain an ML-DSA private key.<a href="#section-1.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.1-2.2">
+            <p id="section-1.1-2.2.1">Issuer transitions impact fields that are generally opaque to the service, such as the certificate signature. In principle, a CA or ACME server <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> operator could simply reconfigure itself to issue from the new issuer. Deployed services will then automatically apply the issuer transition as they renew certificates.<a href="#section-1.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.1-3">PKIs typically have many more service operators than CA operators. Issuer transitions that only require CA operator action can complete sooner. In the post-quantum transition, although both issuer and subject changes are necessary to protect a given service, only the issuer transition needs to <em>complete</em> to prevent the downgrade attack. Concretely:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-1.1-4">
+<li id="section-1.1-4.1">
+            <p id="section-1.1-4.1.1">Relying parties add support for post-quantum subject keys and post-quantum CAs.<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.1-4.2">
+            <p id="section-1.1-4.2.1">Some services migrate ahead of time, but many legacy services exist. Relying parties must remain compatible with legacy services, so the downgrade attack is possible.<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.1-4.3">
+            <p id="section-1.1-4.3.1">Existing ACME servers are reconfigured to start issuing from post-quantum CAs, instead of traditional CAs.<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.1-4.4">
+            <p id="section-1.1-4.4.1">Legacy services automatically switch to post-quantum CAs when renewing certificates. Although their subject keys are still traditional, this is sufficient to unblock step 5 below. These certificates are "post-quantum opt-out certificates" for these legacy services.<a href="#section-1.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.1-4.5">
+            <p id="section-1.1-4.5.1">After certificates are automatically replaced, relying parties remove traditional CAs while retaining support for traditional subject keys. This is enough to prevent the downgrade attack.<a href="#section-1.1-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.1-4.6">
+            <p id="section-1.1-4.6.1">Legacy services individually upgrade their subject keys and replace their opt-out certificates with fully post-quantum certificates.<a href="#section-1.1-4.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-1.1-5">In this example, steps 1 through 5 do not require waiting on all service operators. Step 6 does and will thus take time to fully complete, but the downgrade attack has been prevented by step 5. Although opt-out certificates have quantum-vulnerable subject keys, they are issued by post-quantum CAs. Provided relying parties remove all traditional CAs, a CRQC cannot forge one for a post-quantum service. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss this dynamic in more detail.<a href="#section-1.1-5" class="pilcrow">¶</a></p>
+<p id="section-1.1-6">However, these opt-out certificates are not compatible with legacy relying parties. A legacy relying party will not support post-quantum algorithms, much less post-quantum CAs. Steps 3 and 4 are not viable in applications with many relying party instances (e.g. many web browser installs) and require further refinement.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="combining-multiple-issuers">
+<section id="section-1.2">
+        <h3 id="name-combining-multiple-issuers">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-combining-multiple-issuers" class="section-name selfRef">Combining Multiple Issuers</a>
+        </h3>
+<p id="section-1.2-1">With sufficient deployment capabilities, a CA or ACME server <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> operator could issue <em>both</em> an older and a newer certificate, relying on an online protocol like TLS to select between them:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-2.1">
+            <p id="section-1.2-2.1.1">If issuance protocols, such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>, can issue multiple certificates, the ACME server can transparently provision certificates from both the old and new issuer.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.2">
+            <p id="section-1.2-2.2.1">If the TLS software can automatically send each certificate to the right relying party (as in Sections <a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.2.2" class="relref">4.4.2.2</a> and <a href="https://rfc-editor.org/rfc/rfc8446#section-4.4.4.3" class="relref">4.4.4.3</a> of <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> and <span>[<a href="#I-D.ietf-tls-trust-anchor-ids" class="cite xref">I-D.ietf-tls-trust-anchor-ids</a>]</span>), the TLS software is now ready for new relying parties while remaining compatible with older ones.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.2-3">However, deployments may be missing these capabilities today. Many Web servers today only deploy one certificate with one key. Waiting for services to upgrade will again delay transition timelines.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">This document defines <em>embedded alternate issuers</em>, a limited transitionary mechanism for these scenarios. A single X.509 certificate, known as the <em>outer certificate</em> and issued by the <em>outer CA</em>, embeds one or more <em>alternate certificates</em>, each certifying the same subject information but issued by an <em>alternate CA</em>. An ACME server can then drive a transition as described above, but embedding certificates for new relying parties inside the certificate for older relying parties.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+<p id="section-1.2-5">For a post-quantum transition, this means the opt-out certificate is a combination where:<a href="#section-1.2-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-6.1">
+            <p id="section-1.2-6.1.1">The outer certificate certifies a traditional subject key with a traditional CA.<a href="#section-1.2-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-6.2">
+            <p id="section-1.2-6.2.1">It has one or more alternate certificates that certify the same traditional subject key, but with a post-quantum CA.<a href="#section-1.2-6.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.2-7">This mitigates the compatibility issue described in <a href="#subject-and-issuer-transitions" class="auto internal xref">Section 1.1</a>.<a href="#section-1.2-7" class="pilcrow">¶</a></p>
+<p id="section-1.2-8">Embedded alternate issuers only apply when all certificates describe the same subject information. They are a temporary transitionary tool until services can deploy multiple certificates directly. <a href="#legacy-services" class="auto internal xref">Section 6.1</a> and <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> discuss this in more detail.<a href="#section-1.2-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This document additionally uses the TLS presentation language defined in <span><a href="https://rfc-editor.org/rfc/rfc8446#section-3" class="relref">Section 3</a> of [<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<div id="terminology">
+<section id="section-2.1">
+        <h3 id="name-terminology">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+        </h3>
+<span class="break"></span><dl class="dlParallel" id="section-2.1-1">
+          <dt id="section-2.1-1.1">Subject:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.2">
+            <p id="section-2.1-1.2.1">The entity being described by a certificate.<a href="#section-2.1-1.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.3">Issuer:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.4">
+            <p id="section-2.1-1.4.1">The CA that certified the information in a certificate.<a href="#section-2.1-1.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.5">Outer certificate:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.6">
+            <p id="section-2.1-1.6.1">A certificate that embeds one or more alternate certificates using the mechanism defined in this document.<a href="#section-2.1-1.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.7">Outer CA:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.8">
+            <p id="section-2.1-1.8.1">The CA that issues the outer certificate.<a href="#section-2.1-1.8.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.9">Alternate certificate:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.10">
+            <p id="section-2.1-1.10.1">One of the certificates embedded in the outer certificate. An alternate certificate certifies the same subject information as the outer certificate, but via a different issuer.<a href="#section-2.1-1.10.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.11">Alternate CA:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.12">
+            <p id="section-2.1-1.12.1">A CA that issues one of the alternate certificates.<a href="#section-2.1-1.12.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="overview">
+<section id="section-3">
+      <h2 id="name-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-overview" class="section-name selfRef">Overview</a>
+      </h2>
+<p id="section-3-1">Outer and alternate certificates are closely related and issued in an integrated process:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3-2.1">
+          <p id="section-3-2.1.1">All certificates contain the same subject information, including subjectPublicKeyInfo and subjectAltNames, but they differ in signature and issuer-specific information. The common subject-specific extensions all share an ordering.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-2.2">
+          <p id="section-3-2.2.1">The outer certificate embeds an AlternateIssuerInfo for each alternate certificate. This contains both the signature and issuer-specific information for the alternate certificate. It is sufficient to reconstruct the alternate certificate.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-3-2.3">
+          <p id="section-3-2.3.1">Each alternate certificate contains an outer certificate binding extension. This contains the issuer-specific fields of the outer certificate, but not the signature. This authenticates the outer certificate's issuer-specific information in relying parties that only trust the alternate CA.<a href="#section-3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<div id="issuing-certificates">
+<section id="section-3.1">
+        <h3 id="name-issuing-certificates">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-issuing-certificates" class="section-name selfRef">Issuing Certificates</a>
+        </h3>
+<p id="section-3.1-1">The certificates are issued in the following process. From the perspective of the outer CA, it is analogous to embedding Signed Certificate Timestamps (SCTs) in Certificate Transparency (CT) <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. From the perspective of each alternate CA, it is analogous to issuing a normal certificate, but with an extra extension included.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.1-2">
+<li id="section-3.1-2.1">
+            <p id="section-3.1-2.1.1">The outer CA validates the subject information and constructs a TBSCertificate with the validated subject information and issuer fields reflecting the outer CA. It sets <code>notBefore</code> and <code>notAfter</code> such that the certificate validity would be compatible with each alternate CA.<a href="#section-3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-2.2">
+            <p id="section-3.1-2.2.1">For each alternate CA, the outer and alternate CAs run the following process. The processes for each alternate CA <span class="bcp14">MAY</span> run in parallel.<a href="#section-3.1-2.2.1" class="pilcrow">¶</a></p>
+<ol start="1" type="a" class="normal type-a" id="section-3.1-2.2.2">
+<li id="section-3.1-2.2.2.1">
+                <p id="section-3.1-2.2.2.1.1">The outer CA requests the alternate CA to issue a corresponding alternate certificate for this TBSCertificate.<a href="#section-3.1-2.2.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.2.2.2">
+                <p id="section-3.1-2.2.2.2.1">The alternate CA validates the subject information. If validation fails, or it is otherwise unable to issue this certificate, including with the same <code>notBefore</code> and <code>notAfter</code>, it rejects this request.<a href="#section-3.1-2.2.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.2.2.3">
+                <p id="section-3.1-2.2.2.3.1">Otherwise, it constructs a TBSCertificate containing the same subject information. The outer CA's issuer-specific fields are removed and replaced with ones reflecting the alternate CA.<a href="#section-3.1-2.2.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.2.2.4">
+                <p id="section-3.1-2.2.2.4.1">The alternate CA appends an outer certificate binding extension to the TBSCertificate, containing all the removed outer-CA-specific fields. This authenticates the removed fields to a relying party that only trusts the alternate CA.<a href="#section-3.1-2.2.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.2.2.5">
+                <p id="section-3.1-2.2.2.5.1">The alternate CA signs this TBSCertificate to issue an alternate certificate.<a href="#section-3.1-2.2.2.5.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.2.2.6">
+                <p id="section-3.1-2.2.2.6.1">The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.<a href="#section-3.1-2.2.2.6.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
+</li>
+          <li id="section-3.1-2.3">
+            <p id="section-3.1-2.3.1">If the outer CA participates in Certificate Transparency, it additionally signs a precertificate for this TBSCertificate, including the critical poison extension, as described in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. The outer CA then requests SCTs from CT logs. This step <span class="bcp14">MAY</span> run in parallel with step 2.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-2.4">
+            <p id="section-3.1-2.4.1">The outer CA collects all AlternateIssuerInfos and SCTs and appends an <code>id-ce-embeddedSCT-CTv1</code> extension to its TBSCertificate.<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.1-2.5">
+            <p id="section-3.1-2.5.1">The outer CA signs the TBSCertificate to complete the outer certificate.<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-3.1-3"><a href="#fig-turducken-issuance" class="auto internal xref">Figure 1</a> illustrates this process. Although the two issuance processes are now integrated, from the outer CA's perspective, it is analogous to embedding SCTs in CT. From the alternate CA's perspective, this is issuing a certificate with a specific extension added.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<span id="name-a-diagram-of-how-the-altern"></span><div id="fig-turducken-issuance">
+<figure id="figure-1">
+          <div id="section-3.1-4.1">
+            <div class="alignLeft art-svg artwork" id="section-3.1-4.1.1">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="592" width="496" viewBox="0 0 496 592" class="diagram" text-anchor="middle" font-family="monospace" font-size="13px" stroke-linecap="round">
+                <path d="M 8,96 L 8,160" fill="none" stroke="black"></path>
+                <path d="M 8,416 L 8,576" fill="none" stroke="black"></path>
+                <path d="M 32,512 L 32,576" fill="none" stroke="black"></path>
+                <path d="M 152,96 L 152,160" fill="none" stroke="black"></path>
+                <path d="M 152,416 L 152,576" fill="none" stroke="black"></path>
+                <path d="M 184,416 L 184,576" fill="none" stroke="black"></path>
+                <path d="M 272,272 L 272,400" fill="none" stroke="black"></path>
+                <path d="M 288,96 L 288,160" fill="none" stroke="black"></path>
+                <path d="M 288,512 L 288,576" fill="none" stroke="black"></path>
+                <path d="M 296,368 L 296,400" fill="none" stroke="black"></path>
+                <path d="M 320,192 L 320,224" fill="none" stroke="black"></path>
+                <path d="M 344,432 L 344,464" fill="none" stroke="black"></path>
+                <path d="M 352,176 L 352,208" fill="none" stroke="black"></path>
+                <path d="M 408,512 L 408,576" fill="none" stroke="black"></path>
+                <path d="M 416,272 L 416,400" fill="none" stroke="black"></path>
+                <path d="M 432,96 L 432,160" fill="none" stroke="black"></path>
+                <path d="M 448,272 L 448,400" fill="none" stroke="black"></path>
+                <path d="M 488,176 L 488,208" fill="none" stroke="black"></path>
+                <path d="M 8,48 L 216,48" fill="none" stroke="black"></path>
+                <path d="M 272,48 L 480,48" fill="none" stroke="black"></path>
+                <path d="M 8,96 L 152,96" fill="none" stroke="black"></path>
+                <path d="M 288,96 L 432,96" fill="none" stroke="black"></path>
+                <path d="M 8,128 L 152,128" fill="none" stroke="black"></path>
+                <path d="M 192,128 L 248,128" fill="none" stroke="black"></path>
+                <path d="M 288,128 L 432,128" fill="none" stroke="black"></path>
+                <path d="M 8,160 L 152,160" fill="none" stroke="black"></path>
+                <path d="M 288,160 L 432,160" fill="none" stroke="black"></path>
+                <path d="M 352,176 L 488,176" fill="none" stroke="black"></path>
+                <path d="M 352,208 L 488,208" fill="none" stroke="black"></path>
+                <path d="M 272,272 L 448,272" fill="none" stroke="black"></path>
+                <path d="M 272,304 L 416,304" fill="none" stroke="black"></path>
+                <path d="M 272,336 L 416,336" fill="none" stroke="black"></path>
+                <path d="M 296,368 L 416,368" fill="none" stroke="black"></path>
+                <path d="M 272,400 L 448,400" fill="none" stroke="black"></path>
+                <path d="M 8,416 L 184,416" fill="none" stroke="black"></path>
+                <path d="M 8,448 L 152,448" fill="none" stroke="black"></path>
+                <path d="M 8,480 L 152,480" fill="none" stroke="black"></path>
+                <path d="M 32,512 L 152,512" fill="none" stroke="black"></path>
+                <path d="M 288,512 L 408,512" fill="none" stroke="black"></path>
+                <path d="M 32,544 L 152,544" fill="none" stroke="black"></path>
+                <path d="M 216,544 L 256,544" fill="none" stroke="black"></path>
+                <path d="M 288,544 L 408,544" fill="none" stroke="black"></path>
+                <path d="M 8,576 L 184,576" fill="none" stroke="black"></path>
+                <path d="M 288,576 L 408,576" fill="none" stroke="black"></path>
+                <polygon class="arrowhead" points="352,464 340,458.4 340,469.6" fill="black" transform="rotate(90,344,464)"></polygon>
+                <polygon class="arrowhead" points="328,224 316,218.4 316,229.6" fill="black" transform="rotate(90,320,224)"></polygon>
+                <polygon class="arrowhead" points="256,128 244,122.4 244,133.6" fill="black" transform="rotate(0,248,128)"></polygon>
+                <polygon class="arrowhead" points="224,544 212,538.4 212,549.6" fill="black" transform="rotate(180,216,544)"></polygon>
+                <g class="text">
+                  <text x="64" y="36">CERTIFICATION</text>
+                  <text x="160" y="36">AUTHORITY</text>
+                  <text x="208" y="36">A</text>
+                  <text x="328" y="36">CERTIFICATION</text>
+                  <text x="424" y="36">AUTHORITY</text>
+                  <text x="472" y="36">B</text>
+                  <text x="60" y="84">TBSCertificate</text>
+                  <text x="324" y="84">TBSCertificate</text>
+                  <text x="64" y="116">SUBJECT</text>
+                  <text x="116" y="116">INFO</text>
+                  <text x="344" y="116">SUBJECT</text>
+                  <text x="396" y="116">INFO</text>
+                  <text x="56" y="148">A</text>
+                  <text x="84" y="148">INFO</text>
+                  <text x="336" y="148">B</text>
+                  <text x="364" y="148">INFO</text>
+                  <text x="400" y="196">A</text>
+                  <text x="428" y="196">INFO</text>
+                  <text x="304" y="260">Alternate</text>
+                  <text x="392" y="260">Certificate</text>
+                  <text x="328" y="292">SUBJECT</text>
+                  <text x="380" y="292">INFO</text>
+                  <text x="432" y="308">B</text>
+                  <text x="320" y="324">B</text>
+                  <text x="348" y="324">INFO</text>
+                  <text x="432" y="340">S</text>
+                  <text x="304" y="356">Outer</text>
+                  <text x="348" y="356">Cert</text>
+                  <text x="388" y="356">Bind</text>
+                  <text x="432" y="356">I</text>
+                  <text x="432" y="372">G</text>
+                  <text x="336" y="388">A</text>
+                  <text x="364" y="388">INFO</text>
+                  <text x="24" y="404">Outer</text>
+                  <text x="96" y="404">Certificate</text>
+                  <text x="64" y="436">SUBJECT</text>
+                  <text x="116" y="436">INFO</text>
+                  <text x="168" y="452">A</text>
+                  <text x="56" y="468">A</text>
+                  <text x="84" y="468">INFO</text>
+                  <text x="168" y="484">S</text>
+                  <text x="36" y="500">SCTs</text>
+                  <text x="168" y="500">I</text>
+                  <text x="304" y="500">"SCT"</text>
+                  <text x="168" y="516">G</text>
+                  <text x="72" y="532">B</text>
+                  <text x="100" y="532">INFO</text>
+                  <text x="328" y="532">B</text>
+                  <text x="356" y="532">INFO</text>
+                  <text x="72" y="564">B</text>
+                  <text x="96" y="564">SIG</text>
+                  <text x="328" y="564">B</text>
+                  <text x="352" y="564">SIG</text>
+                </g>
+              </svg><a href="#section-3.1-4.1.1" class="pilcrow">¶</a>
+</div>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-a-diagram-of-how-the-altern" class="selfRef">A diagram of how the alternate and outer certificates are issued. A is the outer CA, and B is an alternate CA.</a>
+          </figcaption></figure>
+</div>
+<p id="section-3.1-5"><a href="#certification-authorities" class="auto internal xref">Section 4</a> discusses this in more detail.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="verifying-certificates">
+<section id="section-3.2">
+        <h3 id="name-verifying-certificates">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-verifying-certificates" class="section-name selfRef">Verifying Certificates</a>
+        </h3>
+<p id="section-3.2-1">When the certificate subject presents the outer certificate to a relying party, relying parties will attempt to validate one of several certificates:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-2.1">
+            <p id="section-3.2-2.1.1">Older relying parties that are not aware of this protocol will ignore the unrecognized SCT and validate the outer certificate as usual.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.2">
+            <p id="section-3.2-2.2.1">Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.2-3">This allows the same certificate to serve both older relying parties that expect the outer CA, and newer relying parties that expect one of the alternate CAs.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4"><a href="#relying-parties" class="auto internal xref">Section 5</a> discusses this in more detail.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="certification-authorities">
+<section id="section-4">
+      <h2 id="name-certification-authorities">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-certification-authorities" class="section-name selfRef">Certification Authorities</a>
+      </h2>
+<p id="section-4-1">Outer and alternate certificates are constrained to share subject information. While the outer CA and each alternate CA <span class="bcp14">MAY</span> have different operators, they are expected to coordinate their certificate profiles and issuance processes. Concretely:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The outer and alternate certificates <span class="bcp14">MUST</span> have a <code>version</code> of v3 and <span class="bcp14">MUST</span> omit <code>issuerUniqueID</code> and <code>subjectUniqueID</code>. These are preexisting requirements from Sections <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.1" class="relref">4.1.2.1</a> and <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.8" class="relref">4.1.2.8</a> of <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">The outer and alternate certificates <span class="bcp14">MUST</span> have the same <code>validity</code>, <code>subject</code>, and <code>subjectPublicKeyInfo</code> values.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">The outer and alternate certificates' <code>extensions</code> lists <span class="bcp14">MUST</span> satisfy the following:<a href="#section-4-4" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4-5.1">
+          <p id="section-4-5.1.1">Each extension list <span class="bcp14">MUST</span> consist of, in order, some number of <em>subject extensions</em>, some number of <em>issuer extensions</em>, and a single final extension. See <a href="#extension-types" class="auto internal xref">Section 4.1</a> for details.<a href="#section-4-5.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-5.2">
+          <p id="section-4-5.2.1">The subject extensions across all certificates <span class="bcp14">MUST</span> be equal and appear in the same order.<a href="#section-4-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-5.3">
+          <p id="section-4-5.3.1">The outer certificate's final extension <span class="bcp14">MUST</span> have type <code>id-ce-embeddedSCT-CTv1</code>, as described in <a href="#alternate-certificate-information" class="auto internal xref">Section 4.2</a>.<a href="#section-4-5.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-4-5.4">
+          <p id="section-4-5.4.1">Each alternate certificate's final extension <span class="bcp14">MUST</span> have type <code>id-pe-outerCertificateBinding</code>, as described in <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a>.<a href="#section-4-5.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+<p id="section-4-6"><a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> discusses why these constraints are necessary.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<div id="extension-types">
+<section id="section-4.1">
+        <h3 id="name-extension-types">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-extension-types" class="section-name selfRef">Extension Types</a>
+        </h3>
+<p id="section-4.1-1">As discussed in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>, this document requires outer and alternate certificates to certify the same subject information. X.509 does not distinguish between certificate extensions that relate to the subject and those that relate to the issuer.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">The registry defined in <a href="#iana-extension-types" class="auto internal xref">Section 8.3</a> classifies extensions into <em>subject extensions</em> and <em>issuer extensions</em>.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">Broadly, subject extensions are those that define properties of the certificate subject. These are expected to match no matter which CA certifies this information. Subject extensions include:<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1-4.1">
+            <p id="section-4.1-4.1.1"><code>id-ce-subjectKeyIdentifier</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.2" class="relref">Section 4.2.1.2</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.2">
+            <p id="section-4.1-4.2.1"><code>id-ce-keyUsage</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.3" class="relref">Section 4.2.1.3</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.3">
+            <p id="section-4.1-4.3.1"><code>id-ce-certificatePolicies</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.4" class="relref">Section 4.2.1.4</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.4">
+            <p id="section-4.1-4.4.1"><code>id-ce-policyMappings</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.5" class="relref">Section 4.2.1.5</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.5">
+            <p id="section-4.1-4.5.1"><code>id-ce-subjectAltName</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.6" class="relref">Section 4.2.1.6</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.6">
+            <p id="section-4.1-4.6.1"><code>id-ce-subjectDirectoryAttributes</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.8" class="relref">Section 4.2.1.8</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.7">
+            <p id="section-4.1-4.7.1"><code>id-ce-basicConstraints</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.9" class="relref">Section 4.2.1.9</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.8">
+            <p id="section-4.1-4.8.1"><code>id-ce-nameConstraints</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.10" class="relref">Section 4.2.1.10</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.9">
+            <p id="section-4.1-4.9.1"><code>id-ce-policyConstraints</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.11" class="relref">Section 4.2.1.11</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.10">
+            <p id="section-4.1-4.10.1"><code>id-ce-extKeyUsage</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.12" class="relref">Section 4.2.1.12</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.10.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.11">
+            <p id="section-4.1-4.11.1"><code>id-ce-inhibitAnyPolicy</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.14" class="relref">Section 4.2.1.14</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.11.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-4.12">
+            <p id="section-4.1-4.12.1"><code>id-pe-subjectInfoAccess</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.2.2" class="relref">Section 4.2.2.2</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-4.12.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.1-5">Issuer extensions are specific to the certificate issuer. These include:<a href="#section-4.1-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1-6.1">
+            <p id="section-4.1-6.1.1"><code>id-ce-authorityKeyIdentifier</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.1" class="relref">Section 4.2.1.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.2">
+            <p id="section-4.1-6.2.1"><code>id-ce-issuerAltName</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.7" class="relref">Section 4.2.1.7</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.3">
+            <p id="section-4.1-6.3.1"><code>id-ce-cRLDistributionPoints</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.13" class="relref">Section 4.2.1.13</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.4">
+            <p id="section-4.1-6.4.1"><code>id-ce-freshestCRL</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.15" class="relref">Section 4.2.1.15</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.5">
+            <p id="section-4.1-6.5.1"><code>id-pe-authorityInfoAccess</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.2.1" class="relref">Section 4.2.2.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.6">
+            <p id="section-4.1-6.6.1"><code>id-ce-embeddedSCT-CTv1</code>, <span><a href="https://rfc-editor.org/rfc/rfc9162#appendix-B" class="relref">Appendix B</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span><a href="#section-4.1-6.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.7">
+            <p id="section-4.1-6.7.1"><code>id-ce-transparencyInfo</code>, <span><a href="https://rfc-editor.org/rfc/rfc9162#appendix-B" class="relref">Appendix B</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span><a href="#section-4.1-6.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.1-6.8">
+            <p id="section-4.1-6.8.1"><code>id-pe-outerCertificateBinding</code>, <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a><a href="#section-4.1-6.8.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.1-7">Concretely, an extension is a subject extension if its extension ID appears in the registry with an "Extension Type" column of "Subject". It is an issuer extension if the "Extension Type" column is "Issuer". X.509 is extensible, so the registry cannot be exhaustive. If the extension ID does not appear in the registry, its classification is not yet defined.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
+<p id="section-4.1-8">Existing CAs and relying parties will not be aware of classifications that postdate them. While a correctly-operated CA will not issue certificates with unrecognized extensions, relying parties process unrecognized non-critical extensions. <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> discusses the checks performed by a CA, while <a href="#known-subject-extensions" class="auto internal xref">Section 5.2</a> discusses the checks performed by a relying party.<a href="#section-4.1-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="alternate-certificate-information">
+<section id="section-4.2">
+        <h3 id="name-alternate-certificate-infor">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-alternate-certificate-infor" class="section-name selfRef">Alternate Certificate Information</a>
+        </h3>
+<p id="section-4.2-1">Each alternate certificate is described as differences from the outer certificate in an AlternateIssuerInfo structure. An AlternateIssuerInfo is defined as follows:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4.2-2">
+<pre>
+AlternateIssuerInfo ::= SEQUENCE {
+    serialNumber          CertificateSerialNumber,
+    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                              {SignatureAlgorithms}},
+    issuer                Name,
+    subjectExtensionCount INTEGER (0..MAX),
+    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}},
+    signatureValue        BIT STRING
+}
+
+AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
+
+IssuerExtensions EXTENSION ::= {
+    ext-AuthorityKeyIdentifier | ext-IssuerAltName |
+    ext-CRLDistributionPoints | ext-FreshestCRL |
+    ext-AuthorityInfoAccess |
+    ext-embeddedSCT-CTv1 | ext-transparencyInfo |
+    ext-outerCertificateBinding,
+    ...
+}
+</pre><a href="#section-4.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-3">An AlternateIssuerInfo's fields are defined as follows:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-4.1">
+            <p id="section-4.2-4.1.1"><code>serialNumber</code> is the alternate certificate's serial number.<a href="#section-4.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-4.2">
+            <p id="section-4.2-4.2.1"><code>signatureAlgorithm</code> is the alternate certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.<a href="#section-4.2-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-4.3">
+            <p id="section-4.2-4.3.1"><code>issuer</code> is the alternate certificate's issuer name.<a href="#section-4.2-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-4.4">
+            <p id="section-4.2-4.4.1"><code>subjectExtensionCount</code> is the number of common subject extensions in the two certificates. It <span class="bcp14">MUST</span> be strictly less than the number of extensions in the outer certificate, to exclude the outer certificate's final extension.<a href="#section-4.2-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-4.5">
+            <p id="section-4.2-4.5.1"><code>issuerExtensions</code> is the list of issuer extensions in the alternate certificate, excluding the final <code>id-pe-outerCertificateBinding</code> extension. Each extension in this list <span class="bcp14">MUST</span> be an issuer extension.<a href="#section-4.2-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-4.6">
+            <p id="section-4.2-4.6.1"><code>signatureValue</code> is the alternate certificate's signature value. This is a signature over the reconstructed TBSCertificate, not the AlternateIssuerInfo.<a href="#section-4.2-4.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.2-5">AlternateIssuerInfos are embedded within the outer certificate's final extension. This extension <span class="bcp14">MUST</span> be of type <code>id-ce-embeddedSCT-CTv1</code> (OID 1.3.6.1.4.1.11129.2.4.2). The format of the contents is defined in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. (<span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses the definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.)<a href="#section-4.2-5" class="pilcrow">¶</a></p>
+<p id="section-4.2-6">The extension <span class="bcp14">MUST</span> contain a Signed Certificate Timestamp (SCT) (<span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.2" class="relref">Section 3.2</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>) of the following form:<a href="#section-4.2-6" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.2-7.1">
+            <p id="section-4.2-7.1.1">As in <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, the <code>sct_version</code> field <span class="bcp14">MUST</span> be <code>v1</code> (zero).<a href="#section-4.2-7.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-7.2">
+            <p id="section-4.2-7.2.1">The <code>id</code> field <span class="bcp14">MUST</span> be the 32-byte string represented in hexadecimal as <code>abdcf1b6ca6af3c91f37f54fbafdbd17e711780d5197d15d0e1e71106d8cb6c5</code>. This is the SHA-256 <span>[<a href="#SHS" class="cite xref">SHS</a>]</span> hash of the ASCII string "Embedded Alternate Issuers".<a href="#section-4.2-7.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-7.3">
+            <p id="section-4.2-7.3.1">The <code>timestamp</code> field <span class="bcp14">MUST</span> be zero.<a href="#section-4.2-7.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-7.4">
+            <p id="section-4.2-7.4.1">The <code>extensions</code> field <span class="bcp14">MUST</span> be the empty string.<a href="#section-4.2-7.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-7.5">
+            <p id="section-4.2-7.5.1">The <code>algorithm</code> field of the digitally-signed element (<span><a href="https://rfc-editor.org/rfc/rfc5246#section-4.7" class="relref">Section 4.7</a> of [<a href="#RFC5246" class="cite xref">RFC5246</a>]</span>) <span class="bcp14">MUST</span> have a <code>hash</code> of <code>none</code> (zero) and a <code>signature</code> of <code>anonymous</code> (zero). (<span>[<a href="#RFC5246" class="cite xref">RFC5246</a>]</span> was obsoleted by <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> but the SignedCertificateTimestamp structure relies on definitions from <span>[<a href="#RFC5246" class="cite xref">RFC5246</a>]</span>.)<a href="#section-4.2-7.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.2-7.6">
+            <p id="section-4.2-7.6.1">The <code>signature</code> field of the digitally-signed element <span class="bcp14">MUST</span> contain a DER-encoded AlternateIssuerInfoList structure, with one AlternateIssuerInfo per alternate certificate.<a href="#section-4.2-7.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.2-8">The <code>id-ce-embeddedSCT-CTv1</code> extension <span class="bcp14">MAY</span> contain other SCTs, for example, if the outer certificate itself participates in Certificate Transparency.<a href="#section-4.2-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="outer-certificate-binding">
+<section id="section-4.3">
+        <h3 id="name-outer-certificate-binding">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-outer-certificate-binding" class="section-name selfRef">Outer Certificate Binding</a>
+        </h3>
+<p id="section-4.3-1">Each alternate certificate contains an outer certificate binding extension, defined below:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<div class="lang-asn.1 sourcecode" id="section-4.3-2">
+<pre>
+OuterCertificateBinding ::= SEQUENCE {
+    serialNumber          CertificateSerialNumber,
+    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                              {SignatureAlgorithms}},
+    issuer                Name,
+    subjectExtensionCount INTEGER (0..MAX),
+    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}}
+}
+
+id-pe-outerCertificateBinding OBJECT IDENTIFIER ::= {
+    iso(1) identified-organization(3) dod(6) internet(1) security(5)
+    mechanisms(5) pkix(7) pe(1) TBD2 }
+
+ext-outerCertificateBinding EXTENSION ::= {
+    SYNTAX OuterCertificateBinding
+    IDENTIFIED BY id-pe-outerCertificateBinding
+    CRITICALITY FALSE
+}
+</pre><a href="#section-4.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.3-3">The OuterCertificateBinding structure is similar to the AlternateIssuerInfo, except that it does not contain a <code>signatureValue</code> field. It describes the outer certificate, relative to the alternate certificate.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.3-4.1">
+            <p id="section-4.3-4.1.1"><code>serialNumber</code> is the outer certificate's serial number.<a href="#section-4.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-4.2">
+            <p id="section-4.3-4.2.1"><code>signatureAlgorithm</code> is the outer certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.<a href="#section-4.3-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-4.3">
+            <p id="section-4.3-4.3.1"><code>issuer</code> is the outer certificate's issuer name.<a href="#section-4.3-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-4.4">
+            <p id="section-4.3-4.4.1"><code>subjectExtensionCount</code> is the number of common subject extensions in the two certificates.<a href="#section-4.3-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-4.5">
+            <p id="section-4.3-4.5.1"><code>issuerExtensions</code> is the list of issuer extensions in the outer certificate, excluding the final <code>id-ce-embeddedSCT-CTv1</code> extension.<a href="#section-4.3-4.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.3-5">The outer certificate binding extension ensures that, even if a relying party only trusts the alternate CA, the outer certificate's contents are still authenticated by a CA trusted by the relying party. The alternate CA <span class="bcp14">MUST</span> check the OuterCertificateBinding is well-formed before issuing the certificate. In particular:<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.3-6.1">
+            <p id="section-4.3-6.1.1">The outer certificate binding extension <span class="bcp14">MUST</span> be the final extension in the alternate certificate.<a href="#section-4.3-6.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-6.2">
+            <p id="section-4.3-6.2.1"><code>subjectExtensionCount</code> <span class="bcp14">MUST</span> be strictly less than the number of extensions in the alternate certificate, to exclude the alternate certificate's outer certificate binding extension.<a href="#section-4.3-6.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-6.3">
+            <p id="section-4.3-6.3.1">Each extension in the alternate certificate, after the first <code>subjectExtensionCount</code> extensions, <span class="bcp14">MUST</span> be an issuer extension, as described in <a href="#extension-types" class="auto internal xref">Section 4.1</a>. That is, the alternate certificate can only add issuer extensions.<a href="#section-4.3-6.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-4.3-6.4">
+            <p id="section-4.3-6.4.1">Each extension in <code>issuerExtensions</code>, critical or not, <span class="bcp14">MUST</span> also be an issuer extension. That is, the alternate certificate can only remove issuer extensions.<a href="#section-4.3-6.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-4.3-7">If the alternate certificate does not satisfy these requirements, the alternate certificate is misissued. The above requirements apply even if the extension is not in the registry or is not known to the CA.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
+<p id="section-4.3-8">The relying party performs a different version of this check in <a href="#known-subject-extensions" class="auto internal xref">Section 5.2</a>, due to the possibility of unrecognized extensions.<a href="#section-4.3-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="relying-parties">
+<section id="section-5">
+      <h2 id="name-relying-parties">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-relying-parties" class="section-name selfRef">Relying Parties</a>
+      </h2>
+<p id="section-5-1">When verifying a certificate, a relying party checks if the outer certificate's final extension is <code>id-ce-embeddedSCT-CTv1</code>. If so, it looks for an SCT formatted as in <a href="#alternate-certificate-information" class="auto internal xref">Section 4.2</a>. If found, it decodes the SCT's <code>signature</code> value as a DER-encoded AlternateIssuerInfoList structure.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">If any AlternateIssuerInfo has a recognized <code>issuer</code>, the relying party reconstructs the alternate certificate as described in <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a>. If successful, the alternate certificate is used as a candidate target certificate when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">If certification path validation (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-6" class="relref">Section 6</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) succeeds for any path ending at an alternate certificate, the relying party accepts the certificate, even if it would otherwise not accept the outer certificate.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<div id="reconstructing-the-alternate-certificate">
+<section id="section-5.1">
+        <h3 id="name-reconstructing-the-alternat">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-reconstructing-the-alternat" class="section-name selfRef">Reconstructing the Alternate Certificate</a>
+        </h3>
+<p id="section-5.1-1">The following procedure reconstructs an alternate certificate from the outer certificate and an AlternateIssuerInfo.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.1-2">
+<li id="section-5.1-2.1">
+            <p id="section-5.1-2.1.1">Check each of the following. If any check fails, abort this procedure.<a href="#section-5.1-2.1.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-2.1.2.1">
+                <p id="section-5.1-2.1.2.1.1">The outer certificate's <code>version</code> is <code>v3</code>.<a href="#section-5.1-2.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.1.2.2">
+                <p id="section-5.1-2.1.2.2.1">The outer certificate's <code>signatureAlgorithm</code> and <code>signature</code> fields are equal.<a href="#section-5.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.1.2.3">
+                <p id="section-5.1-2.1.2.3.1">The outer certificate has no <code>subjectUniqueID</code> or <code>issuerUniqueID</code> field.<a href="#section-5.1-2.1.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.1.2.4">
+                <p id="section-5.1-2.1.2.4.1">The outer certificate has at least <code>subjectExtensionCount + 1</code> extensions and the final extension is <code>id-ce-embeddedSCT-CTv1</code>.<a href="#section-5.1-2.1.2.4.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li id="section-5.1-2.2">
+            <p id="section-5.1-2.2.1">Make a copy of the outer certificate as a Certificate structure.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.3">
+            <p id="section-5.1-2.3.1">Replace the TBSCertificate's <code>serialNumber</code> field with the AlternateIssuerInfo's <code>serialNumber</code>. Let <code>outerSerialNumber</code> be the replaced value.<a href="#section-5.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.4">
+            <p id="section-5.1-2.4.1">Replace the Certificate's <code>signatureAlgorithm</code> field and the TBSCertificate's <code>signature</code> field with the AlternateIssuerInfo's <code>signatureAlgorithm</code>. Let <code>outerSignatureAlgorithm</code> be the replaced value.<a href="#section-5.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.5">
+            <p id="section-5.1-2.5.1">Replace the TBSCertificate's <code>issuer</code> field with the AlternateIssuerInfo's <code>issuer</code>. Let <code>outerIssuer</code> be the replaced value.<a href="#section-5.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.6">
+            <p id="section-5.1-2.6.1">Remove the TBSCertificate's final extension, which will be <code>id-ce-embeddedSCT-CTv1</code>.<a href="#section-5.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.7">
+            <p id="section-5.1-2.7.1">Remove all but the first <code>subjectExtensionCount</code> extensions in the TBSCertificate. Let <code>outerIssuerExtensions</code> be the removed extensions.<a href="#section-5.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.8">
+            <p id="section-5.1-2.8.1">Check if <code>outerIssuerExtensions</code> and the AlternateIssuerInfo's <code>issuerExtensions</code> contain known subject extensions, as described in <a href="#known-subject-extensions" class="auto internal xref">Section 5.2</a>. If any are found, abort this procedure.<a href="#section-5.1-2.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.9">
+            <p id="section-5.1-2.9.1">Append the AlternateIssuerInfo's <code>issuerExtensions</code> to the TBSCertificate.<a href="#section-5.1-2.9.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.1-2.10">
+            <p id="section-5.1-2.10.1">Append a non-critical outer certificate binding extension (<a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a>) to the TBSCertificate such that:<a href="#section-5.1-2.10.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-2.10.2.1">
+                <p id="section-5.1-2.10.2.1.1"><code>serialNumber</code> is <code>outerSerialNumber</code>.<a href="#section-5.1-2.10.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.10.2.2">
+                <p id="section-5.1-2.10.2.2.1"><code>signatureAlgorithm</code> is <code>outerSignatureAlgorithm</code>.<a href="#section-5.1-2.10.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.10.2.3">
+                <p id="section-5.1-2.10.2.3.1"><code>issuer</code> is <code>outerIssuer</code>.<a href="#section-5.1-2.10.2.3.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.10.2.4">
+                <p id="section-5.1-2.10.2.4.1"><code>subjectExtensionCount</code> is the AlternateIssuerInfo's <code>subjectExtensionCount</code> value.<a href="#section-5.1-2.10.2.4.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-5.1-2.10.2.5">
+                <p id="section-5.1-2.10.2.5.1"><code>issuerExtensions</code> is <code>outerIssuerExtensions</code>.<a href="#section-5.1-2.10.2.5.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+          <li id="section-5.1-2.11">
+            <p id="section-5.1-2.11.1">Replace the Certificate's <code>signatureValue</code> field with the AlternateIssuerInfo's <code>signatureValue</code>.<a href="#section-5.1-2.11.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="known-subject-extensions">
+<section id="section-5.2">
+        <h3 id="name-known-subject-extensions">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-known-subject-extensions" class="section-name selfRef">Known Subject Extensions</a>
+        </h3>
+<p id="section-5.2-1"><a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> places requirements on alternate CAs that certify an OuterCertificateBinding. Relying parties are expected to ignore unrecognized non-critical extensions, so a relying party cannot check these requirements in full.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">Instead, relying parties <span class="bcp14">SHOULD</span> check that <code>outerIssuerExtensions</code>, as computed in <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a>, and the AlternateIssuerInfo's <code>issuerExtensions</code> contain no known subject extensions. Relying parties <span class="bcp14">MUST</span> allow unrecognized extensions for purposes of this check. (If the unrecognized extension is critical, it will likely be rejected later during path validation.)<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3">Relying parties are not required to replicate the entire registry in <a href="#iana-extension-types" class="auto internal xref">Section 8.3</a>. If the relying party does not implement some subject extension, it <span class="bcp14">MAY</span> ignore it in <code>outerIssuerExtensions</code> and <code>issuerExtensions</code>. If the relying party implements some extension which does not appear in the registry, it <span class="bcp14">MAY</span> ignore it in this check if the extension does not interact with any issuer-specific constraint during path validation.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4">See <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> for further discussion.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="deployment-considerations">
+<section id="section-6">
+      <h2 id="name-deployment-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-deployment-considerations" class="section-name selfRef">Deployment Considerations</a>
+      </h2>
+<div id="legacy-services">
+<section id="section-6.1">
+        <h3 id="name-legacy-services">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-legacy-services" class="section-name selfRef">Legacy Services</a>
+        </h3>
+<p id="section-6.1-1">Embedded alternate issuers are a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly <span class="bcp14">SHOULD NOT</span> use this mechanism. Deployments are <span class="bcp14">RECOMMENDED</span> to enforce this in CAs and relying parties.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">For example, in a post-quantum transition for TLS, embedded alternate issuers are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. Such a service would have no need for embedded alternate issuers. Accordingly, in a TLS deployment using embedded alternate issuers for a post-quantum transition:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-3.1">
+            <p id="section-6.1-3.1.1">CAs <span class="bcp14">SHOULD NOT</span> issue embedded alternate issuers if the end-entity key is post-quantum.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.1-3.2">
+            <p id="section-6.1-3.2.1">Relying parties <span class="bcp14">SHOULD</span> ignore embedded alternate issuers if the end-entity key is post-quantum.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.1-4">This ensures that, when the post-quantum transition is completed, there will be no embedded alternate issuers remaining and implementations can remove the supporting logic.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-5">A given deployment <span class="bcp14">SHOULD</span> only deploy embedded alternate issuers once, for only one transition. After that transition has completed, the deployment <span class="bcp14">SHOULD</span> have transitioned to a state where certificate holders support multiple certificates.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="certificate-transparency-log-sizes">
+<section id="section-6.2">
+        <h3 id="name-certificate-transparency-lo">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-certificate-transparency-lo" class="section-name selfRef">Certificate Transparency Log Sizes</a>
+        </h3>
+<p id="section-6.2-1">In deployments that use Certificate Transparency (CT) <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, a direct post-quantum transition risks significantly increasing the sizes of CT logs. (<span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses the definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.) <span>[<a href="#IETF124-PLANTS" class="cite xref">IETF124-PLANTS</a>]</span> estimated an 8.3x size increase from migrating to ML-DSA-44. While <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span> mitigates this, this mechanism risks logging the large AlternateIssuerInfo structures in CT logs when the outer certificate is logged.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2"><a href="#alternate-certificate-information" class="auto internal xref">Section 4.2</a> partially mitigates this by embedding AlternateIssuerInfo structures in SCTs. The outer certificate's precertificate omits all SCTs and thus the added post-quantum structures. Logged outer certificate precertificates thus do not increase in size. Alternate certificates, if using <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span>, will be unaffected by this size increase. However, when the final certificate with embedded SCTs is logged, the AlternateIssuerInfo will be logged.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">To mitigate this, deployments using embedded alternate issuers to transition away from a CT-based PKI thus <span class="bcp14">SHOULD</span> permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="validation">
+<section id="section-7.1">
+        <h3 id="name-validation">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
+        </h3>
+<p id="section-7.1-1">Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have issued the reconstructed alternate certificate. The alternate CA <span class="bcp14">MUST</span> perform all checks it would otherwise have performed in the course of issuing a certificate, such as domain validation. Misissuance of an alternate certificate remains misissuance.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="certificate-mismatch">
+<section id="section-7.2">
+        <h3 id="name-certificate-mismatch">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-certificate-mismatch" class="section-name selfRef">Certificate Mismatch</a>
+        </h3>
+<p id="section-7.2-1">Relying parties process embedded alternate issuers during path building and path validation and potentially validate an alternate certificate instead of the outer certificate. The service presenting the certificate or, potentially, some other components of the relying party might be unaware that a different target certificate was ultimately validated. This presents a security risk if the component assumes the relying party validated the outer certificate.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">If a relying party's path validation component accepted an alternate certificate, subsequent access checks in the relying party <span class="bcp14">SHOULD</span> act on the alternate certificate instead of the outer certificate. However, this might not be possible in some cases:<a href="#section-7.2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2-3.1">
+            <p id="section-7.2-3.1.1">An application's path validation component might be updated independently from the rest of the application.<a href="#section-7.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.2">
+            <p id="section-7.2-3.2.1">Path validation implementations <span class="bcp14">MAY</span> limit alternate certificate support to applications that opt in, but this might slow down PKI transitions that use this mechanism.<a href="#section-7.2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-3.3">
+            <p id="section-7.2-3.3.1">A large application might also opt-in, but forget to update some component.<a href="#section-7.2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.2-4">This document further mitigates this risk in two ways:<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.2-5">
+<li id="section-7.2-5.1">
+            <p id="section-7.2-5.1.1">Limiting alternate certificates to encoding the same subject information as the outer certificate.<a href="#section-7.2-5.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.2-5.2">
+            <p id="section-7.2-5.2.1">Requiring the alternate CA to sign over removed or replaced outer certificate fields, via the outer certificate binding extension.<a href="#section-7.2-5.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-7.2-6">This contrasts with <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span>, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
+<p id="section-7.2-7">If a more general protocol were instead used in this document, path validation might, for example, validate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the <code>subjectPublicKeyInfo</code> field.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
+<p id="section-7.2-8">X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, so this document introduces a classification in <a href="#extension-types" class="auto internal xref">Section 4.1</a> and <a href="#iana-extension-types" class="auto internal xref">Section 8.3</a>. However, extensibility introduces the risk that not all components of a system are aware of the classification of every extension.<a href="#section-7.2-8" class="pilcrow">¶</a></p>
+<p id="section-7.2-9">This is primarily mitigated by the outer certificate binding extension. Except for <code>id-ce-embeddedSCT-CTv1</code>, extensions added or removed from the outer certificate are still signed by the alternate CA, so relying parties can hold the alternate CA responsible for their contents. In particular, <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> makes the alternate CA responsible for ensuring all such extensions are issuer extensions. CAs are expected to not sign unknown extensions, so there is no conflict with extensibility.<a href="#section-7.2-9" class="pilcrow">¶</a></p>
+<p id="section-7.2-10">However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.10" class="relref">Section 4.2.1.10</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. <a href="#known-subject-extensions" class="auto internal xref">Section 5.2</a> recommends that the relying party also check extension classification. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.<a href="#section-7.2-10" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-8">
+      <h2 id="name-iana-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="pkix-module-identifier">
+<section id="section-8.1">
+        <h3 id="name-pkix-module-identifier">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-pkix-module-identifier" class="section-name selfRef">PKIX Module Identifier</a>
+        </h3>
+<p id="section-8.1-1">IANA is requested to add the following entry in the "SMI Security for PKIX Module Identifier" registry <span>[<a href="#RFC7299" class="cite xref">RFC7299</a>]</span>:<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Decimal</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+              <th class="text-left" rowspan="1" colspan="1">References</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">TBD1</td>
+              <td class="text-left" rowspan="1" colspan="1">id-mod-embeddedAlternateIssuers-2026</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC]</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="pkix-certificate-extension">
+<section id="section-8.2">
+        <h3 id="name-pkix-certificate-extension">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-pkix-certificate-extension" class="section-name selfRef">PKIX Certificate Extension</a>
+        </h3>
+<p id="section-8.2-1">IANA is requested to add the following entry in the "SMI Security for PKIX Certificate Extension" registry <span>[<a href="#RFC7299" class="cite xref">RFC7299</a>]</span>:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Decimal</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+              <th class="text-left" rowspan="1" colspan="1">References</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">TBD2</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pe-outerCertificateBinding</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC]</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="iana-extension-types">
+<section id="section-8.3">
+        <h3 id="name-extension-types-for-embedde">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-extension-types-for-embedde" class="section-name selfRef">Extension Types for Embedded Alternate Issuers</a>
+        </h3>
+<p id="section-8.3-1">IANA is requested to add a new registry, "Extension Types for Embedded Alternate Issuers", under the top-level registry "Public Key Infrastructure using X.509 (PKIX) Parameters" at <a href="https://www.iana.org/assignments/pkix-parameters">https://www.iana.org/assignments/pkix-parameters</a>. The registration policy is Specification Required <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">The registry contains the following note:<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-8.3-3.1">
+            <p id="section-8.3-3.1.1">See <a href="#extension-types" class="auto internal xref">Section 4.1</a> and <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> in [this-RFC] for guidance on how to classify extensions for this registry.<a href="#section-8.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-8.3-4">The registry initially consists of:<a href="#section-8.3-4" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">OID</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+              <th class="text-left" rowspan="1" colspan="1">Extension Type</th>
+              <th class="text-left" rowspan="1" colspan="1">References</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1.3.6.1.4.1.11129.2.4.2</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-embeddedSCT-CTv1</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1.3.6.1.5.5.7.1.1</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pe-authorityInfoAccess</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1.3.6.1.5.5.7.1.11</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pe-subjectInfoAccess</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1.3.6.1.5.5.7.1.TBD2</td>
+              <td class="text-left" rowspan="1" colspan="1">id-pe-outerCertificateBinding</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC]</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">1.3.101.75</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-transparencyInfo</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.9</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-subjectDirectoryAttributes</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.14</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-subjectKeyIdentifier</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.15</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-keyUsage</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.17</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-subjectAltName</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.18</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-issuerAltName</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.19</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-basicConstraints</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.30</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-nameConstraints</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.31</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-cRLDistributionPoints</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.32</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-certificatePolicies</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.33</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-policyMappings</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.35</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-authorityKeyIdentifier</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.36</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-policyConstraints</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.37</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-extKeyUsage</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.46</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-freshestCRL</td>
+              <td class="text-left" rowspan="1" colspan="1">Issuer</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">2.5.29.54</td>
+              <td class="text-left" rowspan="1" colspan="1">id-ce-inhibitAnyPolicy</td>
+              <td class="text-left" rowspan="1" colspan="1">Subject</td>
+              <td class="text-left" rowspan="1" colspan="1">[this-RFC], <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>
+</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4158">[RFC4158]</dt>
+        <dd>
+<span class="refAuthor">Cooper, M.</span>, <span class="refAuthor">Dzambasow, Y.</span>, <span class="refAuthor">Hesse, P.</span>, <span class="refAuthor">Joseph, S.</span>, and <span class="refAuthor">R. Nicholas</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Certification Path Building"</span>, <span class="seriesInfo">RFC 4158</span>, <span class="seriesInfo">DOI 10.17487/RFC4158</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4158">https://www.rfc-editor.org/rfc/rfc4158</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5246">[RFC5246]</dt>
+        <dd>
+<span class="refAuthor">Dierks, T.</span> and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.2"</span>, <span class="seriesInfo">RFC 5246</span>, <span class="seriesInfo">DOI 10.17487/RFC5246</span>, <time datetime="2008-08" class="refDate">August 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5246">https://www.rfc-editor.org/rfc/rfc5246</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5280">[RFC5280]</dt>
+        <dd>
+<span class="refAuthor">Cooper, D.</span>, <span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Boeyen, S.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5280">https://www.rfc-editor.org/rfc/rfc5280</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5912">[RFC5912]</dt>
+        <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">J. Schaad</span>, <span class="refTitle">"New ASN.1 Modules for the Public Key Infrastructure Using X.509 (PKIX)"</span>, <span class="seriesInfo">RFC 5912</span>, <span class="seriesInfo">DOI 10.17487/RFC5912</span>, <time datetime="2010-06" class="refDate">June 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5912">https://www.rfc-editor.org/rfc/rfc5912</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6962">[RFC6962]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Langley, A.</span>, and <span class="refAuthor">E. Kasper</span>, <span class="refTitle">"Certificate Transparency"</span>, <span class="seriesInfo">RFC 6962</span>, <span class="seriesInfo">DOI 10.17487/RFC6962</span>, <time datetime="2013-06" class="refDate">June 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6962">https://www.rfc-editor.org/rfc/rfc6962</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7299">[RFC7299]</dt>
+        <dd>
+<span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Object Identifier Registry for the PKIX Working Group"</span>, <span class="seriesInfo">RFC 7299</span>, <span class="seriesInfo">DOI 10.17487/RFC7299</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7299">https://www.rfc-editor.org/rfc/rfc7299</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8126">https://www.rfc-editor.org/rfc/rfc8126</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9162">[RFC9162]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Messeri, E.</span>, and <span class="refAuthor">R. Stradling</span>, <span class="refTitle">"Certificate Transparency Version 2.0"</span>, <span class="seriesInfo">RFC 9162</span>, <span class="seriesInfo">DOI 10.17487/RFC9162</span>, <time datetime="2021-12" class="refDate">December 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9162">https://www.rfc-editor.org/rfc/rfc9162</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SHS">[SHS]</dt>
+      <dd>
+<span class="refTitle">"Secure hash standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.180-4</span>, <time datetime="2015" class="refDate">2015</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.180-4">https://doi.org/10.6028/nist.fips.180-4</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIPS204">[FIPS204]</dt>
+        <dd>
+<span class="refTitle">"Module-lattice-based digital signature standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.204</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.204">https://doi.org/10.6028/nist.fips.204</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.bonnell-lamps-chameleon-certs">[I-D.bonnell-lamps-chameleon-certs]</dt>
+        <dd>
+<span class="refAuthor">Bonnell, C.</span>, <span class="refAuthor">Gray, J.</span>, <span class="refAuthor">Hook, D.</span>, <span class="refAuthor">Okubo, T.</span>, and <span class="refAuthor">M. Ounsworth</span>, <span class="refTitle">"A Mechanism for Encoding Differences in Paired Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bonnell-lamps-chameleon-certs-07</span>, <time datetime="2025-10-18" class="refDate">18 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bonnell-lamps-chameleon-certs-07">https://datatracker.ietf.org/doc/html/draft-bonnell-lamps-chameleon-certs-07</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-lamps-certdiscovery">[I-D.ietf-lamps-certdiscovery]</dt>
+        <dd>
+<span class="refAuthor">Okubo, T.</span>, <span class="refAuthor">Bonnell, C.</span>, <span class="refAuthor">Gray, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, and <span class="refAuthor">J. Mandel</span>, <span class="refTitle">"A Mechanism for X.509 Certificate Discovery"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-lamps-certdiscovery-03</span>, <time datetime="2026-05-21" class="refDate">21 May 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-lamps-certdiscovery-03">https://datatracker.ietf.org/doc/html/draft-ietf-lamps-certdiscovery-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-plants-merkle-tree-certs">[I-D.ietf-plants-merkle-tree-certs]</dt>
+        <dd>
+<span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, <span class="refAuthor">Westerbaan, B.</span>, <span class="refAuthor">Valenta, L.</span>, and <span class="refAuthor">F. Valsorda</span>, <span class="refTitle">"Merkle Tree Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-plants-merkle-tree-certs-06</span>, <time datetime="2026-09-21" class="refDate">21 September 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-plants-merkle-tree-certs-06">https://datatracker.ietf.org/doc/html/draft-ietf-plants-merkle-tree-certs-06</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-trust-anchor-ids">[I-D.ietf-tls-trust-anchor-ids]</dt>
+        <dd>
+<span class="refAuthor">Beck, B.</span>, <span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">K. Nekritz</span>, <span class="refTitle">"TLS Trust Anchor Identifiers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-trust-anchor-ids-06</span>, <time datetime="2026-09-30" class="refDate">30 September 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-trust-anchor-ids-06">https://datatracker.ietf.org/doc/html/draft-ietf-tls-trust-anchor-ids-06</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IETF124-PLANTS">[IETF124-PLANTS]</dt>
+        <dd>
+<span class="refAuthor">Benjamin, D.</span>, <span class="refTitle">"PLANTS BoF: Solution Space and Dispatched Work"</span>, <time datetime="2025-11-04" class="refDate">4 November 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/meeting/124/materials/slides-124-plants-solution-space-and-dispatched-work-00.pdf">https://datatracker.ietf.org/meeting/124/materials/slides-124-plants-solution-space-and-dispatched-work-00.pdf</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IETF126-PQ-AUTH">[IETF126-PQ-AUTH]</dt>
+        <dd>
+<span class="refAuthor">Benjamin, D.</span>, <span class="refTitle">"Post-Quantum Authentication: Beating the S-Curve"</span>, <time datetime="2026-07-24" class="refDate">24 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/meeting/126/materials/slides-126-saag-post-quantum-authentication-beating-the-s-curve-00">https://datatracker.ietf.org/meeting/126/materials/slides-126-saag-post-quantum-authentication-beating-the-s-curve-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="PQ-AUTH-ROADMAP">[PQ-AUTH-ROADMAP]</dt>
+        <dd>
+<span class="refAuthor">Benjamin, D.</span> and <span class="refAuthor">J. DeBlasio</span>, <span class="refTitle">"Post-Quantum HTTPS Authentication Roadmap"</span>, <time datetime="2026-02-27" class="refDate">27 February 2026</time>, <span>&lt;<a href="https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/">https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8555">[RFC8555]</dt>
+      <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Hoffman-Andrews, J.</span>, <span class="refAuthor">McCarney, D.</span>, and <span class="refAuthor">J. Kasten</span>, <span class="refTitle">"Automatic Certificate Management Environment (ACME)"</span>, <span class="seriesInfo">RFC 8555</span>, <span class="seriesInfo">DOI 10.17487/RFC8555</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8555">https://www.rfc-editor.org/rfc/rfc8555</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="asn1-module">
+<section id="appendix-A">
+      <h2 id="name-asn1-module">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-asn1-module" class="section-name selfRef">ASN.1 Module</a>
+      </h2>
+<p id="appendix-A-1">This module uses structures defined in <span>[<a href="#RFC5912" class="cite xref">RFC5912</a>]</span> and <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<div class="breakable lang-asn.1 sourcecode" id="appendix-A-2">
+<pre>
+EmbeddedAlternateIssuers-2026
+  { iso(1) identified-organization(3) dod(6) internet(1)
+    security(5) mechanisms(5) pkix(7) id-mod(0)
+    id-mod-embeddedAlternateIssuers-2026(TBD1) }
+
+DEFINITIONS IMPLICIT TAGS ::=
+BEGIN
+
+IMPORTS
+  SIGNATURE-ALGORITHM, AlgorithmIdentifier{}
+  FROM AlgorithmInformation-2009 -- in [RFC5912]
+    { iso(1) identified-organization(3) dod(6) internet(1)
+      security(5) mechanisms(5) pkix(7) id-mod(0)
+      id-mod-algorithmInformation-02(58) }
+  Extension{}, EXTENSION
+  FROM PKIX-CommonTypes-2009 -- in [RFC5912]
+    { iso(1) identified-organization(3) dod(6) internet(1)
+      security(5) mechanisms(5) pkix(7) id-mod(0)
+      id-mod-pkixCommon-02(57) }
+  ext-AuthorityKeyIdentifier, ext-IssuerAltName,
+  ext-CRLDistributionPoints, ext-FreshestCRL,
+  ext-AuthorityInfoAccess
+  FROM PKIX1Implicit-2009 -- in [RFC5912]
+    { iso(1) identified-organization(3) dod(6) internet(1)
+      security(5) mechanisms(5) pkix(7) id-mod(0)
+      id-mod-pkix1-implicit-02(59) }
+  Name, CertificateSerialNumber, SignatureAlgorithms
+  FROM PKIX1Explicit-2009 -- in [RFC5912]
+    { iso(1) identified-organization(3) dod(6) internet(1)
+      security(5) mechanisms(5) pkix(7) id-mod(0)
+      id-mod-pkix1-explicit-02(51) }
+  ext-embeddedSCT-CTv1, ext-transparencyInfo
+  FROM CertificateTransparencyV2Module-2021 -- in [RFC9162]
+    { iso(1) identified-organization(3) dod(6) internet(1)
+      security(5) mechanisms(5) pkix(7) id-mod(0)
+      id-mod-public-notary-v2(102) }
+;
+
+AlternateIssuerInfo ::= SEQUENCE {
+    serialNumber          CertificateSerialNumber,
+    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                              {SignatureAlgorithms}},
+    issuer                Name,
+    subjectExtensionCount INTEGER (0..MAX),
+    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}},
+    signatureValue        BIT STRING
+}
+
+AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
+
+IssuerExtensions EXTENSION ::= {
+    ext-AuthorityKeyIdentifier | ext-IssuerAltName |
+    ext-CRLDistributionPoints | ext-FreshestCRL |
+    ext-AuthorityInfoAccess |
+    ext-embeddedSCT-CTv1 | ext-transparencyInfo |
+    ext-outerCertificateBinding,
+    ...
+}
+
+OuterCertificateBinding ::= SEQUENCE {
+    serialNumber          CertificateSerialNumber,
+    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                              {SignatureAlgorithms}},
+    issuer                Name,
+    subjectExtensionCount INTEGER (0..MAX),
+    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}}
+}
+
+id-pe-outerCertificateBinding OBJECT IDENTIFIER ::= {
+    iso(1) identified-organization(3) dod(6) internet(1) security(5)
+    mechanisms(5) pkix(7) pe(1) TBD2 }
+
+ext-outerCertificateBinding EXTENSION ::= {
+    SYNTAX OuterCertificateBinding
+    IDENTIFIED BY id-pe-outerCertificateBinding
+    CRITICALITY FALSE
+}
+
+END
+</pre><a href="#appendix-A-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-B">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-B-1">Thanks to the authors of <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span> for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">David Benjamin</span></div>
+<div dir="auto" class="left"><span class="org">Google LLC</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:davidben@google.com" class="email">davidben@google.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
