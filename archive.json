@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-06T05:51:31.431415+00:00",
+  "timestamp": "2026-10-08T05:32:05.853618+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -49,6 +49,23 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOTGW8t88AAAABVcTydQ",
+      "title": "Make outer certificate binding critical",
+      "url": "https://github.com/davidben/turducken-certs/issues/1",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@aarongable pointed out that, due to how ACME DV challenges work (sadness), we may need to make the semantics of the certificate somewhat dependent on the particular outer CA that the alternate CA is channeling. In that case, the outer certificate binding extension should be critical.",
+      "createdAt": "2026-10-06T19:05:47Z",
+      "updatedAt": "2026-10-06T19:05:47Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": []
 }
