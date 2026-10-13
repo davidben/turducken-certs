@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-11T05:11:46.499557+00:00",
+  "timestamp": "2026-10-13T06:22:55.986397+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -62,9 +62,31 @@
       "labels": [],
       "body": "@aarongable pointed out that, due to how ACME DV challenges work (sadness), we may need to make the semantics of the certificate somewhat dependent on the particular outer CA that the alternate CA is channeling. In that case, the outer certificate binding extension should be critical.",
       "createdAt": "2026-10-06T19:05:47Z",
-      "updatedAt": "2026-10-06T19:05:47Z",
+      "updatedAt": "2026-10-12T19:22:17Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Or possibly these are two separate extensions, one for the binding and a critical extension for the CA to say \"I am wearing this hat\".",
+          "createdAt": "2026-10-12T07:36:11Z",
+          "updatedAt": "2026-10-12T07:36:11Z"
+        },
+        {
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "body": "I think the outer binding extension should be critical regardless: a relying party which is processing an embedded alternate certificate MUST understand and process the outer binding extension in order to prevent certificate mismatch issues.\n\nIf the webpki goes in the direction of the Alternate CA not actually performing validation, but instead just attesting that the Outer CA wants to issue this certificate, then I think that should be represented by a separate critical extension which indicates that validation was done by the Outer CA, not by the Alternate CA.",
+          "createdAt": "2026-10-12T08:31:12Z",
+          "updatedAt": "2026-10-12T08:31:12Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Oh? I've no concerns making it critical, but I'm curious what certificate mismatch issue we're preventing.\n\nFrom what I can see, if we don't ascribe extra semantics, making it critical just prevents someone from extracting the inner cert and then serving it directly. But I can't think of anything bad per se that would come of this. (Can't think of anything that it enables either.)",
+          "createdAt": "2026-10-12T19:22:17Z",
+          "updatedAt": "2026-10-12T19:22:17Z"
+        }
+      ]
     }
   ],
   "pulls": []
