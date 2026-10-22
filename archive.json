@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-20T04:21:31.596311+00:00",
+  "timestamp": "2026-10-22T04:11:24.747462+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -94,7 +94,235 @@
           "updatedAt": "2026-10-19T22:30:36Z"
         }
       ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOTGW8t88AAAABY1yOQA",
+      "title": "Missing cabfOrganizationIdentifier and qcStatements extensions",
+      "url": "https://github.com/davidben/turducken-certs/issues/3",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@cbonnell pointed out we're missing a couple:\nhttps://www.rfc-editor.org/info/rfc3739/\nhttps://cabforum.org/working-groups/server/extended-validation/guidelines/#7122-cabrowser-forum-organization-identifier-extension",
+      "createdAt": "2026-10-21T13:58:42Z",
+      "updatedAt": "2026-10-21T13:58:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOTGW8t88AAAABY14RBg",
+      "title": "Issuer vs subject classification is a little odd for certificatePolicies",
+      "url": "https://github.com/davidben/turducken-certs/issues/4",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@CBonnell pointed out an awkwardness. We currently say certificatePolicies is a subject extension, but then you get things like CA-specific EV OIDs and whatnot.\n\nPossibly issuer vs subject is not the best name for the classification. What we really want is \"are you allowed to swap this\", with No constraining things and Yes adding some mismatch risk to the relying party. Here, since certificate policies is safe to swap out because you _already_ cannot interpret it without matching them up the chain, so a simple boolean result from your cert verification already wasn't sufficient.",
+      "createdAt": "2026-10-21T14:04:39Z",
+      "updatedAt": "2026-10-21T14:04:39Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOTGW8t88AAAABY2qx3w",
+      "title": "SCTs may not be as extensible as we hope",
+      "url": "https://github.com/davidben/turducken-certs/issues/5",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@CBonnell noticed this slightly horrifying bit of code.\nhttps://github.com/openssl/openssl/blob/master/crypto/ct/ct_oct.c#L50",
+      "createdAt": "2026-10-21T14:53:37Z",
+      "updatedAt": "2026-10-21T14:58:43Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "TODO: Test this out, but I _think_ this means we need to allocate a new SCT version (and test that everyone processes those OK), or just put in a dummy existing codepoint in there. ",
+          "createdAt": "2026-10-21T14:58:43Z",
+          "updatedAt": "2026-10-21T14:58:43Z"
+        }
+      ]
     }
   ],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 2,
+      "id": "PR_kwDOTGW8t88AAAABJpllVA",
+      "title": "Outline a method for uncoordinated issuance.",
+      "url": "https://github.com/davidben/turducken-certs/pull/2",
+      "state": "CLOSED",
+      "author": "bob-beck",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "This allows PQ issuing CA's to construct these certificates without needing coordination with classical CA, when the intended consumers of the classical certificate are un-updatable legacy clients.",
+      "createdAt": "2026-10-20T21:11:21Z",
+      "updatedAt": "2026-10-20T23:40:50Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "607fa28dc59fa77aef10379c330836653719b116",
+      "headRepository": "bob-beck/turducken-certs",
+      "headRefName": "main",
+      "headRefOid": "8e9dbf477e343402a9210e19407ffeb919ace370",
+      "closedAt": "2026-10-20T22:43:40Z",
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": ":-P\r\n\r\nI think the way to think about a compromised key is that you're now also the CA, in which case you're clearly coordinating.",
+          "createdAt": "2026-10-20T22:43:40Z",
+          "updatedAt": "2026-10-20T22:43:40Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "> :-P\r\n> \r\n> I think the way to think about a compromised key is that you're now also the CA, in which case you're clearly coordinating.\r\n\r\nOh dear, so perhaps I mis-named it - it's not uncoordinated - It is freely available public coordination CA's\r\n",
+          "createdAt": "2026-10-20T22:46:39Z",
+          "updatedAt": "2026-10-20T22:46:39Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "> > :-P\r\n> > I think the way to think about a compromised key is that you're now also the CA, in which case you're clearly coordinating.\r\n> \r\n> Oh dear, so perhaps I mis-named it - it's not uncoordinated - It is freely available public coordination CA's\r\n\r\nI mean I do always tell you I am terrible at naming things\r\n",
+          "createdAt": "2026-10-20T22:47:07Z",
+          "updatedAt": "2026-10-20T22:47:07Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "And also, I forgot the meme, and this is github. \r\n\r\n<img width=\"620\" height=\"465\" alt=\"oprah-ca\" src=\"https://github.com/user-attachments/assets/1c8ed6a6-17bb-4e93-84c9-68a7c81770d2\" />\r\n",
+          "createdAt": "2026-10-20T22:56:43Z",
+          "updatedAt": "2026-10-20T22:56:43Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Pronounced \"car\" with a Boston accent? :-)",
+          "createdAt": "2026-10-20T23:16:42Z",
+          "updatedAt": "2026-10-20T23:16:42Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "> Pronounced \"car\" with a Boston accent? :-)\n\nabsolutely!",
+          "createdAt": "2026-10-20T23:40:50Z",
+          "updatedAt": "2026-10-20T23:40:50Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 6,
+      "id": "PR_kwDOTGW8t88AAAABJ2xvGA",
+      "title": "Use a recognized signature for the SCT entry",
+      "url": "https://github.com/davidben/turducken-certs/pull/6",
+      "state": "OPEN",
+      "author": "bob-beck",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Sadly, OpenSSL will barf on any SCT that it can't parse this. and all old code will puke on it. So, while I could fix it in OpenSSL, that presumably doesn't help here.\n\nIf we use a recognized signature that gets around it, we just end up deciding we don't have this particular log, return 0 and move on with life without bothering to try to actually check it.",
+      "createdAt": "2026-10-21T18:25:07Z",
+      "updatedAt": "2026-10-22T02:36:15Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "607fa28dc59fa77aef10379c330836653719b116",
+      "headRepository": "bob-beck/turducken-certs",
+      "headRefName": "we-suck-I-am-so-sorry",
+      "headRefOid": "64f8287f9e08d96afdaebb9cc34ed6fcd3b19682",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "Or is this just demonstrating that we don't know what legacy implementaions will do with this, and we should just pick a brand new extension marked non-critical that nothing legacy will grok - and the risk is less that they will explode on that?",
+          "createdAt": "2026-10-21T18:27:51Z",
+          "updatedAt": "2026-10-21T18:27:51Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "Related: https://github.com/openssl/openssl/pull/33310 - but that won't help us for old junk. ",
+          "createdAt": "2026-10-21T19:07:06Z",
+          "updatedAt": "2026-10-21T19:07:06Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Yyuuuup, issue #5. Have we confirmed that OpenSSL indeed will barf on this? Do you know if it's something that's on by default or only if the caller turns something on? What do they need to turn on? (I haven't had a chance to play with it yet.)\r\n\r\nIf it's indeed bust, I think our options are:\r\n\r\n* This PR\r\n* A variant of this PR where we say that the value can be whatever (RP is expected to ignore it) but you're suggested to use an existing value to dodge OpenSSL's nonsense\r\n* Punt all this entirely and instead change the version number of the SCT. `o2i_SCT` seems to handle that fine. Whether everyone else does, I've no idea.",
+          "createdAt": "2026-10-21T21:35:29Z",
+          "updatedAt": "2026-10-21T21:35:29Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "FWIW, I see no evidence in either google3 or Debian code search that any application has ever used OpenSSL's CT support. It looks like you have to explicitly turn it on for this code to be active. Also the failure mode is that OpenSSL mistakenly believes that the SCT list is empty, not an instant abort, so you would have to actually try to enforce CT to notice.",
+          "createdAt": "2026-10-21T21:56:31Z",
+          "updatedAt": "2026-10-21T21:56:31Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "> FWIW, I see no evidence in either google3 or Debian code search that any application has ever used OpenSSL's CT support. It looks like you have to explicitly turn it on for this code to be active. Also the failure mode is that OpenSSL mistakenly believes that the SCT list is empty, not an instant abort, so you would have to actually try to enforce CT to notice.\n\nyes I am pretty sure nothing outside of bindings i have seen calls this. \n\nSo given the target is legacy crap we might not care, unless said unpdatable legacy stuff is some private thing that *Does* use this code. \n\nCT enforcing is not something I would expect an un updatable thing to do. ",
+          "createdAt": "2026-10-21T22:55:36Z",
+          "updatedAt": "2026-10-21T22:55:36Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "TBH if we can manage it, making it a new SCT version would be quite nice. Avoids having to fill in garbage values for everything.",
+          "createdAt": "2026-10-22T01:22:52Z",
+          "updatedAt": "2026-10-22T01:22:52Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> TBH if we can manage it, making it a new SCT version would be quite nice. Avoids having to fill in garbage values for everything.\r\n\r\nhttps://github.com/davidben/turducken-certs/pull/7 does it with a new SCT version. I think this is just generally preferable. It's a tighter encoding, and we don't need to fill in a bunch of crap.",
+          "createdAt": "2026-10-22T02:36:15Z",
+          "updatedAt": "2026-10-22T02:36:15Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 7,
+      "id": "PR_kwDOTGW8t88AAAABJ7XYrg",
+      "title": "Use a different SCT version instead",
+      "url": "https://github.com/davidben/turducken-certs/pull/7",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Unfortunately, since we never established an SCT version registry, this is a bit goofy and we actually have to (ab)use the never-deployed RFC 9162 registry, but it works out.\n\nThis will need testing to confirm, but by code inspection, it seems implementations all handle unknown versions fine? I did find one that will parse a few fields ahead, but even if those fields get misinterpreted from here, it ignores all SCTs it cannot parse, so that's still fine.\n\nAn alternative to #6 to fix #5.\n\n@bob-beck @CBonnell WDYT?",
+      "createdAt": "2026-10-22T02:30:17Z",
+      "updatedAt": "2026-10-22T02:34:47Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "f22aca018521d71d9daacb442e3127cde7c30e86",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "sct-version",
+      "headRefOid": "44b7ace5cb94ad47efab971eb08e8aa85c84e53c",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
