@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"crypto/x509"
 	"encoding/asn1"
 	"encoding/hex"
@@ -14,6 +13,11 @@ import (
 
 	"golang.org/x/crypto/cryptobyte"
 	cbasn1 "golang.org/x/crypto/cryptobyte/asn1"
+)
+
+const (
+	// Not actually assigned, just a prediction.
+	embeddedAlternateIssuersSCTVersion = 0x0107
 )
 
 var (
@@ -97,37 +101,16 @@ func extractAlternateCertificates(outer *x509.Certificate) ([]*x509.Certificate,
 		if !sctList.ReadUint16LengthPrefixed(&sct) || sct.Empty() {
 			return nil, errors.New("could not parse SCT")
 		}
-		var version uint8
-		if !sct.ReadUint8(&version) {
-			return nil, errors.New("could not parse SCT")
-		}
-		if version != 0 {
+		var version uint16
+		if !sct.ReadUint16(&version) || version != embeddedAlternateIssuersSCTVersion {
 			continue
 		}
-		var id []byte
-		var timestamp uint64
-		var extensions cryptobyte.String
-		var hashAlg, sigAlg uint8
-		var signature cryptobyte.String
-		if !sct.ReadBytes(&id, 32) ||
-			!sct.ReadUint64(&timestamp) ||
-			!sct.ReadUint16LengthPrefixed(&extensions) ||
-			!sct.ReadUint8(&hashAlg) ||
-			!sct.ReadUint8(&sigAlg) ||
-			!sct.ReadUint16LengthPrefixed(&signature) ||
-			!sct.Empty() {
+		if !sct.ReadUint24LengthPrefixed(&altInfoList) || !sct.Empty() {
 			return nil, errors.New("could not parse SCT")
-		}
-		if !bytes.Equal(id, altInfoListLogID) {
-			continue
 		}
 		if foundAltInfoList {
 			return nil, errors.New("duplicate AlternateIssuerInfoList SCT")
 		}
-		if timestamp != 0 || !extensions.Empty() || hashAlg != 0 || sigAlg != 0 {
-			return nil, errors.New("invalid AlternateIssuerInfoList SCT")
-		}
-		altInfoList = signature
 		foundAltInfoList = true
 	}
 	if !foundAltInfoList {
