@@ -325,18 +325,31 @@ An AlternateIssuerInfo's fields are defined as follows:
 * `issuerExtensions` is the list of issuer extensions in the alternate certificate, excluding the final `id-pe-outerCertificateBinding` extension. Each extension in this list MUST be an issuer extension.
 * `signatureValue` is the alternate certificate's signature value. This is a signature over the reconstructed TBSCertificate, not the AlternateIssuerInfo.
 
-AlternateIssuerInfos are embedded within the outer certificate's final extension. This extension MUST be of type `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2). The format of the contents is defined in {{Section 3.3 of !RFC6962}}. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.)
+### Signed Certificate Timestamp Encoding
 
-The extension MUST contain a Signed Certificate Timestamp (SCT) ({{Section 3.2 of !RFC6962}}) of the following form:
+The AlternateIssuerInfos for each alternate certificate are collected in an AlternateIssuerInfoList, which is embedded in a SignedCertificateTimestamp (SCT) in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in  {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate.
 
-* As in {{?RFC6962}}, the `sct_version` field MUST be `v1` (zero).
-* The `id` field MUST be the 32-byte string represented in hexadecimal as `abdcf1b6ca6af3c91f37f54fbafdbd17e711780d5197d15d0e1e71106d8cb6c5`. This is the SHA-256 {{!SHS=DOI.10.6028/NIST.FIPS.180-4}} hash of the ASCII string "Embedded Alternate Issuers".
-* The `timestamp` field MUST be zero.
-* The `extensions` field MUST be the empty string.
-* The `algorithm` field of the digitally-signed element ({{Section 4.7 of !RFC5246}}) MUST have a `hash` of `none` (zero) and a `signature` of `anonymous` (zero). ({{!RFC5246}} was obsoleted by {{?RFC9846}} but the SignedCertificateTimestamp structure relies on definitions from {{!RFC5246}}.)
-* The `signature` field of the digitally-signed element MUST contain a DER-encoded AlternateIssuerInfoList structure, with one AlternateIssuerInfo per alternate certificate.
+Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
 
-The `id-ce-embeddedSCT-CTv1` extension MAY contain other SCTs, for example, if the outer certificate itself participates in Certificate Transparency.
+The SCT is formatted as a TransItem ({{Section 4.5 of !RFC9162}}) with a `versioned_type` of `embedded_alternate_issuers`, defined below:
+
+~~~ tls-presentation
+enum {
+    embedded_alternate_issuers(TBD3), (0xFFFF)
+} VersionedTransType;
+
+struct {
+    VersionedTransType versioned_type;
+    select (versioned_type) {
+        case embedded_alternate_issuers:
+            opaque alternate_issuer_infos<1..2^24-1>;
+    } data;
+} TransItem;
+~~~
+
+The `alternate_issuer_infos` field contains the DER encoding of the AlternateIssuerInfoList.
+
+Note: This structure uses a two-byte version, while the SignedCertificateTimestamp uses a one-byte version. The VersionedTransType type from {{?RFC9162}} reserves 0x0000..0x00FF to avoid overlapping with the `v1(0)` version value from {{?RFC6962}}. The above structure is defined using {{?RFC9162}} to preserve this property and to make use of the registry defined in {{Section 10.2.3 of ?RFC9162}}. The version allocation means it still can and is used in place of a SignedCertificateTimestamp and not the protocols defined in {{?RFC9162}}.
 
 ## Outer Certificate Binding
 
@@ -387,7 +400,7 @@ The relying party performs a different version of this check in {{known-subject-
 
 # Relying Parties
 
-When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for an SCT formatted as in {{alternate-certificate-information}}. If found, it decodes the SCT's `signature` value as a DER-encoded AlternateIssuerInfoList structure.
+When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for an SCT formatted as in {{signed-certificate-timestamp-encoding}}. If found, it decodes the SCT's `signature` value as a DER-encoded AlternateIssuerInfoList structure.
 
 If any AlternateIssuerInfo has a recognized `issuer`, the relying party reconstructs the alternate certificate as described in {{reconstructing-the-alternate-certificate}}. If successful, the alternate certificate is used as a candidate target certificate when building certification paths {{!RFC4158}}.
 
@@ -459,7 +472,7 @@ A given deployment SHOULD only deploy embedded alternate issuers once, for only 
 
 In deployments that use Certificate Transparency (CT) {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44. While {{?I-D.ietf-plants-merkle-tree-certs}} mitigates this, this mechanism risks logging the large AlternateIssuerInfo structures in CT logs when the outer certificate is logged.
 
-{{alternate-certificate-information}} partially mitigates this by embedding AlternateIssuerInfo structures in SCTs. The outer certificate's precertificate omits all SCTs and thus the added post-quantum structures. Logged outer certificate precertificates thus do not increase in size. Alternate certificates, if using {{?I-D.ietf-plants-merkle-tree-certs}}, will be unaffected by this size increase. However, when the final certificate with embedded SCTs is logged, the AlternateIssuerInfo will be logged.
+{{signed-certificate-timestamp-encoding}} partially mitigates this by embedding AlternateIssuerInfo structures in SCTs. The outer certificate's precertificate omits all SCTs and thus the added post-quantum structures. Logged outer certificate precertificates thus do not increase in size. Alternate certificates, if using {{?I-D.ietf-plants-merkle-tree-certs}}, will be unaffected by this size increase. However, when the final certificate with embedded SCTs is logged, the AlternateIssuerInfo will be logged.
 
 To mitigate this, deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
@@ -544,6 +557,14 @@ The registry initially consists of:
 | 2.5.29.37               | id-ce-extKeyUsage                | Subject        | [this-RFC], {{RFC5280}} |
 | 2.5.29.46               | id-ce-freshestCRL                | Issuer         | [this-RFC], {{RFC5280}} |
 | 2.5.29.54               | id-ce-inhibitAnyPolicy           | Subject        | [this-RFC], {{RFC5280}} |
+
+## Versioned Transparency Item Types
+
+IANA is requested to add the following entry in the "VersionedTransTypes" registry {{!RFC9162}}:
+
+| Value | Type and Version           | Reference  |
+|-------|----------------------------|------------|
+| TBD3  | embedded_alternate_issuers | [this-RFC] |
 
 --- back
 
@@ -637,3 +658,5 @@ END
 {:numbered="false"}
 
 Thanks to the authors of {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}} for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.
+
+Thanks also to Bob Beck and Corey Bonnell for reviewing the document and providing feedback.
