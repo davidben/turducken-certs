@@ -72,7 +72,7 @@ That is, in order to protect services against CRQC, relying parties must remove 
 
 A PKI transition might change the subject information (e.g. new subject key algorithms), the issuer (e.g. new issuer key algorithms or new issuers entirely), or both. When both change, as in the post-quantum transition, the two changes can still complete on separate timelines, with different parties taking action:
 
-* Subject transitions often require changes to a service's software stack and key management. For example, to authenticate with an ML-DSA {{?FIPS204=DOI.10.6028/NIST.FIPS.204}} end-entity key, TLS {{?RFC8446}} serving software must support ML-DSA, and the operator must maintain an ML-DSA private key.
+* Subject transitions often require changes to a service's software stack and key management. For example, to authenticate with an ML-DSA {{?FIPS204=DOI.10.6028/NIST.FIPS.204}} end-entity key, TLS {{?RFC9846}} serving software must support ML-DSA, and the operator must maintain an ML-DSA private key.
 
 * Issuer transitions impact fields that are generally opaque to the service, such as the certificate signature. In principle, a CA or ACME server {{?RFC8555}} operator could simply reconfigure itself to issue from the new issuer. Deployed services will then automatically apply the issuer transition as they renew certificates.
 
@@ -100,7 +100,7 @@ With sufficient deployment capabilities, a CA or ACME server {{?RFC8555}} operat
 
 * If issuance protocols, such as ACME {{?RFC8555}}, can issue multiple certificates, the ACME server can transparently provision certificates from both the old and new issuer.
 
-* If the TLS software can automatically send each certificate to the right relying party (as in {{Sections 4.4.2.2 and 4.4.4.3 of ?RFC8446}} and {{?I-D.ietf-tls-trust-anchor-ids}}), the TLS software is now ready for new relying parties while remaining compatible with older ones.
+* If the TLS software can automatically send each certificate to the right relying party (as in {{Section 4.5.1.2 of ?RFC9846}} and {{?I-D.ietf-tls-trust-anchor-ids}}), the TLS software is now ready for new relying parties while remaining compatible with older ones.
 
 However, deployments may be missing these capabilities today. Many Web servers today only deploy one certificate with one key. Waiting for services to upgrade will again delay transition timelines.
 
@@ -119,7 +119,7 @@ Embedded alternate issuers only apply when all certificates describe the same su
 
 {::boilerplate bcp14-tagged}
 
-This document additionally uses the TLS presentation language defined in {{Section 3 of !RFC8446}}.
+This document additionally uses the TLS presentation language defined in {{Section 3 of !RFC9846}}.
 
 ## Terminology
 
@@ -333,7 +333,7 @@ The extension MUST contain a Signed Certificate Timestamp (SCT) ({{Section 3.2 o
 * The `id` field MUST be the 32-byte string represented in hexadecimal as `abdcf1b6ca6af3c91f37f54fbafdbd17e711780d5197d15d0e1e71106d8cb6c5`. This is the SHA-256 {{!SHS=DOI.10.6028/NIST.FIPS.180-4}} hash of the ASCII string "Embedded Alternate Issuers".
 * The `timestamp` field MUST be zero.
 * The `extensions` field MUST be the empty string.
-* The `algorithm` field of the digitally-signed element ({{Section 4.7 of !RFC5246}}) MUST have a `hash` of `none` (zero) and a `signature` of `anonymous` (zero). ({{!RFC5246}} was obsoleted by {{?RFC8446}} but the SignedCertificateTimestamp structure relies on definitions from {{!RFC5246}}.)
+* The `algorithm` field of the digitally-signed element ({{Section 4.7 of !RFC5246}}) MUST have a `hash` of `none` (zero) and a `signature` of `anonymous` (zero). ({{!RFC5246}} was obsoleted by {{?RFC9846}} but the SignedCertificateTimestamp structure relies on definitions from {{!RFC5246}}.)
 * The `signature` field of the digitally-signed element MUST contain a DER-encoded AlternateIssuerInfoList structure, with one AlternateIssuerInfo per alternate certificate.
 
 The `id-ce-embeddedSCT-CTv1` extension MAY contain other SCTs, for example, if the outer certificate itself participates in Certificate Transparency.
