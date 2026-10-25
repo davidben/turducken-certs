@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-22T04:11:24.747462+00:00",
+  "timestamp": "2026-10-25T04:08:27.296897+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -132,15 +132,15 @@
       "id": "I_kwDOTGW8t88AAAABY2qx3w",
       "title": "SCTs may not be as extensible as we hope",
       "url": "https://github.com/davidben/turducken-certs/issues/5",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@CBonnell noticed this slightly horrifying bit of code.\nhttps://github.com/openssl/openssl/blob/master/crypto/ct/ct_oct.c#L50",
       "createdAt": "2026-10-21T14:53:37Z",
-      "updatedAt": "2026-10-21T14:58:43Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-22T15:46:46Z",
+      "closedAt": "2026-10-22T15:46:46Z",
       "comments": [
         {
           "author": "davidben",
@@ -227,21 +227,21 @@
       "id": "PR_kwDOTGW8t88AAAABJ2xvGA",
       "title": "Use a recognized signature for the SCT entry",
       "url": "https://github.com/davidben/turducken-certs/pull/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bob-beck",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Sadly, OpenSSL will barf on any SCT that it can't parse this. and all old code will puke on it. So, while I could fix it in OpenSSL, that presumably doesn't help here.\n\nIf we use a recognized signature that gets around it, we just end up deciding we don't have this particular log, return 0 and move on with life without bothering to try to actually check it.",
       "createdAt": "2026-10-21T18:25:07Z",
-      "updatedAt": "2026-10-22T02:36:15Z",
+      "updatedAt": "2026-10-22T16:29:20Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "607fa28dc59fa77aef10379c330836653719b116",
       "headRepository": "bob-beck/turducken-certs",
       "headRefName": "we-suck-I-am-so-sorry",
       "headRefOid": "64f8287f9e08d96afdaebb9cc34ed6fcd3b19682",
-      "closedAt": null,
+      "closedAt": "2026-10-22T16:29:19Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -294,6 +294,13 @@
           "body": "> TBH if we can manage it, making it a new SCT version would be quite nice. Avoids having to fill in garbage values for everything.\r\n\r\nhttps://github.com/davidben/turducken-certs/pull/7 does it with a new SCT version. I think this is just generally preferable. It's a tighter encoding, and we don't need to fill in a bunch of crap.",
           "createdAt": "2026-10-22T02:36:15Z",
           "updatedAt": "2026-10-22T02:36:15Z"
+        },
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "Abandoned in favour of using the SCT verison. ",
+          "createdAt": "2026-10-22T16:29:19Z",
+          "updatedAt": "2026-10-22T16:29:19Z"
         }
       ],
       "reviews": []
@@ -303,20 +310,98 @@
       "id": "PR_kwDOTGW8t88AAAABJ7XYrg",
       "title": "Use a different SCT version instead",
       "url": "https://github.com/davidben/turducken-certs/pull/7",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Unfortunately, since we never established an SCT version registry, this is a bit goofy and we actually have to (ab)use the never-deployed RFC 9162 registry, but it works out.\n\nThis will need testing to confirm, but by code inspection, it seems implementations all handle unknown versions fine? I did find one that will parse a few fields ahead, but even if those fields get misinterpreted from here, it ignores all SCTs it cannot parse, so that's still fine.\n\nAn alternative to #6 to fix #5.\n\n@bob-beck @CBonnell WDYT?",
       "createdAt": "2026-10-22T02:30:17Z",
-      "updatedAt": "2026-10-22T02:34:47Z",
+      "updatedAt": "2026-10-22T15:46:51Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "f22aca018521d71d9daacb442e3127cde7c30e86",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "sct-version",
       "headRefOid": "44b7ace5cb94ad47efab971eb08e8aa85c84e53c",
+      "closedAt": "2026-10-22T15:46:45Z",
+      "mergedAt": "2026-10-22T15:46:44Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "a846d9360da606c69c3880a3139c943d4a8ed6db"
+      },
+      "comments": [
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "LGTM, and i think a better option with less risk than my hack\n\nmajor stacks seem to ignore this by my inspection.  might need some practical experimentation in the wild to ensure that both:\n\n1) somwthing important we dont know about pukes on this\n\n2) No CT log decides this is not an SCT somehow and actually logs the bytes\n\nIt is not a good week for me to take implementaion behavior on faith. ",
+          "createdAt": "2026-10-22T13:58:22Z",
+          "updatedAt": "2026-10-22T13:58:22Z"
+        },
+        {
+          "author": "CBonnell",
+          "authorAssociation": "NONE",
+          "body": "Not necessarily challenging this approach, but what is the rationale for using the SCT extension to convey the AltIssuerInfos as opposed to just making a new (non-critical) extension?",
+          "createdAt": "2026-10-22T14:03:51Z",
+          "updatedAt": "2026-10-22T14:03:51Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "It's to keep the large signatures out of CT logs. The SCT extension is stripped to form the precertificate.\r\nhttps://davidben.github.io/turducken-certs/draft-davidben-lamps-turducken-certs.html#name-certificate-transparency-lo",
+          "createdAt": "2026-10-22T15:20:44Z",
+          "updatedAt": "2026-10-22T15:20:44Z"
+        },
+        {
+          "author": "CBonnell",
+          "authorAssociation": "NONE",
+          "body": "> It's to keep the large signatures out of CT logs. The SCT extension is stripped to form the precertificate. https://davidben.github.io/turducken-certs/draft-davidben-lamps-turducken-certs.html#name-certificate-transparency-lo\r\n\r\nThat makes sense, but Chrome root policy currently recommends logging final certificates: https://googlechrome.github.io/chromerootprogram/crp/policy/#1342-logging-final-certificates. That policy needs to be amended to fully realize space savings.",
+          "createdAt": "2026-10-22T15:44:04Z",
+          "updatedAt": "2026-10-22T15:44:04Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "@bob-beck Yeah, definitely agreed we will need to test this. Really we'll want a whole end-to-end test once we're a little further along.",
+          "createdAt": "2026-10-22T15:44:24Z",
+          "updatedAt": "2026-10-22T15:44:24Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> That makes sense, but Chrome root policy currently recommends logging final certificates: https://googlechrome.github.io/chromerootprogram/crp/policy/#1342-logging-final-certificates. That policy needs to be amended to fully realize space savings.\r\n\r\nYup, that is indeed on folks' radar. That section currently says:\r\n\r\n> To mitigate this, deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.",
+          "createdAt": "2026-10-22T15:45:39Z",
+          "updatedAt": "2026-10-22T15:45:39Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "(Merging for now as it seems to be the best option given what we currently know. We can change it later if it doesn't work out.)",
+          "createdAt": "2026-10-22T15:46:26Z",
+          "updatedAt": "2026-10-22T15:46:34Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 8,
+      "id": "PR_kwDOTGW8t88AAAABKUqShQ",
+      "title": "Add Mike Ounsworth as coauthor",
+      "url": "https://github.com/davidben/turducken-certs/pull/8",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@ounsworth this LGTY? I just copied your author block from another one of your slides, but let me know if you'd prefer a different spelling.",
+      "createdAt": "2026-10-23T18:48:32Z",
+      "updatedAt": "2026-10-23T18:48:32Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "a846d9360da606c69c3880a3139c943d4a8ed6db",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "add-mike",
+      "headRefOid": "8f1f733018a76bd760dbd1223ba2e6662d1f8b1d",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
