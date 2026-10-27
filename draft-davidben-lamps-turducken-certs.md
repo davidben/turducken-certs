@@ -153,30 +153,26 @@ Outer and alternate certificates are closely related and issued in an integrated
 
 ## Issuing Certificates
 
-The certificates are issued in the following process. From the perspective of the outer CA, it is analogous to embedding Signed Certificate Timestamps (SCTs) in Certificate Transparency (CT) {{!RFC6962}}. From the perspective of each alternate CA, it is analogous to issuing a normal certificate, but with an extra extension included.
+After subject information is validated according to the policies of each CA involved, the certificates are issued in the following process:
 
-1. The outer CA validates the subject information and constructs a TBSCertificate with the validated subject information and issuer fields reflecting the outer CA. It sets `notBefore` and `notAfter` such that the certificate validity would be compatible with each alternate CA.
+1. The outer CA constructs an initial TBSCertificate with the validated subject information and issuer fields reflecting the outer CA. It sets `notBefore` and `notAfter` such that the certificate validity would be compatible with each alternate CA.
 
-2. For each alternate CA, the outer and alternate CAs run the following process. The processes for each alternate CA MAY run in parallel.
+2. For each alternate CA, run the following steps. The steps for each alternate CA MAY run in parallel.
 
    {:type="a"}
-   1. The outer CA requests the alternate CA to issue a corresponding alternate certificate for this TBSCertificate.
+   1. The alternate CA constructs a TBSCertificate based on the outer CA's initial TBSCertificate. The outer CA's issuer-specific fields are removed and replaced with ones reflecting the alternate CA.
 
-   2. The alternate CA validates the subject information. If validation fails, or it is otherwise unable to issue this certificate, including with the same `notBefore` and `notAfter`, it rejects this request.
+   2. The alternate CA appends an outer certificate binding extension to its TBSCertificate, containing all fields removed from the initial TBSCertificate, above. This authenticates the removed fields to a relying party that only trusts the alternate CA.
 
-   3. Otherwise, it constructs a TBSCertificate containing the same subject information. The outer CA's issuer-specific fields are removed and replaced with ones reflecting the alternate CA.
+   3. The alternate CA signs its TBSCertificate to issue an alternate certificate. This TBSCertificate MUST satisfy the policies of the alternate CA.
 
-   4. The alternate CA appends an outer certificate binding extension to the TBSCertificate, containing all the removed outer-CA-specific fields. This authenticates the removed fields to a relying party that only trusts the alternate CA.
+   4. The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.
 
-   5. The alternate CA signs this TBSCertificate to issue an alternate certificate.
+3. If the outer CA participates in Certificate Transparency (CT), it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step MAY run in parallel with step 2.
 
-   6. The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.
+4. The outer CA collects all AlternateIssuerInfos and SCTs and appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate.
 
-3. If the outer CA participates in Certificate Transparency, it additionally signs a precertificate for this TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests SCTs from CT logs. This step MAY run in parallel with step 2.
-
-4. The outer CA collects all AlternateIssuerInfos and SCTs and appends an `id-ce-embeddedSCT-CTv1` extension to its TBSCertificate.
-
-5. The outer CA signs the TBSCertificate to complete the outer certificate.
+5. The outer CA signs its final TBSCertificate to issue the outer certificate. This TBSCertificate MUST satisfy the policies of the outer CA.
 
 {{fig-turducken-issuance}} illustrates this process. Although the two issuance processes are now integrated, from the outer CA's perspective, it is analogous to embedding SCTs in CT. From the alternate CA's perspective, this is issuing a certificate with a specific extension added.
 
@@ -480,7 +476,7 @@ To mitigate this, deployments using embedded alternate issuers to transition awa
 
 ## Validation
 
-Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have issued the reconstructed alternate certificate. The alternate CA MUST perform all checks it would otherwise have performed in the course of issuing a certificate, such as domain validation. Misissuance of an alternate certificate remains misissuance.
+Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have issued the reconstructed alternate certificate. The alternate TBSCertificate MUST satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.
 
 ## Certificate Mismatch
 
