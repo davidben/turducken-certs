@@ -47,6 +47,12 @@ author:
     email: mike@ounsworth.ca
 
 normative:
+  CABF-EV:
+    target: https://cabforum.org/working-groups/server/extended-validation/documents/CA-Browser-Forum-EV-Guidelines-2.0.4.pdf
+    title: Guidelines for the Issuance and Management of Extended Validation Certificates
+    author:
+    - org: CA/Browser Forum
+    date: 2026-08-13
 
 informative:
   PQ-AUTH-ROADMAP:
@@ -252,59 +258,44 @@ This allows the same certificate to serve both older relying parties that expect
 
 # Certification Authorities
 
+## Certificate Constraints
+
 Outer and alternate certificates are constrained to share subject information. While the outer CA and each alternate CA MAY have different operators, they are expected to coordinate their certificate profiles and issuance processes. Concretely:
 
 The outer and alternate certificates MUST have a `version` of v3 and MUST omit `issuerUniqueID` and `subjectUniqueID`. These are preexisting requirements from {{Sections 4.1.2.1 and 4.1.2.8 of !RFC5280}}.
 
 The outer and alternate certificates MUST have the same `validity`, `subject`, and `subjectPublicKeyInfo` values.
 
-The outer and alternate certificates' `extensions` lists MUST satisfy the following:
+The outer and alternate certificates' `extensions` lists MUST be dividable into, in order, some number of *common extensions*, some number of *issuer-specific extensions*, and a single *final extension*. These MUST satisfy the following:
 
-* Each extension list MUST consist of, in order, some number of *subject extensions*, some number of *issuer extensions*, and a single final extension. See {{extension-types}} for details.
+* The common extensions across all certificates MUST be equal and appear in the same order.
 
-* The subject extensions across all certificates MUST be equal and appear in the same order.
+* The issuer-specific extensions MUST NOT contain any extension which would change the subject information described by the certificate. In particular, they MUST NOT be any of the following extensions:
+
+  * `id-ce-subjectKeyIdentifier`, {{Section 4.2.1.2 of !RFC5280}}
+  * `id-ce-keyUsage`, {{Section 4.2.1.3 of !RFC5280}}
+  * `id-ce-subjectAltName`, {{Section 4.2.1.6 of !RFC5280}}
+  * `id-ce-subjectDirectoryAttributes`, {{Section 4.2.1.8 of !RFC5280}}
+  * `id-ce-basicConstraints`, {{Section 4.2.1.9 of !RFC5280}}
+  * `id-ce-nameConstraints`, {{Section 4.2.1.10 of !RFC5280}}
+  * `id-ce-extKeyUsage`, {{Section 4.2.1.12 of !RFC5280}}
+  * `id-pe-subjectInfoAccess`, {{Section 4.2.2.2 of !RFC5280}}
+  * `id-CABFOrganizationIdentifier`, {{CABF-EV}}
 
 * The outer certificate's final extension MUST have type `id-ce-embeddedSCT-CTv1`, as described in {{alternate-certificate-information}}.
 
 * Each alternate certificate's final extension MUST have type `id-pe-outerCertificateBinding`, as described in {{outer-certificate-binding}}.
 
-{{certificate-mismatch}} discusses why these constraints are necessary.
-
-## Extension Types
-
-As discussed in {{certificate-mismatch}}, this document requires outer and alternate certificates to certify the same subject information. X.509 does not distinguish between certificate extensions that relate to the subject and those that relate to the issuer.
-
-The registry defined in {{iana-extension-types}} classifies extensions into *subject extensions* and *issuer extensions*.
-
-Broadly, subject extensions are those that define properties of the certificate subject. These are expected to match no matter which CA certifies this information. Subject extensions include:
-
-* `id-ce-subjectKeyIdentifier`, {{Section 4.2.1.2 of !RFC5280}}
-* `id-ce-keyUsage`, {{Section 4.2.1.3 of !RFC5280}}
-* `id-ce-certificatePolicies`, {{Section 4.2.1.4 of !RFC5280}}
-* `id-ce-policyMappings`, {{Section 4.2.1.5 of !RFC5280}}
-* `id-ce-subjectAltName`, {{Section 4.2.1.6 of !RFC5280}}
-* `id-ce-subjectDirectoryAttributes`, {{Section 4.2.1.8 of !RFC5280}}
-* `id-ce-basicConstraints`, {{Section 4.2.1.9 of !RFC5280}}
-* `id-ce-nameConstraints`, {{Section 4.2.1.10 of !RFC5280}}
-* `id-ce-policyConstraints`, {{Section 4.2.1.11 of !RFC5280}}
-* `id-ce-extKeyUsage`, {{Section 4.2.1.12 of !RFC5280}}
-* `id-ce-inhibitAnyPolicy`, {{Section 4.2.1.14 of !RFC5280}}
-* `id-pe-subjectInfoAccess`, {{Section 4.2.2.2 of !RFC5280}}
-
-Issuer extensions are specific to the certificate issuer. These include:
+The following is a non-exhaustive list of extensions which MAY appear as issuer-specific extensions:
 
 * `id-ce-authorityKeyIdentifier`, {{Section 4.2.1.1 of !RFC5280}}
+* `id-ce-certificatePolicies`, {{Section 4.2.1.4 of !RFC5280}}
 * `id-ce-issuerAltName`, {{Section 4.2.1.7 of !RFC5280}}
 * `id-ce-cRLDistributionPoints`, {{Section 4.2.1.13 of !RFC5280}}
 * `id-ce-freshestCRL`, {{Section 4.2.1.15 of !RFC5280}}
 * `id-pe-authorityInfoAccess`, {{Section 4.2.2.1 of !RFC5280}}
-* `id-ce-embeddedSCT-CTv1`, {{Appendix B of !RFC9162}}
-* `id-ce-transparencyInfo`, {{Appendix B of !RFC9162}}
-* `id-pe-outerCertificateBinding`, {{outer-certificate-binding}}
 
-Concretely, an extension is a subject extension if its extension ID appears in the registry with an "Extension Type" column of "Subject". It is an issuer extension if the "Extension Type" column is "Issuer". X.509 is extensible, so the registry cannot be exhaustive. If the extension ID does not appear in the registry, its classification is not yet defined.
-
-Existing CAs and relying parties will not be aware of classifications that postdate them. While a correctly-operated CA will not issue certificates with unrecognized extensions, relying parties process unrecognized non-critical extensions. {{outer-certificate-binding}} discusses the checks performed by a CA, while {{known-subject-extensions}} discusses the checks performed by a relying party.
+{{certificate-mismatch}} discusses why these constraints are necessary.
 
 ## Alternate Certificate Information
 
@@ -312,25 +303,16 @@ Each alternate certificate is described as differences from the outer certificat
 
 ~~~ asn.1
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber          CertificateSerialNumber,
-    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
-                              {SignatureAlgorithms}},
-    issuer                Name,
-    subjectExtensionCount INTEGER (0..MAX),
-    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}},
-    signatureValue        BIT STRING
+    serialNumber         CertificateSerialNumber,
+    signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                             {SignatureAlgorithms}},
+    issuer               Name,
+    commonExtensionCount INTEGER (0..MAX),
+    issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
+    signatureValue       BIT STRING
 }
 
 AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
-
-IssuerExtensions EXTENSION ::= {
-    ext-AuthorityKeyIdentifier | ext-IssuerAltName |
-    ext-CRLDistributionPoints | ext-FreshestCRL |
-    ext-AuthorityInfoAccess |
-    ext-embeddedSCT-CTv1 | ext-transparencyInfo |
-    ext-outerCertificateBinding,
-    ...
-}
 ~~~
 
 An AlternateIssuerInfo's fields are defined as follows:
@@ -338,8 +320,8 @@ An AlternateIssuerInfo's fields are defined as follows:
 * `serialNumber` is the alternate certificate's serial number.
 * `signatureAlgorithm` is the alternate certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.
 * `issuer` is the alternate certificate's issuer name.
-* `subjectExtensionCount` is the number of common subject extensions in the two certificates. It MUST be strictly less than the number of extensions in the outer certificate, to exclude the outer certificate's final extension.
-* `issuerExtensions` is the list of issuer extensions in the alternate certificate, excluding the final `id-pe-outerCertificateBinding` extension. Each extension in this list MUST be an issuer extension.
+* `commonExtensionCount` is the number of common extensions, as defined in {{certificate-constraints}}. This value MUST be strictly less than the number of extensions in the outer certificate, to exclude the outer certificate's final extension.
+* `issuerExtensions` is the alternate certificate's issuer-specific extensions, as defined in {{certificate-constraints}}.
 * `signatureValue` is the alternate certificate's signature value. This is a signature over the reconstructed TBSCertificate, not the AlternateIssuerInfo.
 
 ### Signed Certificate Timestamp Encoding
@@ -374,12 +356,12 @@ Each alternate certificate contains an outer certificate binding extension, defi
 
 ~~~ asn.1
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber          CertificateSerialNumber,
-    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
-                              {SignatureAlgorithms}},
-    issuer                Name,
-    subjectExtensionCount INTEGER (0..MAX),
-    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}}
+    serialNumber         CertificateSerialNumber,
+    signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                            {SignatureAlgorithms}},
+    issuer               Name,
+    commonExtensionCount INTEGER (0..MAX),
+    issuerExtensions     SEQUENCE OF Extension{{CertExtensions}}
 }
 
 id-pe-outerCertificateBinding OBJECT IDENTIFIER ::= {
@@ -398,22 +380,12 @@ The OuterCertificateBinding structure is similar to the AlternateIssuerInfo, exc
 * `serialNumber` is the outer certificate's serial number.
 * `signatureAlgorithm` is the outer certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.
 * `issuer` is the outer certificate's issuer name.
-* `subjectExtensionCount` is the number of common subject extensions in the two certificates.
-* `issuerExtensions` is the list of issuer extensions in the outer certificate, excluding the final `id-ce-embeddedSCT-CTv1` extension.
+* `commonExtensionCount` is the number of common extensions, as defined in {{certificate-constraints}}. This value MUST be strictly less than the number of extensions in the alternate certificate, to exclude outer certificate binding extension itself.
+* `issuerExtensions` is the outer certificate's issuer-specific extensions, as defined in {{certificate-constraints}}.
 
-The outer certificate binding extension ensures that, even if a relying party only trusts the alternate CA, the outer certificate's contents are still authenticated by a CA trusted by the relying party. The alternate CA MUST check the OuterCertificateBinding is well-formed before issuing the certificate. In particular:
+The outer certificate binding extension MUST be the final extension in the outer certificate. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see {{issuing-certificates}}) from the outer certificate. This mitigates the security risks described in {{certificate-mismatch}} by ensuring of the outer certificate is still authenticated by the alternate CA.
 
-* The outer certificate binding extension MUST be the final extension in the alternate certificate.
-
-* `subjectExtensionCount` MUST be strictly less than the number of extensions in the alternate certificate, to exclude the alternate certificate's outer certificate binding extension.
-
-* Each extension in the alternate certificate, after the first `subjectExtensionCount` extensions, MUST be an issuer extension, as described in {{extension-types}}. That is, the alternate certificate can only add issuer extensions.
-
-* Each extension in `issuerExtensions`, critical or not, MUST also be an issuer extension. That is, the alternate certificate can only remove issuer extensions.
-
-If the alternate certificate does not satisfy these requirements, the alternate certificate is misissued. The above requirements apply even if the extension is not in the registry or is not known to the CA.
-
-The relying party performs a different version of this check in {{known-subject-extensions}}, due to the possibility of unrecognized extensions.
+CAs MUST NOT issue an outer certificate binding extension if the corresponding outer TBSCertificate would describe different subject information than the alternate certificate. In particular, the `issuerExtensions` field MUST NOT contain any of the extensions forbidden by {{certificate-constraints}}.
 
 # Relying Parties
 
@@ -432,7 +404,7 @@ The following procedure reconstructs an alternate certificate from the outer cer
    * The outer certificate's `version` is `v3`.
    * The outer certificate's `signatureAlgorithm` and `signature` fields are equal.
    * The outer certificate has no `subjectUniqueID` or `issuerUniqueID` field.
-   * The outer certificate has at least `subjectExtensionCount + 1` extensions and the final extension is `id-ce-embeddedSCT-CTv1`.
+   * The outer certificate has at least `commonExtensionCount + 1` extensions and the final extension is `id-ce-embeddedSCT-CTv1`.
 
 2. Make a copy of the outer certificate as a Certificate structure.
 
@@ -444,9 +416,9 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 6. Remove the TBSCertificate's final extension, which will be `id-ce-embeddedSCT-CTv1`.
 
-7. Remove all but the first `subjectExtensionCount` extensions in the TBSCertificate. Let `outerIssuerExtensions` be the removed extensions.
+7. Remove all but the first `commonExtensionCount` extensions in the TBSCertificate. Let `outerIssuerExtensions` be the removed extensions.
 
-8. Check if `outerIssuerExtensions` and the AlternateIssuerInfo's `issuerExtensions` contain known subject extensions, as described in {{known-subject-extensions}}. If any are found, abort this procedure.
+8. Check `outerIssuerExtensions` and the AlternateIssuerInfo's `issuerExtensions` as described in {{checking-issuer-specific-extensions}}. If rejected, above this procedure.
 
 9. Append the AlternateIssuerInfo's `issuerExtensions` to the TBSCertificate.
 
@@ -455,20 +427,16 @@ The following procedure reconstructs an alternate certificate from the outer cer
     * `serialNumber` is `outerSerialNumber`.
     * `signatureAlgorithm` is `outerSignatureAlgorithm`.
     * `issuer` is `outerIssuer`.
-    * `subjectExtensionCount` is the AlternateIssuerInfo's `subjectExtensionCount` value.
+    * `commonExtensionCount` is the AlternateIssuerInfo's `commonExtensionCount` value.
     * `issuerExtensions` is `outerIssuerExtensions`.
 
 11. Replace the Certificate's `signatureValue` field with the AlternateIssuerInfo's `signatureValue`.
 
-## Known Subject Extensions
+## Checking Issuer-Specific Extensions
 
-{{outer-certificate-binding}} places requirements on alternate CAs that certify an OuterCertificateBinding. Relying parties are expected to ignore unrecognized non-critical extensions, so a relying party cannot check these requirements in full.
+{{certificate-constraints}} forbids `outerIssuerExtensions` and `issuerExtensions` above from containing any extensions that would change the certificate's subject information. However, a relying party cannot enforce this restriction in full. It might encounter unrecognized extensions and thus cannot tell if it is such an extension. Relying parties MUST accept unrecognized issuer-specific extensions. (If the unrecognized issuer-specific extension is critical, it will likely be rejected later during path validation.)
 
-Instead, relying parties SHOULD check that `outerIssuerExtensions`, as computed in {{reconstructing-the-alternate-certificate}}, and the AlternateIssuerInfo's `issuerExtensions` contain no known subject extensions. Relying parties MUST allow unrecognized extensions for purposes of this check. (If the unrecognized extension is critical, it will likely be rejected later during path validation.)
-
-Relying parties are not required to replicate the entire registry in {{iana-extension-types}}. If the relying party does not implement some subject extension, it MAY ignore it in `outerIssuerExtensions` and `issuerExtensions`. If the relying party implements some extension which does not appear in the registry, it MAY ignore it in this check if the extension does not interact with any issuer-specific constraint during path validation.
-
-See {{certificate-mismatch}} for further discussion.
+The relying party SHOULD check for and reject the forbidden extensions listed in {{certificate-constraints}}, and any other known subject information extensions. The relying party MAY skip this check for any extension that its path verifier does not recognize. It also MAY skip this check if all subsequent access checks reliably inspect the correct certificate, as described in {{certificate-mismatch}}.
 
 # Deployment Considerations
 
@@ -511,18 +479,16 @@ X.509 implementations MAY further mitigate the risk by limiting alternate certif
 
 This document further mitigates this risk in two ways:
 
-1. Limiting alternate certificates to encoding the same subject information as the outer certificate.
+1. Where possible, limiting alternate certificates to encoding the same subject information as the outer certificate.
 2. Requiring the alternate CA to sign over removed or replaced outer certificate fields, via the outer certificate binding extension.
 
 This contrasts with {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}}, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.
 
 If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
 
-X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, so this document introduces a classification in {{extension-types}} and {{iana-extension-types}}. However, extensibility introduces the risk that not all components of a system are aware of the classification of every extension.
+X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, and a relying party cannot classify unrecognized extension types. Instead, the outer certificate binding extension mitigates this risk more generally. Except for `id-ce-embeddedSCT-CTv1`, extensions replaced or removed from the outer certificate are still signed by the alternate CA. In particular, {{outer-certificate-binding}} holds the alternate CA responsible for ensuring these extensions do not impact the subject information. CAs are expected to not sign unknown extensions, so there is no conflict with extensibility.
 
-This is primarily mitigated by the outer certificate binding extension. Except for `id-ce-embeddedSCT-CTv1`, extensions added or removed from the outer certificate are still signed by the alternate CA, so relying parties can hold the alternate CA responsible for their contents. In particular, {{outer-certificate-binding}} makes the alternate CA responsible for ensuring all such extensions are issuer extensions. CAs are expected to not sign unknown extensions, so there is no conflict with extensibility.
-
-However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{known-subject-extensions}} recommends that the relying party also check extension classification. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.
+However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{checking-issuer-specific-extensions}} recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.
 
 # IANA Considerations
 
@@ -541,39 +507,6 @@ IANA is requested to add the following entry in the "SMI Security for PKIX Certi
 | Decimal | Description                   | References |
 |---------|-------------------------------|------------|
 | TBD2    | id-pe-outerCertificateBinding | [this-RFC] |
-
-## Extension Types for Embedded Alternate Issuers {#iana-extension-types}
-
-IANA is requested to add a new registry, "Extension Types for Embedded Alternate Issuers", under the top-level registry "Public Key Infrastructure using X.509 (PKIX) Parameters" at <https://www.iana.org/assignments/pkix-parameters>. The registration policy is Specification Required {{!RFC8126}}.
-
-The registry contains the following note:
-
-> See {{extension-types}} and {{certificate-mismatch}} in [this-RFC] for guidance on how to classify extensions for this registry.
-
-The registry initially consists of:
-
-| OID                     | Description                      | Extension Type | References              |
-|-------------------------|----------------------------------|----------------|-------------------------|
-| 1.3.6.1.4.1.11129.2.4.2 | id-ce-embeddedSCT-CTv1           | Issuer         | [this-RFC], {{RFC9162}} |
-| 1.3.6.1.5.5.7.1.1       | id-pe-authorityInfoAccess        | Issuer         | [this-RFC], {{RFC5280}} |
-| 1.3.6.1.5.5.7.1.11      | id-pe-subjectInfoAccess          | Subject        | [this-RFC], {{RFC5280}} |
-| 1.3.6.1.5.5.7.1.TBD2    | id-pe-outerCertificateBinding    | Issuer         | [this-RFC]              |
-| 1.3.101.75              | id-ce-transparencyInfo           | Issuer         | [this-RFC], {{RFC9162}} |
-| 2.5.29.9                | id-ce-subjectDirectoryAttributes | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.14               | id-ce-subjectKeyIdentifier       | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.15               | id-ce-keyUsage                   | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.17               | id-ce-subjectAltName             | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.18               | id-ce-issuerAltName              | Issuer         | [this-RFC], {{RFC5280}} |
-| 2.5.29.19               | id-ce-basicConstraints           | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.30               | id-ce-nameConstraints            | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.31               | id-ce-cRLDistributionPoints      | Issuer         | [this-RFC], {{RFC5280}} |
-| 2.5.29.32               | id-ce-certificatePolicies        | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.33               | id-ce-policyMappings             | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.35               | id-ce-authorityKeyIdentifier     | Issuer         | [this-RFC], {{RFC5280}} |
-| 2.5.29.36               | id-ce-policyConstraints          | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.37               | id-ce-extKeyUsage                | Subject        | [this-RFC], {{RFC5280}} |
-| 2.5.29.46               | id-ce-freshestCRL                | Issuer         | [this-RFC], {{RFC5280}} |
-| 2.5.29.54               | id-ce-inhibitAnyPolicy           | Subject        | [this-RFC], {{RFC5280}} |
 
 ## Versioned Transparency Item Types
 
@@ -609,9 +542,7 @@ IMPORTS
     { iso(1) identified-organization(3) dod(6) internet(1)
       security(5) mechanisms(5) pkix(7) id-mod(0)
       id-mod-pkixCommon-02(57) }
-  ext-AuthorityKeyIdentifier, ext-IssuerAltName,
-  ext-CRLDistributionPoints, ext-FreshestCRL,
-  ext-AuthorityInfoAccess
+  CertExtensions
   FROM PKIX1Implicit-2009 -- in [RFC5912]
     { iso(1) identified-organization(3) dod(6) internet(1)
       security(5) mechanisms(5) pkix(7) id-mod(0)
@@ -621,41 +552,27 @@ IMPORTS
     { iso(1) identified-organization(3) dod(6) internet(1)
       security(5) mechanisms(5) pkix(7) id-mod(0)
       id-mod-pkix1-explicit-02(51) }
-  ext-embeddedSCT-CTv1, ext-transparencyInfo
-  FROM CertificateTransparencyV2Module-2021 -- in [RFC9162]
-    { iso(1) identified-organization(3) dod(6) internet(1)
-      security(5) mechanisms(5) pkix(7) id-mod(0)
-      id-mod-public-notary-v2(102) }
 ;
 
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber          CertificateSerialNumber,
-    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
-                              {SignatureAlgorithms}},
-    issuer                Name,
-    subjectExtensionCount INTEGER (0..MAX),
-    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}},
-    signatureValue        BIT STRING
+    serialNumber         CertificateSerialNumber,
+    signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                             {SignatureAlgorithms}},
+    issuer               Name,
+    commonExtensionCount INTEGER (0..MAX),
+    issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
+    signatureValue       BIT STRING
 }
 
 AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
 
-IssuerExtensions EXTENSION ::= {
-    ext-AuthorityKeyIdentifier | ext-IssuerAltName |
-    ext-CRLDistributionPoints | ext-FreshestCRL |
-    ext-AuthorityInfoAccess |
-    ext-embeddedSCT-CTv1 | ext-transparencyInfo |
-    ext-outerCertificateBinding,
-    ...
-}
-
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber          CertificateSerialNumber,
-    signatureAlgorithm    AlgorithmIdentifier{SIGNATURE-ALGORITHM,
-                              {SignatureAlgorithms}},
-    issuer                Name,
-    subjectExtensionCount INTEGER (0..MAX),
-    issuerExtensions      SEQUENCE OF Extension{{IssuerExtensions}}
+    serialNumber         CertificateSerialNumber,
+    signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
+                            {SignatureAlgorithms}},
+    issuer               Name,
+    commonExtensionCount INTEGER (0..MAX),
+    issuerExtensions     SEQUENCE OF Extension{{CertExtensions}}
 }
 
 id-pe-outerCertificateBinding OBJECT IDENTIFIER ::= {
