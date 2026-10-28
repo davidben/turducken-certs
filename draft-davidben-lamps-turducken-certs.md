@@ -493,13 +493,13 @@ Although each alternate certificate is ultimately encoded relative to the outer 
 
 ## Certificate Mismatch
 
-Relying parties process embedded alternate issuers during path building and path validation and potentially validate an alternate certificate instead of the outer certificate. The service presenting the certificate or, potentially, some other components of the relying party might be unaware that a different target certificate was ultimately validated. This presents a security risk if the component assumes the relying party validated the outer certificate.
+A relying party that implements this specification will sometimes validate a certification path for an alternate certificate. This presents a security risk of other parts of the system check the original target certificate instead.
 
-If a relying party's path validation component accepted an alternate certificate, subsequent access checks in the relying party SHOULD act on the alternate certificate instead of the outer certificate. However, this might not be possible in some cases:
+Access checks in the relying party SHOULD act on the certification path that was ultimately validated. In support of this, APIs that return the validated certification path SHOULD reflect the correct target certificate.
 
-* An application's path validation component might be updated independently from the rest of the application.
-* Path validation implementations MAY limit alternate certificate support to applications that opt in, but this might slow down PKI transitions that use this mechanism.
-* A large application might also opt-in, but forget to update some component.
+However, this breaks an application invariant: previously, the target certificate would never change after path building. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, the above measure might fail.
+
+X.509 implementations MAY further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt-in, yet forget to update some component.
 
 This document further mitigates this risk in two ways:
 
@@ -508,7 +508,7 @@ This document further mitigates this risk in two ways:
 
 This contrasts with {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}}, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.
 
-If a more general protocol were instead used in this document, path validation might, for example, validate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
+If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
 
 X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, so this document introduces a classification in {{extension-types}} and {{iana-extension-types}}. However, extensibility introduces the risk that not all components of a system are aware of the classification of every extension.
 
