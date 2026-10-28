@@ -45,6 +45,13 @@ informative:
     - name: "Joe DeBlasio"
     date: 2026-02-27
 
+  IETF124-PLANTS:
+    target: https://datatracker.ietf.org/meeting/124/materials/slides-124-plants-solution-space-and-dispatched-work-00.pdf
+    title: "PLANTS BoF: Solution Space and Dispatched Work"
+    author:
+      - name: "David Benjamin"
+    date: 2025-11-04
+
 ...
 
 --- abstract
