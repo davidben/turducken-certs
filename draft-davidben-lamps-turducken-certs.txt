@@ -4,8 +4,9 @@
 
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                         22 October 2026
-Expires: 25 April 2027
+Intended status: Standards Track                            M. Ounsworth
+Expires: 1 May 2027                                       Cryptic Forest
+                                                         28 October 2026
 
 
                        Embedded Alternate Issuers
@@ -55,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 April 2027.
+   This Internet-Draft will expire on 1 May 2027.
 
 Copyright Notice
 
@@ -105,7 +106,7 @@ Table of Contents
      9.2.  Informative References
    Appendix A.  ASN.1 Module
    Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -1295,8 +1296,15 @@ Acknowledgments
    Thanks also to Bob Beck and Corey Bonnell for reviewing the document
    and providing feedback.
 
-Author's Address
+Authors' Addresses
 
    David Benjamin
    Google LLC
    Email: davidben@google.com
+
+
+   Mike Ounsworth
+   Cryptic Forest Software
+   Sioux Lookout, Ontario
+   Canada
+   Email: mike@ounsworth.ca
