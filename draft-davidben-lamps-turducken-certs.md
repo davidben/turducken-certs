@@ -57,16 +57,16 @@ This document defines a mechanism to embed one or more additional certification 
 
 # Introduction
 
-This document provides a new type of hybrid X.509 certificate {{!RFC5280}} aimed at solving the Post-Quantum Cryptography (PQC) migration problem for Public Key Infrastructures (PKIs) that must simultaneously allow for upgraded clients to drop all legacy trust anchors, even against servers that themselves do not support PQC algorithms, as well as continue to serve non-upgraded clients on those same trust anchors. The presented solution involves smuggling an additional certificate for the same subject and public key, but signed by a PQC CA, inside the traditional certificate. Unlike other types of hybrids, this one does not allow for multiple subject public keys; only for multiple issuer keys.
+This document provides a new type of hybrid X.509 certificate {{!RFC5280}} aimed at solving the Post-Quantum Cryptography (PQC) migration problem for Public Key Infrastructures (PKIs) that must simultaneously allow for upgraded clients to drop all legacy trust anchors, even against servers that themselves do not support PQC algorithms, as well as continue to serve non-upgraded clients on those legacy trust anchors. The presented solution involves smuggling an additional certificate path (aka issuer) for the same subject and public key, but signed by a PQC CA, inside the traditional certificate. Unlike other types of hybrids, this one does not allow for multiple subject public keys; only for multiple issuer keys.
 
 This addresses several security and backwards-compatibility goals:
 
 * **Security**: The aspect of a PKI that poses the greatest risk to quantum attack is the trust anchor and Issuing Certificate Authority (CA) keys; therefore these need to be the first to migrate to PQC. A PKI Relying Party consuming end-entity certificates is not fully protected against quantum compromise of legacy trust-anchors until it has removed every legacy trust anchor from its local trust store. The only path to achieving this efficiently is to allow CAs to issue PQ-Rooted certificates to every end entity, even if that end entity does not support PQ and is continuing to use a legacy subject public key.
-* **Backwards-compatibility**: In a PKI that must continue to serve non-updated legacy relying parties, end entities must use certificates that continue to chain to the legacy trust anchors.
+* **Backwards-compatibility**: In a PKI that must continue to serve non-updated legacy relying parties, end entities must use certificates that continue to chain to the legacy trust anchors. Especially, this must work in the current TLS environment which lacks any reliable mechanism for the client to signal which trust anchors it has.
 
-The only simultaneous solution to these problems is to have a certificate that presents to a legacy client as chaining to the original legacy trust anchor, but which carries a nested, non-critical, extension that provides an additional PQ certification path to a PQ trust anchor, via a PQ issuing CA.
+The only simultaneous solution to these problems is to have a certificate that presents as chaining to the original legacy trust anchor, but which carries a nested, non-critical, extension that provides an additional PQ certification path to a PQ trust anchor.
 
-The WebPKI of TLS X.509 certificates is the primary motivation, but other PKIs share a similar PQC migration problem {{PQ-AUTH-ROADMAP}}.
+The WebPKI TLS X.509 certificates is the primary motivation {{PQ-AUTH-ROADMAP}}, but this mechanism may be appropriate to other PKIs that share a similar PQC migration problem.
 
 ## Detailed Design Requirements
 
