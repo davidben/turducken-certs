@@ -344,7 +344,7 @@ An AlternateIssuerInfo's fields are defined as follows:
 
 ### Signed Certificate Timestamp Encoding
 
-The AlternateIssuerInfos for each alternate certificate are collected in an AlternateIssuerInfoList, which is embedded in a SignedCertificateTimestamp (SCT) in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in  {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate.
+The AlternateIssuerInfos for each alternate certificate are collected in an AlternateIssuerInfoList, which is embedded in the outer certificate. Instead of a custom extension, this document embeds them as a SignedCertificateTimestamp (SCT) in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding in an SCT.
 
 Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
 
@@ -487,11 +487,13 @@ A given deployment SHOULD only deploy embedded alternate issuers once, for only 
 
 ## Certificate Transparency Log Sizes
 
-In deployments that use Certificate Transparency (CT) {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44. While {{?I-D.ietf-plants-merkle-tree-certs}} mitigates this, this mechanism risks logging the large AlternateIssuerInfo structures in CT logs when the outer certificate is logged.
+In deployments that use Certificate Transparency (CT) {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
 
-{{signed-certificate-timestamp-encoding}} partially mitigates this by embedding AlternateIssuerInfo structures in SCTs. The outer certificate's precertificate omits all SCTs and thus the added post-quantum structures. Logged outer certificate precertificates thus do not increase in size. Alternate certificates, if using {{?I-D.ietf-plants-merkle-tree-certs}}, will be unaffected by this size increase. However, when the final certificate with embedded SCTs is logged, the AlternateIssuerInfo will be logged.
+Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.
 
-To mitigate this, deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
+{{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in an SCT. When the outer certificate's precertificate is logged, the precertificate will omit this SCT and thus the added structures.
+
+This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
 
