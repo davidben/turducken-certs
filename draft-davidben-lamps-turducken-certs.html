@@ -6,6 +6,8 @@
 <meta content="initial-scale=1.0" name="viewport">
 <title>Embedded Alternate Issuers</title>
 <meta content="David Benjamin" name="author">
+<meta content="Corey Bonnell" name="author">
+<meta content="John Gray" name="author">
 <meta content="Mike Ounsworth" name="author">
 <meta content="
        This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. Each alternate certificate is constrained to certify the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. 
@@ -1044,7 +1046,7 @@ svg {
 <td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Benjamin &amp; Ounsworth</td>
+<td class="left">Benjamin, et al.</td>
 <td class="center">Expires 2 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1069,6 +1071,14 @@ svg {
 <div class="author">
       <div class="author-name">D. Benjamin</div>
 <div class="org">Google LLC</div>
+</div>
+<div class="author">
+      <div class="author-name">C. Bonnell</div>
+<div class="org">TurboLight Solutions, LLC</div>
+</div>
+<div class="author">
+      <div class="author-name">J. Gray</div>
+<div class="org">Entrust</div>
 </div>
 <div class="author">
       <div class="author-name">M. Ounsworth</div>
@@ -2467,7 +2477,7 @@ END
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
 <p id="appendix-B-1">Thanks to the authors of <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span> for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">Thanks also to Bob Beck and Corey Bonnell for reviewing the document and providing feedback.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">Thanks also to Bob Beck for reviewing the document and providing feedback.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
@@ -2481,6 +2491,22 @@ END
 <div class="email">
 <span>Email:</span>
 <a href="mailto:davidben@google.com" class="email">davidben@google.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Corey Bonnell</span></div>
+<div dir="auto" class="left"><span class="org">TurboLight Solutions, LLC</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:corey.bonnell@turbolightsolutions.com" class="email">corey.bonnell@turbolightsolutions.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">John Gray</span></div>
+<div dir="auto" class="left"><span class="org">Entrust</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:john.gray@entrust.com" class="email">john.gray@entrust.com</a>
 </div>
 </address>
 <address class="vcard">

@@ -4,8 +4,12 @@
 
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
-Intended status: Standards Track                            M. Ounsworth
-Expires: 2 May 2027                                       Cryptic Forest
+Intended status: Standards Track                              C. Bonnell
+Expires: 2 May 2027                            TurboLight Solutions, LLC
+                                                                 J. Gray
+                                                                 Entrust
+                                                            M. Ounsworth
+                                                          Cryptic Forest
                                                          29 October 2026
 
 
@@ -1284,14 +1288,24 @@ Acknowledgments
    represent related certificates.  While this document is intentionally
    more specialized, it has benefited significantly from their work.
 
-   Thanks also to Bob Beck and Corey Bonnell for reviewing the document
-   and providing feedback.
+   Thanks also to Bob Beck for reviewing the document and providing
+   feedback.
 
 Authors' Addresses
 
    David Benjamin
    Google LLC
    Email: davidben@google.com
+
+
+   Corey Bonnell
+   TurboLight Solutions, LLC
+   Email: corey.bonnell@turbolightsolutions.com
+
+
+   John Gray
+   Entrust
+   Email: john.gray@entrust.com
 
 
    Mike Ounsworth
