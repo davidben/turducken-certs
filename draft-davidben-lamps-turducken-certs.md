@@ -250,7 +250,7 @@ When the certificate subject presents the outer certificate to a relying party, 
 
 * Older relying parties that are not aware of this protocol will ignore the unrecognized SCT and validate the outer certificate as usual.
 
-* Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths {{!RFC4158}}.
+* Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths {{!RFC4158}}. If it finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path.
 
 This allows the same certificate to serve both older relying parties that expect the outer CA, and newer relying parties that expect one of the alternate CAs.
 
@@ -260,7 +260,9 @@ This allows the same certificate to serve both older relying parties that expect
 
 ## Certificate Constraints
 
-Outer and alternate certificates are constrained to share subject information. While the outer CA and each alternate CA MAY have different operators, they are expected to coordinate their certificate profiles and issuance processes. Concretely:
+Although outer and alternate certificates are conceptually separate, with relying parties accepting one or the other, they are constrained to both share subject information and incorporates parts of each other. Alternate certificates are incorporated into the outer certificate to transmit them. The outer certificate is also partially incorporated into the alternate certificate to mitigate a class of security risks in relying parties. These are described in more detail in {{certificate-mismatch}}.
+
+This means outer and alternate CAs are expected to coordinate their certificate profiles and issuance processes, as outlined in {{issuing-certificates}}. Concretely, the certificates are constrained as follows:
 
 The outer and alternate certificates MUST have a `version` of v3 and MUST omit `issuerUniqueID` and `subjectUniqueID`. These are preexisting requirements from {{Sections 4.1.2.1 and 4.1.2.8 of !RFC5280}}.
 
@@ -270,7 +272,7 @@ The outer and alternate certificates' `extensions` lists MUST be dividable into,
 
 * The common extensions across all certificates MUST be equal and appear in the same order.
 
-* The issuer-specific extensions MUST NOT contain any extension which would change the subject information described by the certificate. In particular, they MUST NOT be any of the following extensions:
+* The issuer-specific extensions MUST NOT contain any of the following extensions:
 
   * `id-ce-subjectKeyIdentifier`, {{Section 4.2.1.2 of !RFC5280}}
   * `id-ce-keyUsage`, {{Section 4.2.1.3 of !RFC5280}}
@@ -282,20 +284,19 @@ The outer and alternate certificates' `extensions` lists MUST be dividable into,
   * `id-pe-subjectInfoAccess`, {{Section 4.2.2.2 of !RFC5280}}
   * `id-CABFOrganizationIdentifier`, {{CABF-EV}}
 
-* The outer certificate's final extension MUST have type `id-ce-embeddedSCT-CTv1`, as described in {{alternate-certificate-information}}.
+* PKI deployments MAY impose additional restrictions on issuer-specific extensions by policy. In particular, deployments SHOULD forbid extensions which would change the certificate's subject information in ways which would risk issues the described in {{certificate-mismatch}}. The following is a non-exhaustive list of extensions which would be safe to permit as issuer-specific in most applications:
 
-* Each alternate certificate's final extension MUST have type `id-pe-outerCertificateBinding`, as described in {{outer-certificate-binding}}.
+  * `id-ce-authorityKeyIdentifier`, {{Section 4.2.1.1 of !RFC5280}}
+  * `id-ce-certificatePolicies`, {{Section 4.2.1.4 of !RFC5280}}
+  * `id-ce-issuerAltName`, {{Section 4.2.1.7 of !RFC5280}}
+  * `id-ce-cRLDistributionPoints`, {{Section 4.2.1.13 of !RFC5280}}
+  * `id-ce-freshestCRL`, {{Section 4.2.1.15 of !RFC5280}}
+  * `id-pe-authorityInfoAccess`, {{Section 4.2.2.1 of !RFC5280}}
+  * `id-pe-qcStatements`, {{Section 3.2.6 of !RFC3739}}
 
-The following is a non-exhaustive list of extensions which MAY appear as issuer-specific extensions:
+* The outer certificate's final extension MUST have type `id-ce-embeddedSCT-CTv1`, with contents as described in {{alternate-certificate-information}}. This embeds each alternate certificate in the outer certificate.
 
-* `id-ce-authorityKeyIdentifier`, {{Section 4.2.1.1 of !RFC5280}}
-* `id-ce-certificatePolicies`, {{Section 4.2.1.4 of !RFC5280}}
-* `id-ce-issuerAltName`, {{Section 4.2.1.7 of !RFC5280}}
-* `id-ce-cRLDistributionPoints`, {{Section 4.2.1.13 of !RFC5280}}
-* `id-ce-freshestCRL`, {{Section 4.2.1.15 of !RFC5280}}
-* `id-pe-authorityInfoAccess`, {{Section 4.2.2.1 of !RFC5280}}
-
-{{certificate-mismatch}} discusses why these constraints are necessary.
+* Each alternate certificate's final extension MUST have type `id-pe-outerCertificateBinding`, with contents as described in {{outer-certificate-binding}}. This authenticates most of the outer certificate from the alternate certificate.
 
 ## Alternate Certificate Information
 
@@ -383,9 +384,9 @@ The OuterCertificateBinding structure is similar to the AlternateIssuerInfo, exc
 * `commonExtensionCount` is the number of common extensions, as defined in {{certificate-constraints}}. This value MUST be strictly less than the number of extensions in the alternate certificate, to exclude outer certificate binding extension itself.
 * `issuerExtensions` is the outer certificate's issuer-specific extensions, as defined in {{certificate-constraints}}.
 
-The outer certificate binding extension MUST be the final extension in the outer certificate. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see {{issuing-certificates}}) from the outer certificate. This mitigates the security risks described in {{certificate-mismatch}} by ensuring of the outer certificate is still authenticated by the alternate CA.
+The outer certificate binding extension MUST be the final extension in the alternate certificate. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see {{issuing-certificates}}). CAs MUST NOT issue an outer certificate binding extension if this reconstructed TBSCertificate violates the constraints in {{certificate-constraints}}, or is otherwise inconsistent with applicable policies. In particular, the `issuerExtensions` field MUST NOT contain any issuer-specific extensions forbidden by {{certificate-constraints}} or applicable policies.
 
-CAs MUST NOT issue an outer certificate binding extension if the corresponding outer TBSCertificate would describe different subject information than the alternate certificate. In particular, the `issuerExtensions` field MUST NOT contain any of the extensions forbidden by {{certificate-constraints}}.
+This binding mitigates the security risks described in {{certificate-mismatch}} by authenticating most of the replaced outer certificate by alternate CA.
 
 # Relying Parties
 
@@ -486,7 +487,9 @@ This contrasts with {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps
 
 If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
 
-X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, and a relying party cannot classify unrecognized extension types. Instead, the outer certificate binding extension mitigates this risk more generally. Except for `id-ce-embeddedSCT-CTv1`, extensions replaced or removed from the outer certificate are still signed by the alternate CA. In particular, {{outer-certificate-binding}} holds the alternate CA responsible for ensuring these extensions do not impact the subject information. CAs are expected to not sign unknown extensions, so there is no conflict with extensibility.
+X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, and a relying party cannot classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on.
+
+Instead, the outer certificate binding extension mitigates this risk more generally. Except for `id-ce-embeddedSCT-CTv1`, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. {{outer-certificate-binding}} additionally holds the alternate CA responsible for meeting the requirements in {{certificate-constraints}} and other deployment-specific policies, to prevent the alternate CA themselves from enabling an attack. CAs are expected to not sign unknown extensions, so this does no conflict with extensibility.
 
 However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{checking-issuer-specific-extensions}} recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.
 
