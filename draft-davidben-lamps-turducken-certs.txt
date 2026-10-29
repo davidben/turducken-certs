@@ -5,8 +5,8 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                            M. Ounsworth
-Expires: 1 May 2027                                       Cryptic Forest
-                                                         28 October 2026
+Expires: 2 May 2027                                       Cryptic Forest
+                                                         29 October 2026
 
 
                        Embedded Alternate Issuers
@@ -56,7 +56,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 May 2027.
+   This Internet-Draft will expire on 2 May 2027.
 
 Copyright Notice
 
@@ -300,62 +300,53 @@ Table of Contents
 
 3.1.  Issuing Certificates
 
-   The certificates are issued in the following process.  From the
-   perspective of the outer CA, it is analogous to embedding Signed
-   Certificate Timestamps (SCTs) in Certificate Transparency (CT)
-   [RFC6962].  From the perspective of each alternate CA, it is
-   analogous to issuing a normal certificate, but with an extra
-   extension included.
+   After subject information is validated according to the policies of
+   each CA involved, the certificates are issued in the following
+   process:
 
-   1.  The outer CA validates the subject information and constructs a
-       TBSCertificate with the validated subject information and issuer
-       fields reflecting the outer CA.  It sets notBefore and notAfter
-       such that the certificate validity would be compatible with each
-       alternate CA.
+   1.  The outer CA constructs an initial TBSCertificate with the
+       validated subject information and issuer fields reflecting the
+       outer CA.  It sets notBefore and notAfter such that the
+       certificate validity would be compatible with each alternate CA.
 
-   2.  For each alternate CA, the outer and alternate CAs run the
-       following process.  The processes for each alternate CA MAY run
-       in parallel.
+   2.  For each alternate CA, run the following steps.  The steps for
+       each alternate CA MAY run in parallel.
 
-       a.  The outer CA requests the alternate CA to issue a
-           corresponding alternate certificate for this TBSCertificate.
+       a.  The alternate CA constructs a TBSCertificate based on the
+           outer CA's initial TBSCertificate.  The outer CA's issuer-
+           specific fields are removed and replaced with ones reflecting
+           the alternate CA.
 
-       b.  The alternate CA validates the subject information.  If
-           validation fails, or it is otherwise unable to issue this
-           certificate, including with the same notBefore and notAfter,
-           it rejects this request.
+       b.  The alternate CA appends an outer certificate binding
+           extension to its TBSCertificate, containing all fields
+           removed from the initial TBSCertificate, above.  This
+           authenticates the removed fields to a relying party that only
+           trusts the alternate CA.
 
-       c.  Otherwise, it constructs a TBSCertificate containing the same
-           subject information.  The outer CA's issuer-specific fields
-           are removed and replaced with ones reflecting the alternate
-           CA.
+       c.  The alternate CA signs its TBSCertificate to issue an
+           alternate certificate.  This TBSCertificate MUST satisfy the
+           policies of the alternate CA.
 
-       d.  The alternate CA appends an outer certificate binding
-           extension to the TBSCertificate, containing all the removed
-           outer-CA-specific fields.  This authenticates the removed
-           fields to a relying party that only trusts the alternate CA.
-
-       e.  The alternate CA signs this TBSCertificate to issue an
-           alternate certificate.
-
-       f.  The alternate CA extracts the alternate certificate's issuer-
+       d.  The alternate CA extracts the alternate certificate's issuer-
            specific fields and signature.  It returns these to the outer
            CA as an AlternateIssuerInfo.  This contains enough
            information for the relying party to reconstruct the
            alternate certificate.
 
-   3.  If the outer CA participates in Certificate Transparency, it
-       additionally signs a precertificate for this TBSCertificate,
-       including the critical poison extension, as described in
-       Section 3.1 of [RFC6962].  The outer CA then requests SCTs from
-       CT logs.  This step MAY run in parallel with step 2.
+   3.  If the outer CA participates in Certificate Transparency (CT), it
+       additionally signs a precertificate for its initial
+       TBSCertificate, including the critical poison extension, as
+       described in Section 3.1 of [RFC6962].  The outer CA then
+       requests Signed Certificate Timestamps (SCTs) from CT logs.  This
+       step MAY run in parallel with step 2.
 
    4.  The outer CA collects all AlternateIssuerInfos and SCTs and
-       appends an id-ce-embeddedSCT-CTv1 extension to its
+       appends an id-ce-embeddedSCT-CTv1 extension to its initial
        TBSCertificate.
 
-   5.  The outer CA signs the TBSCertificate to complete the outer
-       certificate.
+   5.  The outer CA signs its final TBSCertificate to issue the outer
+       certificate.  This TBSCertificate MUST satisfy the policies of
+       the outer CA.
 
    Figure 1 illustrates this process.  Although the two issuance
    processes are now integrated, from the outer CA's perspective, it is
@@ -869,9 +860,9 @@ Table of Contents
    the outer certificate, the alternate CA's signature is on the
    reconstructed alternate TBSCertificate, so it is still considered to
    have issued the reconstructed alternate certificate.  The alternate
-   CA MUST perform all checks it would otherwise have performed in the
-   course of issuing a certificate, such as domain validation.
-   Misissuance of an alternate certificate remains misissuance.
+   TBSCertificate MUST satisfy the policies of the alternate CA,
+   including any domain validation.  Misissuance of an alternate
+   certificate remains misissuance.
 
 7.2.  Certificate Mismatch
 
