@@ -28,8 +28,8 @@ author:
  -
     ins: C. Bonnell
     fullname: Corey Bonnell
-    organization: DigiCert, Inc.
-    email: corey.bonnell@digicert.com
+    organization: TurboLight Solutions, LLC
+    email: corey.bonnell@turbolightsolutions.com
 
  -
     ins: J. Gray
