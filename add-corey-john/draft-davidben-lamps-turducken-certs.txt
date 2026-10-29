@@ -5,7 +5,7 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 2 May 2027                                       DigiCert, Inc.
+Expires: 2 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
@@ -1308,8 +1308,8 @@ Authors' Addresses
 
 
    Corey Bonnell
-   DigiCert, Inc.
-   Email: corey.bonnell@digicert.com
+   TurboLight Solutions, LLC
+   Email: corey.bonnell@turbolightsolutions.com
 
 
    John Gray
