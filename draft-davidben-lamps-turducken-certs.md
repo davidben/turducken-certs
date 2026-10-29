@@ -680,4 +680,4 @@ END
 
 Thanks to the authors of {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}} for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.
 
-Thanks also to Bob Beck and Corey Bonnell for reviewing the document and providing feedback.
+Thanks also to Bob Beck for reviewing the document and providing feedback.
