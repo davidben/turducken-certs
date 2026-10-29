@@ -435,9 +435,9 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 ## Checking Issuer-Specific Extensions
 
-{{certificate-constraints}} forbids `outerIssuerExtensions` and `issuerExtensions` above from containing any extensions that would change the certificate's subject information. However, a relying party cannot enforce this restriction in full. It might encounter unrecognized extensions and thus cannot tell if it is such an extension. Relying parties MUST accept unrecognized issuer-specific extensions. (If the unrecognized issuer-specific extension is critical, it will likely be rejected later during path validation.)
+{{certificate-constraints}} aims to forbid `outerIssuerExtensions` and `issuerExtensions` above from containing any extensions that would change the certificate's subject information. However, X.509 is extensible, so a relying party cannot enforce this restriction in full. In particular, relying parties MUST accept unrecognized issuer-specific extensions in this procedure. (If the unrecognized issuer-specific extension is critical, it will likely be rejected later during path validation.)
 
-The relying party SHOULD check for and reject the forbidden extensions listed in {{certificate-constraints}}, and any other known subject information extensions. The relying party MAY skip this check for any extension that its path verifier does not recognize. It also MAY skip this check if all subsequent access checks reliably inspect the correct certificate, as described in {{certificate-mismatch}}.
+The relying party SHOULD check for and reject the forbidden issuer-specific extensions listed in {{certificate-constraints}} and other issuer-specific extensions known to be forbidden by local policy. The relying party MAY skip this check for any extension that its path verifier does not recognize. It also MAY skip this check if all subsequent access checks reliably inspect the correct certificate, as described in {{certificate-mismatch}}.
 
 # Deployment Considerations
 
