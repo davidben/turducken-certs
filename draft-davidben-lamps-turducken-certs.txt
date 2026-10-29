@@ -576,11 +576,13 @@ Table of Contents
 4.2.1.  Signed Certificate Timestamp Encoding
 
    The AlternateIssuerInfos for each alternate certificate are collected
-   in an AlternateIssuerInfoList, which is embedded in a
-   SignedCertificateTimestamp (SCT) in the outer certificate's id-ce-
-   embeddedSCT-CTv1 (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined
-   in Section 3.3 of [RFC6962].  This extension MUST be the final
-   extension in the outer certificate.
+   in an AlternateIssuerInfoList, which is embedded in the outer
+   certificate.  Instead of a custom extension, this document embeds
+   them as a SignedCertificateTimestamp (SCT) in the outer certificate's
+   id-ce-embeddedSCT-CTv1 (OID 1.3.6.1.4.1.11129.2.4.2) extension, as
+   defined in Section 3.3 of [RFC6962].  This extension MUST be the
+   final extension in the outer certificate.  Section 6.2 discusses the
+   motivation for embedding in an SCT.
 
    Note: [RFC6962] was obsoleted by [RFC9162], but the two protocols are
    incompatible.  This document uses some definitions from [RFC6962] for
@@ -836,25 +838,28 @@ Table of Contents
    protocols are incompatible.  This document uses the definitions from
    [RFC6962] for compatibility with existing deployments.)
    [IETF124-PLANTS] estimated an 8.3x size increase from migrating to
-   ML-DSA-44.  While [I-D.ietf-plants-merkle-tree-certs] mitigates this,
-   this mechanism risks logging the large AlternateIssuerInfo structures
-   in CT logs when the outer certificate is logged.
+   ML-DSA-44.
 
-   Section 4.2.1 partially mitigates this by embedding
-   AlternateIssuerInfo structures in SCTs.  The outer certificate's
-   precertificate omits all SCTs and thus the added post-quantum
-   structures.  Logged outer certificate precertificates thus do not
-   increase in size.  Alternate certificates, if using
-   [I-D.ietf-plants-merkle-tree-certs], will be unaffected by this size
-   increase.  However, when the final certificate with embedded SCTs is
-   logged, the AlternateIssuerInfo will be logged.
+   Merkle Tree Certificates [I-D.ietf-plants-merkle-tree-certs] provide
+   a quantum-resistant transparency construction that avoids this size
+   increase.  However, when Merkle Tree Certificates are combined with
+   embedded alternate issuers, the resulting large AlternateIssuerInfo
+   structures will instead be logged with the outer certificate.  The
+   classical CT logs would increase in size during the transition to
+   Merkle Tree Certificates.
 
-   To mitigate this, deployments using embedded alternate issuers to
-   transition away from a CT-based PKI thus SHOULD permit CT logs to
-   reject logging of any certificates with an embedded
-   AlternateIssuerInfoList.  This will not impact other embedded SCTs,
-   which refer to logged precertificates rather than logged final
-   certificates.
+   Section 4.2.1 partially mitigates this new increase by embedding
+   AlternateIssuerInfo structures in an SCT.  When the outer
+   certificate's precertificate is logged, the precertificate will omit
+   this SCT and thus the added structures.
+
+   This is only a partial mitigation because the AlternateIssuerInfo
+   will still be logged when the final certificate with embedded SCTs is
+   logged.  Deployments using embedded alternate issuers to transition
+   away from a CT-based PKI thus SHOULD permit CT logs to reject logging
+   of any certificates with an embedded AlternateIssuerInfoList.  This
+   will not impact other embedded SCTs, which refer to logged
+   precertificates rather than logged final certificates.
 
 7.  Security Considerations
 
@@ -870,28 +875,28 @@ Table of Contents
 
 7.2.  Certificate Mismatch
 
-   Relying parties process embedded alternate issuers during path
-   building and path validation and potentially validate an alternate
-   certificate instead of the outer certificate.  The service presenting
-   the certificate or, potentially, some other components of the relying
-   party might be unaware that a different target certificate was
-   ultimately validated.  This presents a security risk if the component
-   assumes the relying party validated the outer certificate.
+   A relying party that implements this specification will sometimes
+   validate a certification path for an alternate certificate.  This
+   presents a security risk of other parts of the system check the
+   original target certificate instead.
 
-   If a relying party's path validation component accepted an alternate
-   certificate, subsequent access checks in the relying party SHOULD act
-   on the alternate certificate instead of the outer certificate.
-   However, this might not be possible in some cases:
+   Access checks in the relying party SHOULD act on the certification
+   path that was ultimately validated.  In support of this, APIs that
+   return the validated certification path SHOULD reflect the correct
+   target certificate.
 
-   *  An application's path validation component might be updated
-      independently from the rest of the application.
+   However, this breaks an application invariant: previously, the target
+   certificate would never change after path building.  An existing
+   application might assume this invariant and inspect the original
+   target certificate for some access check.  If the application's X.509
+   implementation is updated independently from the rest of the
+   application, the above measure might fail.
 
-   *  Path validation implementations MAY limit alternate certificate
-      support to applications that opt in, but this might slow down PKI
-      transitions that use this mechanism.
-
-   *  A large application might also opt-in, but forget to update some
-      component.
+   X.509 implementations MAY further mitigate the risk by limiting
+   alternate certificate support to applications that opt in.  However,
+   this might undesirably slow down PKI transitions that depend on
+   alternate certificates.  Additionally, a large application might opt-
+   in, yet forget to update some component.
 
    This document further mitigates this risk in two ways:
 
@@ -907,12 +912,12 @@ Table of Contents
    aware of the second certificate.
 
    If a more general protocol were instead used in this document, path
-   validation might, for example, validate an alternate certificate's
-   public key, while the rest of the application acts on a different,
-   unchecked public key in the outer certificate.  This would allow an
-   attacker to bypass certificate-based authentication.  This is not
-   possible here because alternate certificates cannot replace the
-   subjectPublicKeyInfo field.
+   validation might, for example, authenticate an alternate
+   certificate's public key, while the rest of the application acts on a
+   different, unchecked public key in the outer certificate.  This would
+   allow an attacker to bypass certificate-based authentication.  This
+   is not possible here because alternate certificates cannot replace
+   the subjectPublicKeyInfo field.
 
    X.509 extensions complicate this mitigation.  X.509 does not
    distinguish between subject and issuer extensions, so this document
@@ -1153,9 +1158,9 @@ Table of Contents
               Okubo, T., Bonnell, C., Gray, J., Ounsworth, M., and J.
               Mandel, "A Mechanism for X.509 Certificate Discovery",
               Work in Progress, Internet-Draft, draft-ietf-lamps-
-              certdiscovery-03, 21 May 2026,
+              certdiscovery-04, 29 October 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
-              certdiscovery-03>.
+              certdiscovery-04>.
 
    [I-D.ietf-plants-merkle-tree-certs]
               Benjamin, D., O'Brien, D., Westerbaan, B., Valenta, L.,
