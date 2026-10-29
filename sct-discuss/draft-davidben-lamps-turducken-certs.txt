@@ -846,7 +846,7 @@ Table of Contents
    embedded alternate issuers, the resulting large AlternateIssuerInfo
    structures will instead be logged with the outer certificate.  The
    classical CT logs would increase in size during the transition to
-   Merkle Tree Certificatyes.
+   Merkle Tree Certificates.
 
    Section 4.2.1 partially mitigates this new increase by embedding
    AlternateIssuerInfo structures in an SCT.  When the outer
