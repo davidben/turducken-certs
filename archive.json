@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-25T04:08:27.296897+00:00",
+  "timestamp": "2026-10-29T05:16:11.629336+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -150,6 +150,22 @@
           "updatedAt": "2026-10-21T14:58:43Z"
         }
       ]
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOTGW8t88AAAABavWndw",
+      "title": "Write down explicitly they the outer CA might even be compromised",
+      "url": "https://github.com/davidben/turducken-certs/issues/14",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-10-28T23:30:24Z",
+      "updatedAt": "2026-10-28T23:30:24Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -388,20 +404,280 @@
       "id": "PR_kwDOTGW8t88AAAABKUqShQ",
       "title": "Add Mike Ounsworth as coauthor",
       "url": "https://github.com/davidben/turducken-certs/pull/8",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@ounsworth this LGTY? I just copied your author block from another one of your slides, but let me know if you'd prefer a different spelling.",
       "createdAt": "2026-10-23T18:48:32Z",
-      "updatedAt": "2026-10-23T18:48:32Z",
+      "updatedAt": "2026-10-28T01:34:41Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "a846d9360da606c69c3880a3139c943d4a8ed6db",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "add-mike",
       "headRefOid": "8f1f733018a76bd760dbd1223ba2e6662d1f8b1d",
+      "closedAt": "2026-10-28T01:34:37Z",
+      "mergedAt": "2026-10-28T01:34:37Z",
+      "mergedBy": "ounsworth",
+      "mergeCommit": {
+        "oid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABUlvGdA",
+          "commit": {
+            "abbreviatedOid": "8f1f733"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-28T01:34:31Z",
+          "updatedAt": "2026-10-28T01:34:31Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "id": "PR_kwDOTGW8t88AAAABLIKA_A",
+      "title": "Simplify the text for issuing certificates",
+      "url": "https://github.com/davidben/turducken-certs/pull/9",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Per discussion with @ounsworth today. How the two CA services communicate, whether they perform separate or combined validation, and even whether they are operated by the same entity or not, is all out of scope for this document.\r\n\r\nInstead, focus on the mechanics of constructing the certificate. Rather than say things like \"the alternate CA validates the TBSCertificate\", say things like \"the TBSCertificate MUST satisfy the policies of the alternate CA\". This wording leaves enough room for either:\r\n\r\n- Both CAs are operated by the same entity and the same domain validation applies to both, via some out-of-scope internal coordination.\r\n\r\n- Via some out-of-scope mechanism, each CA independently performs domain validation.\r\n\r\nI left the arrows in the (non-normative) diagram because I think they're useful for understanding the process, even if the exact nature of these arrows is situation-dependent. You can choose to interpret them as either actual messages being sent, or just dependency arrows.\r\n\r\n(Also CC @aarongable because this is very related to something we were talking about the other day.)",
+      "createdAt": "2026-10-27T21:56:04Z",
+      "updatedAt": "2026-10-27T22:53:02Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "a846d9360da606c69c3880a3139c943d4a8ed6db",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "issuing-simplify",
+      "headRefOid": "44c1c5ea09a1280452b8eeeaf5ae83773b01a89b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "body": "This reads much better to me.",
+          "createdAt": "2026-10-27T22:53:02Z",
+          "updatedAt": "2026-10-27T22:53:02Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 10,
+      "id": "PR_kwDOTGW8t88AAAABLK8B8Q",
+      "title": "Take another pass on the certificate mismatch section",
+      "url": "https://github.com/davidben/turducken-certs/pull/10",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "In particular, recommend that the returned validated path actually reflect the target certificate. This probably covers a lot of applications. Also rearrange the first few paragraphs a bit so they read a bit better.",
+      "createdAt": "2026-10-28T03:17:35Z",
+      "updatedAt": "2026-10-28T03:17:35Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "revise-cert-mismatch",
+      "headRefOid": "58cfc6d6c991f5b851e582d39c88bd3df9b592dd",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 11,
+      "id": "PR_kwDOTGW8t88AAAABLK8cAQ",
+      "title": "I re-wrote the intro",
+      "url": "https://github.com/davidben/turducken-certs/pull/11",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "* I did big snip snip on the Intro :) Focused on a concise description of the problem statement.\r\n* Added a section \"Detailed Design Requirements\" where we can lock-in precisely what we are trying to design here.\r\n* I added a cheeky title \"Smuggled Nested Additional-Issuer Layer (SNAIL) Certificates\"\r\n* I systematically renamed \"alternate issuer\" to \"additional issuer\" to reflect that these are not supposed to be a totally isolated certs.\r\n* I started renaming \"issuer\" to \"certification path\" where it makes sense; because the core idea is that you have one subject name / public key that gets captured in two (or more) different (but coupled) sets of TA -> ICA -> EE Cert. I think \"certification path\" is a better mental picture for that than \"issuer\".\r\n\r\n\r\n---\r\n\r\nBTW; I am still not convinced that the inner-to-outer binding is necessary, but we can sort that out later. Like, I'm not convinced that there's a serious security issue associated with split-views in the RP beyond what can be handled by saying \"BAD CA!\" if they issue certs that lead to weird behaviours.\r\n\r\nI suggest that we spend some cycles just on the Detailed Design Requirements before getting too into the exact shape of the solution.",
+      "createdAt": "2026-10-28T03:18:19Z",
+      "updatedAt": "2026-10-29T04:04:11Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "mike_go_snip_snip",
+      "headRefOid": "4295ff47f6372ec4b8b56e8c45f304914942e5ec",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Haven't looked at the PR yet, just some quick thoughts from the preamble:\r\n\r\n> I added a cheeky title \"Smuggled Nested Additional-Issuer Layer (SNAIL) Certificates\"\r\n\r\nHehehe. Chameleons, fowl, and now snails. Just how many animals do we have in this zoo? \ud83e\udd23 \r\n\r\nMore seriously, I think it's worth avoiding \"smuggled\" just to avoid any funny connotations. Which, you know, is coming from someone who called it a \"turducken\", but I did try to keep \"turducken\" out of the _official_ name. \ud83d\ude43\r\n\r\n> I systematically renamed \"alternate issuer\" to \"additional issuer\" to reflect that these are not supposed to be a totally isolated certs.\r\n\r\nAh interesting. I went for \"alternate\" at first to capture this is an alternate choice from the relying party's perspective. That is, the relying party is expected to validate one _or_ the other. \"Additional\" seems to suggest the relying party checks this certificate _in addition to_ the outer one. But the relying party in this model probably doesn't even trust the outer CA anymore because the key's been compromised by a CRQC.\r\n\r\nThoughts?\r\n\r\n> BTW; I am still not convinced that the inner-to-outer binding is necessary, but we can sort that out later. Like, I'm not convinced that there's a serious security issue associated with split-views in the RP beyond what can be handled by saying \"BAD CA!\" if they issue certs that lead to weird behaviours.\r\n\r\nThe inner-to-outer binding is what lets us say \"BAD CA!\" in the first place. Otherwise the attack doesn't involve the CA doing anything wrong in the first place. Concretely:\r\n\r\n1. Attacker owns `attacker.example` and gets alternate CA to sign `attacker.example` with attacker's private key. This is a perfectly valid certificate. The attacker legitimately owns both.\r\n\r\n2. Attacker constructs the following outer certificate\r\n\r\n   * SPKI is the attacker's SPKI.\r\n   * SAN is `example.com`.\r\n   * AlternateIssuerInfo specifies to remove the `example.com` SAN and replace it with `attacker.example`\r\n   * Issuer and signature are arbitrary. Doesn't matter because it's not someone the RP trusts anyway.\r\n\r\nIf the relying party does not enforce anything about extensions (because that has the fail-closed problem we were talking about), this will reconstruct the attacker's legitimate certificate as the alternate certificate and check out. But a split-view relying party will then look at outer certificate and go \"aha the attacker's SPKI is authoritative for `example.com`\" and badness ensues.\r\n\r\nZero CAs did anything bad to enable this. The attacker's certificate is totally legitimate. The CA that the RP trusted never signed over the fact that it was part of this transformation. The point of the outer binding is ensure that they do. _Then_ this scenario is not possible without CA involvement.\r\n\r\nBut, like you say, we can also sort it out later.",
+          "createdAt": "2026-10-28T03:34:51Z",
+          "updatedAt": "2026-10-28T03:34:51Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "\"Alternate\" vs \"Additional\":\r\n\r\n> That is, the relying party is expected to validate one or the other. \"Additional\" seems to suggest the relying party checks this certificate in addition to the outer one. \r\n\r\nThis is exactly the core point that I think we need to figure out clarity on -- after that, I suspect the rest will click into place -- is it an AND mode or an OR mode? Or is it neither of those things in a way that we can figure out how to describe concisely?\r\n\r\nFrom a legacy client's perspective, it only sees one thing, so calling that on OR mode is a bit confusing -- it only sees one thing!\r\n\r\nAnd from the upgraded client's perspective, there are two things, but the inner-to-outer binding to solve split-views means that it's not an OR mode there either; but it's also not an AND mode; it's something in between, and my usual mental model for thinking about these things breaks.\r\n\r\nLike, I'm not even sure that I can explain this to myself in a clear and concise way, let alone get on a stage and explain it to a room full of people, and this is the core stumbling block.\r\n",
+          "createdAt": "2026-10-28T22:28:29Z",
+          "updatedAt": "2026-10-28T22:29:09Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> The inner-to-outer binding is what lets us say \"BAD CA!\" in the first place.\r\n\r\n> 2. Attacker constructs the following outer certificate\r\n\r\nI am starting to suspect that there are some pre-assumptions about the attack scenario / threat model that you have in your head that do not match mine.\r\n\r\nPresumably, Outer is still CT-logged, and therefore leaves an artifact to researchers to find and say \"BAD CA!\".\r\n\r\nPresumably, Outer CA is not so compromised that the attacker effectively has its private key and can sign arbitrary certs (and ditto for the signing key of the CT log). Surely if that's in-scope for the security model, and you're assuming that parts of your upgraded client still have that thing in their trust store, then surely we have bigger problems than split views? \r\n\r\nI'm softof inclined to say that a partially-upgraded client that has some layers where the legacy TAs are removed and some where they are still trusted is just a vulnerable client. I understand that this will be an intermediate migration state than many platforms will go through, so I think this should work for well-behaved turducken certs where everything lines up like it's supposed to, but I'm not convinced that we should be be overly-complicating the spec to try and protect against maliciously-constructed certs that exploit this; because I think it's not fundamentally different from any other non-upgraded vulnerable client.\r\n\r\nWhat we could do is include some negative test vectors where Inner and Outer have different SANs, different EKUs, etc, and say _\"If your client chokes on this, then means that you haven't found all the places that you need to upgrade; keep going\"_.",
+          "createdAt": "2026-10-28T22:40:13Z",
+          "updatedAt": "2026-10-28T22:48:53Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "It's an OR mode. That seems pretty clear to me? The client accepts the certificate if it accepts the outer certificate OR the alternate certificate.\r\n\r\nYes, legacy clients will always pick the first half of the OR because they are incapable of doing anything else. Newer clients will... in principle evaluate both, but we intend for them to take the alternate certificate in the long run, since their goal is to stop depending on classical CAs.\r\n\r\nThe inner-to-outer binding isn't about OR vs AND. Or rather, it is needed _because_ it's an OR mode. Because _some_ clients will _only_ verify the inner signature, the outer certificate parts are suddenly malleable.\r\n\r\nDoes it matter that it's malleable? Well, if you're doing an OR mode, the client needs to consistently apply all its access checks on the branch of the OR that it took. However, due to non-browser scenarios where the client has different parts updated at different times, we risk a security vulnerability if the client gets a bit confused. The inner-to-outer binding is to keep the outer certificate non-malleable even if the client:\r\n\r\n* Looked at the inner certificate\r\n* Has some components that got a bit confused\r\n\r\nI think this is important because IMO clients that are not browsers should have a path to PQ-security too.\r\n\r\n> Presumably, Outer CA is not so compromised that the attacker effectively has its private key and can sign arbitrary certs (and ditto for the signing key of the CT log). Surely if that's in-scope for the security model, and you're assuming that parts of your upgraded client still have that thing in their trust store, then surely we have bigger problems than split views?\r\n\r\nAh yes, that is the mismatch. I am assuming the Outer CA is indeed so compromised. The Outer CA is a classical CA and every CRQC is presumed to have its private key. CT logging doesn't save us because the CT signatures are themselves classical signatures, and so the attacker is presumed to have the CT signing keys too.\r\n\r\nThe system needs to be secure even if that happens. I.e. the PQ client is totally ignoring the outer certificate's signatures (because it gets no value from them anyway) and needs to get all the assurance it needs from the alternate certificate's signatures.",
+          "createdAt": "2026-10-28T22:47:59Z",
+          "updatedAt": "2026-10-28T22:48:36Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(note, I edited my previous text while you were posting yours. Might want to re-read it)",
+          "createdAt": "2026-10-28T22:49:44Z",
+          "updatedAt": "2026-10-28T22:49:44Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> It's an OR mode. That seems pretty clear to me? The client accepts the certificate if it accepts the outer certificate OR the alternate certificate.\r\n\r\nMaybe we don't agree on the definition of \"OR mode\" lol.\r\n\r\nI think the logic we're defining is:\r\n\r\n* The legacy client accepts the outer certificate. It never had a choice.\r\n* The upgraded client accepts the alternate certificate, but only after checking the outer cert for consistency via the inner-to-outer.\r\n\r\nNeither of those things sound like a nice clean \"OR\" to me. ...\r\nTo my understanding, the inner-to-outer binding is what complicates it from not being a clean OR.",
+          "createdAt": "2026-10-28T22:51:52Z",
+          "updatedAt": "2026-10-28T22:53:02Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> The upgraded client accepts the alternate certificate, but only after checking the outer cert for consistency via the inner-to-outer.\r\n\r\nHmm. So the upgraded client isn't *checking* anything for the binding. That's why I like the binding more than the extension classification. (Extension classification is actually a check.)\r\n\r\nAll the upgraded client is doing is appending an extension as part of the process to compute the alternate certificate in the first place. That is, the outer binding doesn't show up in `issuerExtensions` at all. It's just that one of the steps in applying the delta is to add this extra extension based on some values you saved along the way.\r\n\r\nOnce you've done that, you have the alternate certificate, which happens to, by how you reconstructed it, always have an outer binding extension. Then you pass that to your unmodified path validator, which will check the signature over it because it happens to be inside the TBSCertificate.",
+          "createdAt": "2026-10-28T22:58:14Z",
+          "updatedAt": "2026-10-28T22:58:14Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Ah yes, that is the mismatch. I am assuming the Outer CA is indeed so compromised. The Outer CA is a classical CA and every CRQC is presumed to have its private key.\r\n\r\nThis is a productive discussion! Mental Models Align!\r\n\r\nOk. Start with basics. I think we both agree that under this security model, we'll keep serving content to your 2010 Smart TV with 2010 roots, but nobody is pretending that there's any security there. Agree?\r\n\r\nI think we both agree that a fully upgraded RP won't have this split-view problem because either every layer understands and is using the inner cert, or some layer doesn't understand the nested cert and doesn't have the outer TA and so hard-fails (nothing we can do about that).\r\n\r\nThe split-view problem comes in with a partially-upgraded client that is still only partially upgraded after Q-Day. My vote (currently, I reserve the right to change my mind) is that that's a \"Fix Your Stack\" problem, that's a \"You're not a 2010 TV, why do you even still have these TAs?\" problem, and not something that we should be including within the security model of the draft.",
+          "createdAt": "2026-10-28T23:02:34Z",
+          "updatedAt": "2026-10-28T23:02:34Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "(I'm signing off for the evening. TBC tomorrow)",
+          "createdAt": "2026-10-28T23:03:14Z",
+          "updatedAt": "2026-10-28T23:03:14Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> Ok. Start with basics. I think we both agree that under this security model, we'll keep serving content to your 2010 Smart TV with 2010 roots, but nobody is pretending that there's any security there. Agree?\r\n\r\nYes.\r\n\r\n> I think we both agree that a fully upgraded RP won't have this split-view problem because either every layer understands and is using the inner cert, or some layer doesn't understand the nested cert and doesn't have the outer TA and so hard-fails (nothing we can do about that).\r\n\r\nNo, that's not quite the issue. If the other layer hard failed, that would be fine-ish because it's failing closed.\r\n\r\nThe problem is the other layer is going to *assume the outer certificate is trustworthy when it actually wasn't*. Specifically consider an application that writes:\r\n\r\n```\r\nif (!OpenSSL.verify_cert(cert)) {\r\n  error();\r\n}\r\n// OpenSSL said yes, so I can assume that the SPKI\r\n// and SAN pair is legit.\r\nproceed_with(cert.spki, cert.sans):\r\n```\r\n\r\nNormally, this application is fine. If the path validator says yes on a chain, you know the target certificate you passed in is valid as can trust the SPKI/SAN pair in it. This is a fine assumption today.\r\n\r\nBut if OpenSSL is updated to process turduckens, it might have actually validated `cert.inner`, while `cert.sans` and `cert.spki` are under attacker control. This is bad.\r\n\r\nThe point of the binding is to stop those fields from being under attacker control. Yes, we could demand that every layer of application be updated, but when the failure mode is this bad, I don't think that's acceptable. And I think the outer binding is really not as complicated as you fear it is, so this seems like a small price to pay.",
+          "createdAt": "2026-10-28T23:25:14Z",
+          "updatedAt": "2026-10-28T23:26:16Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "(I think this detail can also be ironed out post adoption too.)",
+          "createdAt": "2026-10-28T23:29:28Z",
+          "updatedAt": "2026-10-28T23:29:28Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "**I SEE**\r\n\r\nSo, actually, \"split-view\" is the wrong name for the vulnerability, it's more: clients that validate the cert using a turducken-aware parser, then raw-ASN.1 parse the cert and grab the outer SANs, or whatever.. Really, when you query the crypto library for `cert.spki, cert.sans`, it should return the things from the inner that were validated. The question is whether it's worth complexifying the spec to protect clients that are raw-parsing ASN.1.\r\n\r\n(I'm still in favour of a list of which fields are not allowed to vary between inner and outer and therefore it is a malformed cert / parsing error if they are duplicated, we can throw all the obvious stuff like SANs, EKU, basicConstraints on that list, and add a Sec Con saying that a cautious parser is free to check for consistency of other things and reject if they mismatch)",
+          "createdAt": "2026-10-28T23:44:59Z",
+          "updatedAt": "2026-10-28T23:45:10Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Maybe! That was the original version and then I got different feedback that people preferred the binding and I've come around to that being better. But perhaps it was better the first time haha. \ud83d\ude05",
+          "createdAt": "2026-10-29T01:26:21Z",
+          "updatedAt": "2026-10-29T01:26:21Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "To be fair, the application might not be completely reparsing the certificate. Maybe it's got `X509` object from OpenSSL and is just inspecting it a bit. Not totally far-fetched if the extension doesn't interact with path validation, so the path builder component doesn't support it.\r\n\r\nHere's a maybe more plausible strawman: an application uses the LogoType extension from [RFC 9399](https://www.rfc-editor.org/info/rfc9399/) (hahaha why...). `id-pe-logotype` doesn't interact with path building in any way, so the path verifier doesn't implement it at all. Rather, the application verifies with OpenSSL, and then extracts the logotype extension. If it looks at the wrong one, it won't get the logo that the CA actually signed over.\r\n\r\nThis is also an example where the binding is more robust than extension checking. In the extension-checking model, we expect OpenSSL to say \"no, `id-pe-logotype` is a subject extension, so it may not be changed\". But OpenSSL doesn't support this extension (it has no need to). If it doesn't know the extension, it can't possibly enforce it, unless it rejects all unknown extensions, but then we have the extensibility problem.\r\n\r\nIn the binding version, it's OK if OpenSSL doesn't enforce anything because, if `id-pe-logotype` was perturbed, the outer value will end up in the binding extension. That means one of two things will happen:\r\n* The signature doesn't check out because the alternate CA never signed over that\r\n* The signature checks out because the alternate CA _did_ sign over that. But if it did, _then_ we get to say \"BAD CA!\"\r\n\r\nAnyway, this is possibly getting in the weeds a bit. :-) Popping up the stack... did that help us answer the \"alternate\" or \"additional\" question? :-)",
+          "createdAt": "2026-10-29T03:02:30Z",
+          "updatedAt": "2026-10-29T03:02:30Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU0-KbA",
+          "commit": {
+            "abbreviatedOid": "4295ff4"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T04:01:11Z",
+          "updatedAt": "2026-10-29T04:04:11Z",
+          "comments": [
+            {
+              "originalPosition": 70,
+              "body": "Feel like using the term \"hybrid\" risks all kinds of associations.",
+              "createdAt": "2026-10-29T04:01:12Z",
+              "updatedAt": "2026-10-29T04:04:11Z"
+            },
+            {
+              "originalPosition": 77,
+              "body": "I don't think that's *quite* the constraints here. It's not that clients have no way to signal its trust anchors. We're going to fix that because we have to anyway.\n\nIt's that we're targeting legacy servers that don't implement any kind of multi-certificate scheme. If the servers weren't legacy, they would just use trust anchor IDs and move on.",
+              "createdAt": "2026-10-29T04:02:48Z",
+              "updatedAt": "2026-10-29T04:04:11Z"
+            },
+            {
+              "originalPosition": 100,
+              "body": "There will never be PQ CT logs. If your PKI doesn't have a transparency requirement, it doesn't have SCTs. If your PKI does have a transparency requirement, the answer is MTCs, which don't use SCTs.",
+              "createdAt": "2026-10-29T04:04:01Z",
+              "updatedAt": "2026-10-29T04:04:11Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "id": "PR_kwDOTGW8t88AAAABLMC5ng",
+      "title": "Simplify extension classification",
+      "url": "https://github.com/davidben/turducken-certs/pull/12",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The extension classification mechanism is *broadly* redundant with outer certificate binding.\n\nCloses #3 by no longer requiring that every extension be enumerated. Still, I went ahead and added cabfOrganizationIdentifier since that is clearly a subject extension.\n\nCloses #4 by permitting it in issuer-specific extensions. Whether this one is an \"issuer extension\" or a \"subject extension\" is a little fuzzy, but it actually doesn't matter, as described in the bug.\n\nCC @CBonnell",
+      "createdAt": "2026-10-28T05:41:01Z",
+      "updatedAt": "2026-10-28T05:41:01Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "revise-cert-mismatch",
+      "baseRefOid": "58cfc6d6c991f5b851e582d39c88bd3df9b592dd",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "issuer-exts",
+      "headRefOid": "b10494dd9bd36fbefd6557682eda2163bae29367",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
