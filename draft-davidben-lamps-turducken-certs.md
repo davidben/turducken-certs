@@ -26,6 +26,18 @@ author:
     email: "davidben@google.com"
 
  -
+    ins: C. Bonnell
+    fullname: Corey Bonnell
+    organization: DigiCert, Inc.
+    email: corey.bonnell@digicert.com
+
+ -
+    ins: J. Gray
+    fullname: John Gray
+    organization: Entrust
+    email: john.gray@entrust.com
+
+ -
     ins: M. Ounsworth
     name: Mike Ounsworth
     org: Cryptic Forest Software
