@@ -248,7 +248,7 @@ Outer Certificate                +--+--------------+---+
 
 When the certificate subject presents the outer certificate to a relying party, relying parties will attempt to validate one of several certificates:
 
-* Older relying parties that are not aware of this protocol will ignore the unrecognized SCT and validate the outer certificate as usual.
+* Older relying parties that are not aware of this protocol will ignore the unrecognized SCTs and validate the outer certificate as usual.
 
 * Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths {{!RFC4158}}. If it finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path.
 
@@ -460,7 +460,7 @@ In deployments that use Certificate Transparency (CT) {{!RFC6962}}, a direct pos
 
 Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.
 
-{{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in an SCT. When the outer certificate's precertificate is logged, the precertificate will omit this SCT and thus the added structures.
+{{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.
 
 This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `embedded_alternate_issuer`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
