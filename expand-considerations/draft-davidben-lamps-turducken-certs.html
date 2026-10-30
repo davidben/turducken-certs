@@ -1979,7 +1979,7 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-7.1-2.2.1">Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-7.1-3">When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA and thus its key must be assumed compromised by a CRQC.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-mismatch">

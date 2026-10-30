@@ -877,8 +877,7 @@ Table of Contents
    relying party accepts an alternate certificate, it does not verify
    outer certificate or even necessarily trust the outer CA.  In
    particular, in the post-quantum transition, the outer CA is a
-   traditional CA and thus its key must be assumed compromised by a
-   CRQC.
+   traditional CA, so its key could be compromised by a CRQC.
 
 7.2.  Certificate Mismatch
 
