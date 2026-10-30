@@ -1816,6 +1816,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 <p id="section-5-1">When verifying a certificate, a relying party checks if the outer certificate's final extension is <code>id-ce-embeddedSCT-CTv1</code>. If so, it looks for an SCT formatted as in <a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a>. If found, it decodes the SCT's <code>signature</code> value as a DER-encoded AlternateIssuerInfoList structure.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">If any AlternateIssuerInfo has a recognized <code>issuer</code>, the relying party reconstructs the alternate certificate as described in <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a>. If successful, the alternate certificate is used as a candidate target certificate when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <p id="section-5-3">If certification path validation (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-6" class="relref">Section 6</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) succeeds for any path ending at an alternate certificate, the relying party accepts the certificate, even if it would otherwise not accept the outer certificate.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>, X.509 policy validation <span>[<a href="#RFC9618" class="cite xref">RFC9618</a>]</span>, certification path length, and other factors that contribute to X.509 scaling. Relying parties <span class="bcp14">SHOULD</span> limit the number of alternate certificates they will consider. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <div id="reconstructing-the-alternate-certificate">
 <section id="section-5.1">
         <h3 id="name-reconstructing-the-alternat">
@@ -2157,8 +2158,12 @@ ext-outerCertificateBinding EXTENSION ::= {
 <span class="refAuthor">Benjamin, D.</span> and <span class="refAuthor">J. DeBlasio</span>, <span class="refTitle">"Post-Quantum HTTPS Authentication Roadmap"</span>, <time datetime="2026-02-27" class="refDate">27 February 2026</time>, <span>&lt;<a href="https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/">https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8555">[RFC8555]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Hoffman-Andrews, J.</span>, <span class="refAuthor">McCarney, D.</span>, and <span class="refAuthor">J. Kasten</span>, <span class="refTitle">"Automatic Certificate Management Environment (ACME)"</span>, <span class="seriesInfo">RFC 8555</span>, <span class="seriesInfo">DOI 10.17487/RFC8555</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8555">https://www.rfc-editor.org/rfc/rfc8555</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9618">[RFC9618]</dt>
+      <dd>
+<span class="refAuthor">Benjamin, D.</span>, <span class="refTitle">"Updates to X.509 Policy Validation"</span>, <span class="seriesInfo">RFC 9618</span>, <span class="seriesInfo">DOI 10.17487/RFC9618</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9618">https://www.rfc-editor.org/rfc/rfc9618</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
