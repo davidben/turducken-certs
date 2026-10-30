@@ -444,6 +444,21 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 The relying party SHOULD check for and reject the forbidden issuer-specific extensions listed in {{certificate-constraints}} and other issuer-specific extensions known to be forbidden by local policy. The relying party MAY skip this check for any extension that its path verifier does not recognize. It also MAY skip this check if all subsequent access checks reliably inspect the correct certificate, as described in {{certificate-mismatch}}.
 
+## Input Certificates and Validated Certificates
+
+If the relying party validated a certification path via an alternate certificate, the validated target certificate and the input certificate will be different. The relying party uses different ones in different contexts.
+
+In contexts that are defined based on the certificate that was sent over the wire, the input certificate is used. For example:
+
+* The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the input certificate.
+* The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the input certificate.
+
+Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
+
+In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. {{certificate-mismatch}} discusses this case in more detail.
+
+This distinction is a generalization of an existing distinction in path-building X.509 applications. The input list of certificates may differ from the final certification path that was built. Applications are already expected to separate these cases, but they were not previously required to consider different target certificates.
+
 # Deployment Considerations
 
 ## Legacy Services
@@ -471,9 +486,15 @@ This is only a partial mitigation because the AlternateIssuerInfo will still be 
 
 # Security Considerations
 
-## Validation
+## Separate Certificates
 
-Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have issued the reconstructed alternate certificate. The alternate TBSCertificate MUST satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.
+Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have separately issued the reconstructed alternate certificate. In particular:
+
+* The alternate TBSCertificate MUST satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.
+
+* Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.
+
+When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.
 
 ## Certificate Mismatch
 
