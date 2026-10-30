@@ -87,60 +87,32 @@ This document defines a mechanism to embed one or more alternate certificates wi
 
 # Introduction
 
-An X.509 certificate {{!RFC5280}} relates two entities in a PKI: a *subject* described by the certificate and an *issuer* who has certified that information. If a relying party trusts the issuer to only certify correct subject information, it can trust the subject information in the certificate.
+In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors. Otherwise, post-quantum certificates do not prevent downgrade attacks. Even if some service has deployed a post-quantum certificate, a cryptographically relevant quantum computer (CRQC) can simply break the key of some unrelated traditional certification authority (CA) and forge a certificate for that service. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
 
-Security transitions in a PKI must coordinate certificate changes across this system. For example, securing a PKI application against a Cryptographically Relevant Quantum Computer (CRQC) requires issuers to issue some form of post-quantum certificate, services to deploy those certificates, and relying parties to require these certificates.
+Some applications, such as the Web, have constraints that make this particularly challenging:
 
-Until the final step, post-quantum certificates do not prevent attacks. Suppose `example.com` has deployed post-quantum certificates, but `legacy.example` has not. A relying party must trust both post-quantum and traditional CAs to support both services. However, this enables a downgrade attack against `example.com`. A CRQC can simply break the traditional CA's key and forge a certificate for `example.com`.
+* Relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
 
-That is, in order to protect services against CRQC, relying parties must remove support for existing traditional, quantum-vulnerable CAs. This poses a compatibility challenge for PKIs with a large number of existing services.
+* Relying parties support enough services that pre-configuring different trust anchors for different services is impractical.
 
-## Subject and Issuer Transitions
+* Legacy services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
 
-A PKI transition might change the subject information (e.g. new subject key algorithms), the issuer (e.g. new issuer key algorithms or new issuers entirely), or both. When both change, as in the post-quantum transition, the two changes can still complete on separate timelines, with different parties taking action:
+* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates.
 
-* Subject transitions often require changes to a service's software stack and key management. For example, to authenticate with an ML-DSA {{?FIPS204=DOI.10.6028/NIST.FIPS.204}} end-entity key, TLS {{?RFC9846}} serving software must support ML-DSA, and the operator must maintain an ML-DSA private key.
+{{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
 
-* Issuer transitions impact fields that are generally opaque to the service, such as the certificate signature. In principle, a CA or ACME server {{?RFC8555}} operator could simply reconfigure itself to issue from the new issuer. Deployed services will then automatically apply the issuer transition as they renew certificates.
+1. Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service is not yet post-quantum-capable.
 
-PKIs typically have many more service operators than CA operators. Issuer transitions that only require CA operator action can complete sooner. In the post-quantum transition, although both issuer and subject changes are necessary to protect a given service, only the issuer transition needs to *complete* to prevent the downgrade attack. Concretely:
+2. Relying parties only accept post-quantum issuers, but accept both post-quantum or traditional end-entity keys.
 
-1. Relying parties add support for post-quantum subject keys and post-quantum CAs.
+This issuer-side transition protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties.
 
-2. Some services migrate ahead of time, but many legacy services exist. Relying parties must remain compatible with legacy services, so the downgrade attack is possible.
+This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
 
-3. Existing ACME servers are reconfigured to start issuing from post-quantum CAs, instead of traditional CAs.
+* It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in {{certificate-transparency-log-sizes}}.
+* It aims to mitigate security risks if some components consume alternate certificates without awareness from other components, as described in {{certificate-mismatch}}.
 
-4. Legacy services automatically switch to post-quantum CAs when renewing certificates. Although their subject keys are still traditional, this is sufficient to unblock step 5 below. These certificates are "post-quantum opt-out certificates" for these legacy services.
-
-5. After certificates are automatically replaced, relying parties remove traditional CAs while retaining support for traditional subject keys. This is enough to prevent the downgrade attack.
-
-6. Legacy services individually upgrade their subject keys and replace their opt-out certificates with fully post-quantum certificates.
-
-In this example, steps 1 through 5 do not require waiting on all service operators. Step 6 does and will thus take time to fully complete, but the downgrade attack has been prevented by step 5. Although opt-out certificates have quantum-vulnerable subject keys, they are issued by post-quantum CAs. Provided relying parties remove all traditional CAs, a CRQC cannot forge one for a post-quantum service. {{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss this dynamic in more detail.
-
-However, these opt-out certificates are not compatible with legacy relying parties. A legacy relying party will not support post-quantum algorithms, much less post-quantum CAs. Steps 3 and 4 are not viable in applications with many relying party instances (e.g. many web browser installs) and require further refinement.
-
-## Combining Multiple Issuers
-
-With sufficient deployment capabilities, a CA or ACME server {{?RFC8555}} operator could issue *both* an older and a newer certificate, relying on an online protocol like TLS to select between them:
-
-* If issuance protocols, such as ACME {{?RFC8555}}, can issue multiple certificates, the ACME server can transparently provision certificates from both the old and new issuer.
-
-* If the TLS software can automatically send each certificate to the right relying party (as in {{Section 4.5.1.2 of ?RFC9846}} and {{?I-D.ietf-tls-trust-anchor-ids}}), the TLS software is now ready for new relying parties while remaining compatible with older ones.
-
-However, deployments may be missing these capabilities today. Many Web servers today only deploy one certificate with one key. Waiting for services to upgrade will again delay transition timelines.
-
-This document defines *embedded alternate issuers*, a limited transitionary mechanism for these scenarios. A single X.509 certificate, known as the *outer certificate* and issued by the *outer CA*, embeds one or more *alternate certificates*, each certifying the same subject information but issued by an *alternate CA*. An ACME server can then drive a transition as described above, but embedding certificates for new relying parties inside the certificate for older relying parties.
-
-For a post-quantum transition, this means the opt-out certificate is a combination where:
-
-* The outer certificate certifies a traditional subject key with a traditional CA.
-* It has one or more alternate certificates that certify the same traditional subject key, but with a post-quantum CA.
-
-This mitigates the compatibility issue described in {{subject-and-issuer-transitions}}.
-
-Embedded alternate issuers only apply when all certificates describe the same subject information. They are a temporary transitionary tool until services can deploy multiple certificates directly. {{legacy-services}} and {{certificate-mismatch}} discuss this in more detail.
+While the Web PKI is the primary motivator, this mechanism may be appropriate for other PKIs with similar post-quantum migration constraints, as well as other similarly-constrained issuer-side PKI transitions. In all cases, however, this is a temporary transitionary tool until services can deploy multiple certificates directly. {{legacy-services}} discuss this in more detail.
 
 # Conventions and Definitions
 
@@ -167,6 +139,9 @@ Alternate certificate:
 
 Alternate CA:
 : A CA that issues one of the alternate certificates.
+
+Post-quantum opt-out certificate:
+: An end-entity certificate with a traditional subject key and post-quantum issuer. It can be embedded as an alternate certificate in a fully traditional outer certificate.
 
 # Overview
 
@@ -195,7 +170,7 @@ After subject information is validated according to the policies of each CA invo
 
    4. The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.
 
-3. If the outer CA participates in Certificate Transparency (CT), it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step MAY run in parallel with step 2.
+3. If the outer CA participates in Certificate Transparency, it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step MAY run in parallel with step 2.
 
 4. The outer CA collects all AlternateIssuerInfos and SCTs and appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate.
 
@@ -460,7 +435,7 @@ A given deployment SHOULD only deploy embedded alternate issuers once, for only 
 
 In deployments that use Certificate Transparency (CT) {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
 
-Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.
+Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
 
 {{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in an SCT. When the outer certificate's precertificate is logged, the precertificate will omit this SCT and thus the added structures.
 
