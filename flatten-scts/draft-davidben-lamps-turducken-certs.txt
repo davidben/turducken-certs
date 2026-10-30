@@ -406,7 +406,7 @@ Table of Contents
    several certificates:
 
    *  Older relying parties that are not aware of this protocol will
-      ignore the unrecognized SCT and validate the outer certificate as
+      ignore the unrecognized SCTs and validate the outer certificate as
       usual.
 
    *  Newer relying parties will reconstruct the alternate certificates
@@ -809,9 +809,9 @@ Table of Contents
    Merkle Tree Certificates.
 
    Section 4.2.1 partially mitigates this new increase by embedding
-   AlternateIssuerInfo structures in an SCT.  When the outer
-   certificate's precertificate is logged, the precertificate will omit
-   this SCT and thus the added structures.
+   AlternateIssuerInfo structures in SCTs.  When the outer certificate's
+   precertificate is logged, the precertificate will omit these SCTs and
+   thus the added structures.
 
    This is only a partial mitigation because the AlternateIssuerInfo
    will still be logged when the final certificate with embedded SCTs is
