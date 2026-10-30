@@ -651,7 +651,7 @@ Table of Contents
    When verifying a certificate, a relying party checks if the outer
    certificate's final extension is id-ce-embeddedSCT-CTv1.  If so, it
    looks for SCTs formatted as in Section 4.2.1.  For each such SCT, it
-   decode the AlternateIssuerInfo structure.
+   decodes the AlternateIssuerInfo structure.
 
    If any AlternateIssuerInfo has a recognized issuer, the relying party
    reconstructs the alternate certificate as described in Section 5.1.
