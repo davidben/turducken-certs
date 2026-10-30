@@ -396,6 +396,8 @@ If any AlternateIssuerInfo has a recognized `issuer`, the relying party reconstr
 
 If certification path validation ({{Section 6 of !RFC5280}}) succeeds for any path ending at an alternate certificate, the relying party accepts the certificate, even if it would otherwise not accept the outer certificate.
 
+An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates they will consider. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.
+
 ## Reconstructing the Alternate Certificate
 
 The following procedure reconstructs an alternate certificate from the outer certificate and an AlternateIssuerInfo.
