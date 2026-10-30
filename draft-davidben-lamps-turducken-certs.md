@@ -312,8 +312,6 @@ AlternateIssuerInfo ::= SEQUENCE {
     issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
     signatureValue       BIT STRING
 }
-
-AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
 ~~~
 
 An AlternateIssuerInfo's fields are defined as follows:
@@ -327,27 +325,27 @@ An AlternateIssuerInfo's fields are defined as follows:
 
 ### Signed Certificate Timestamp Encoding
 
-The AlternateIssuerInfos for each alternate certificate are collected in an AlternateIssuerInfoList, which is embedded in the outer certificate. Instead of a custom extension, this document embeds them as a SignedCertificateTimestamp (SCT) in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding in an SCT.
+The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a SignedCertificateTimestamp (SCT) in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding as SCTs.
 
 Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
 
-The SCT is formatted as a TransItem ({{Section 4.5 of !RFC9162}}) with a `versioned_type` of `embedded_alternate_issuers`, defined below:
+Each AlternateIssuerInfo is formatted as an SCT using the TransItem ({{Section 4.5 of !RFC9162}}) structure with a `versioned_type` of `embedded_alternate_issuer`, defined below:
 
 ~~~ tls-presentation
 enum {
-    embedded_alternate_issuers(TBD3), (0xFFFF)
+    embedded_alternate_issuer(TBD3), (0xFFFF)
 } VersionedTransType;
 
 struct {
     VersionedTransType versioned_type;
     select (versioned_type) {
-        case embedded_alternate_issuers:
-            opaque alternate_issuer_infos<1..2^24-1>;
+        case embedded_alternate_issuer:
+            opaque alternate_issuer_info<1..2^16-1>;
     } data;
 } TransItem;
 ~~~
 
-The `alternate_issuer_infos` field contains the DER encoding of the AlternateIssuerInfoList.
+The `alternate_issuer_info` field contains the DER encoding of the AlternateIssuerInfo.
 
 Note: This structure uses a two-byte version, while the SignedCertificateTimestamp uses a one-byte version. The VersionedTransType type from {{?RFC9162}} reserves 0x0000..0x00FF to avoid overlapping with the `v1(0)` version value from {{?RFC6962}}. The above structure is defined using {{?RFC9162}} to preserve this property and to make use of the registry defined in {{Section 10.2.3 of ?RFC9162}}. The version allocation means it still can and is used in place of a SignedCertificateTimestamp and not the protocols defined in {{?RFC9162}}.
 
@@ -390,7 +388,7 @@ This binding mitigates the security risks described in {{certificate-mismatch}} 
 
 # Relying Parties
 
-When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for an SCT formatted as in {{signed-certificate-timestamp-encoding}}. If found, it decodes the SCT's `signature` value as a DER-encoded AlternateIssuerInfoList structure.
+When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for SCTs formatted as in {{signed-certificate-timestamp-encoding}}. For each such SCT, it decodes the AlternateIssuerInfo structure.
 
 If any AlternateIssuerInfo has a recognized `issuer`, the relying party reconstructs the alternate certificate as described in {{reconstructing-the-alternate-certificate}}. If successful, the alternate certificate is used as a candidate target certificate when building certification paths {{!RFC4158}}.
 
@@ -464,7 +462,7 @@ Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantu
 
 {{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in an SCT. When the outer certificate's precertificate is logged, the precertificate will omit this SCT and thus the added structures.
 
-This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
+This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `embedded_alternate_issuer`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
 
@@ -519,9 +517,9 @@ IANA is requested to add the following entry in the "SMI Security for PKIX Certi
 
 IANA is requested to add the following entry in the "VersionedTransTypes" registry {{!RFC9162}}:
 
-| Value | Type and Version           | Reference  |
-|-------|----------------------------|------------|
-| TBD3  | embedded_alternate_issuers | [this-RFC] |
+| Value | Type and Version          | Reference  |
+|-------|---------------------------|------------|
+| TBD3  | embedded_alternate_issuer | [this-RFC] |
 
 --- back
 
@@ -570,8 +568,6 @@ AlternateIssuerInfo ::= SEQUENCE {
     issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
     signatureValue       BIT STRING
 }
-
-AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
 
 OuterCertificateBinding ::= SEQUENCE {
     serialNumber         CertificateSerialNumber,
