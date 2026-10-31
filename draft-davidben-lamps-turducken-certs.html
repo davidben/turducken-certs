@@ -1158,20 +1158,12 @@ svg {
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-subject-and-issuer-transiti" class="internal xref">Subject and Issuer Transitions</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
-                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-combining-multiple-issuers" class="internal xref">Combining Multiple Issuers</a></p>
-</li>
-            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
-                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
 </li>
             </ul>
 </li>
@@ -1284,78 +1276,42 @@ svg {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">An X.509 certificate <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span> relates two entities in a PKI: a <em>subject</em> described by the certificate and an <em>issuer</em> who has certified that information. If a relying party trusts the issuer to only certify correct subject information, it can trust the subject information in the certificate.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Security transitions in a PKI must coordinate certificate changes across this system. For example, securing a PKI application against a Cryptographically Relevant Quantum Computer (CRQC) requires issuers to issue some form of post-quantum certificate, services to deploy those certificates, and relying parties to require these certificates.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">Until the final step, post-quantum certificates do not prevent attacks. Suppose <code>example.com</code> has deployed post-quantum certificates, but <code>legacy.example</code> has not. A relying party must trust both post-quantum and traditional CAs to support both services. However, this enables a downgrade attack against <code>example.com</code>. A CRQC can simply break the traditional CA's key and forge a certificate for <code>example.com</code>.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">That is, in order to protect services against CRQC, relying parties must remove support for existing traditional, quantum-vulnerable CAs. This poses a compatibility challenge for PKIs with a large number of existing services.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<div id="subject-and-issuer-transitions">
-<section id="section-1.1">
-        <h3 id="name-subject-and-issuer-transiti">
-<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-subject-and-issuer-transiti" class="section-name selfRef">Subject and Issuer Transitions</a>
-        </h3>
-<p id="section-1.1-1">A PKI transition might change the subject information (e.g. new subject key algorithms), the issuer (e.g. new issuer key algorithms or new issuers entirely), or both. When both change, as in the post-quantum transition, the two changes can still complete on separate timelines, with different parties taking action:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors. Otherwise, post-quantum certificates do not prevent downgrade attacks. Even if some service has deployed a post-quantum certificate, a cryptographically relevant quantum computer (CRQC) can simply break the key of some unrelated traditional certification authority (CA) and forge a certificate for that service. The service's choice of CA does not impact this attack, only the relying party's trust anchors.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Some applications, such as the Web, have constraints that make this particularly challenging:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-1.1-2.1">
-            <p id="section-1.1-2.1.1">Subject transitions often require changes to a service's software stack and key management. For example, to authenticate with an ML-DSA <span>[<a href="#FIPS204" class="cite xref">FIPS204</a>]</span> end-entity key, TLS <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span> serving software must support ML-DSA, and the operator must maintain an ML-DSA private key.<a href="#section-1.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-1-3.1">
+          <p id="section-1-3.1.1">Relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.1-2.2">
-            <p id="section-1.1-2.2.1">Issuer transitions impact fields that are generally opaque to the service, such as the certificate signature. In principle, a CA or ACME server <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> operator could simply reconfigure itself to issue from the new issuer. Deployed services will then automatically apply the issuer transition as they renew certificates.<a href="#section-1.1-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-3.2">
+          <p id="section-1-3.2.1">Relying parties support enough services that pre-configuring different trust anchors for different services is impractical.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-1.1-3">PKIs typically have many more service operators than CA operators. Issuer transitions that only require CA operator action can complete sooner. In the post-quantum transition, although both issuer and subject changes are necessary to protect a given service, only the issuer transition needs to <em>complete</em> to prevent the downgrade attack. Concretely:<a href="#section-1.1-3" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-1.1-4">
-<li id="section-1.1-4.1">
-            <p id="section-1.1-4.1.1">Relying parties add support for post-quantum subject keys and post-quantum CAs.<a href="#section-1.1-4.1.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-3.3">
+          <p id="section-1-3.3.1">Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-1.1-4.2">
-            <p id="section-1.1-4.2.1">Some services migrate ahead of time, but many legacy services exist. Relying parties must remain compatible with legacy services, so the downgrade attack is possible.<a href="#section-1.1-4.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-3.4">
+          <p id="section-1-3.4.1">In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates.<a href="#section-1-3.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-1.1-4.3">
-            <p id="section-1.1-4.3.1">Existing ACME servers are reconfigured to start issuing from post-quantum CAs, instead of traditional CAs.<a href="#section-1.1-4.3.1" class="pilcrow">¶</a></p>
+      </ul>
+<p id="section-1-4"><span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss how, for these applications, it is sufficient to migrate to a state where:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-1-5">
+<li id="section-1-5.1">
+          <p id="section-1-5.1.1">Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a <em>post-quantum opt-out certificate</em>. It provides a quantum-resistant proof to the relying party that the service is not yet post-quantum-capable.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-1.1-4.4">
-            <p id="section-1.1-4.4.1">Legacy services automatically switch to post-quantum CAs when renewing certificates. Although their subject keys are still traditional, this is sufficient to unblock step 5 below. These certificates are "post-quantum opt-out certificates" for these legacy services.<a href="#section-1.1-4.4.1" class="pilcrow">¶</a></p>
+        <li id="section-1-5.2">
+          <p id="section-1-5.2.1">Relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-1.1-4.5">
-            <p id="section-1.1-4.5.1">After certificates are automatically replaced, relying parties remove traditional CAs while retaining support for traditional subject keys. This is enough to prevent the downgrade attack.<a href="#section-1.1-4.5.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-1.1-4.6">
-            <p id="section-1.1-4.6.1">Legacy services individually upgrade their subject keys and replace their opt-out certificates with fully post-quantum certificates.<a href="#section-1.1-4.6.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="section-1.1-5">In this example, steps 1 through 5 do not require waiting on all service operators. Step 6 does and will thus take time to fully complete, but the downgrade attack has been prevented by step 5. Although opt-out certificates have quantum-vulnerable subject keys, they are issued by post-quantum CAs. Provided relying parties remove all traditional CAs, a CRQC cannot forge one for a post-quantum service. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss this dynamic in more detail.<a href="#section-1.1-5" class="pilcrow">¶</a></p>
-<p id="section-1.1-6">However, these opt-out certificates are not compatible with legacy relying parties. A legacy relying party will not support post-quantum algorithms, much less post-quantum CAs. Steps 3 and 4 are not viable in applications with many relying party instances (e.g. many web browser installs) and require further refinement.<a href="#section-1.1-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="combining-multiple-issuers">
-<section id="section-1.2">
-        <h3 id="name-combining-multiple-issuers">
-<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-combining-multiple-issuers" class="section-name selfRef">Combining Multiple Issuers</a>
-        </h3>
-<p id="section-1.2-1">With sufficient deployment capabilities, a CA or ACME server <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span> operator could issue <em>both</em> an older and a newer certificate, relying on an online protocol like TLS to select between them:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+      </ol>
+<p id="section-1-6">This issuer-side transition protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:<a href="#section-1-7" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-1.2-2.1">
-            <p id="section-1.2-2.1.1">If issuance protocols, such as ACME <span>[<a href="#RFC8555" class="cite xref">RFC8555</a>]</span>, can issue multiple certificates, the ACME server can transparently provision certificates from both the old and new issuer.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-1-8.1">
+          <p id="section-1-8.1.1">It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in <a href="#certificate-transparency-log-sizes" class="auto internal xref">Section 6.2</a>.<a href="#section-1-8.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-1.2-2.2">
-            <p id="section-1.2-2.2.1">If the TLS software can automatically send each certificate to the right relying party (as in <span><a href="https://rfc-editor.org/rfc/rfc9846#section-4.5.1.2" class="relref">Section 4.5.1.2</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span> and <span>[<a href="#I-D.ietf-tls-trust-anchor-ids" class="cite xref">I-D.ietf-tls-trust-anchor-ids</a>]</span>), the TLS software is now ready for new relying parties while remaining compatible with older ones.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-1-8.2">
+          <p id="section-1-8.2.1">It aims to mitigate security risks if some components consume alternate certificates without awareness of other components, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-1-8.2.1" class="pilcrow">¶</a></p>
 </li>
-        </ul>
-<p id="section-1.2-3">However, deployments may be missing these capabilities today. Many Web servers today only deploy one certificate with one key. Waiting for services to upgrade will again delay transition timelines.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
-<p id="section-1.2-4">This document defines <em>embedded alternate issuers</em>, a limited transitionary mechanism for these scenarios. A single X.509 certificate, known as the <em>outer certificate</em> and issued by the <em>outer CA</em>, embeds one or more <em>alternate certificates</em>, each certifying the same subject information but issued by an <em>alternate CA</em>. An ACME server can then drive a transition as described above, but embedding certificates for new relying parties inside the certificate for older relying parties.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
-<p id="section-1.2-5">For a post-quantum transition, this means the opt-out certificate is a combination where:<a href="#section-1.2-5" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-1.2-6.1">
-            <p id="section-1.2-6.1.1">The outer certificate certifies a traditional subject key with a traditional CA.<a href="#section-1.2-6.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-1.2-6.2">
-            <p id="section-1.2-6.2.1">It has one or more alternate certificates that certify the same traditional subject key, but with a post-quantum CA.<a href="#section-1.2-6.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="section-1.2-7">This mitigates the compatibility issue described in <a href="#subject-and-issuer-transitions" class="auto internal xref">Section 1.1</a>.<a href="#section-1.2-7" class="pilcrow">¶</a></p>
-<p id="section-1.2-8">Embedded alternate issuers only apply when all certificates describe the same subject information. They are a temporary transitionary tool until services can deploy multiple certificates directly. <a href="#legacy-services" class="auto internal xref">Section 6.1</a> and <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> discuss this in more detail.<a href="#section-1.2-8" class="pilcrow">¶</a></p>
-</section>
-</div>
+      </ul>
+<p id="section-1-9">While the Web PKI is the primary motivator, this mechanism may be appropriate for other PKIs with similar post-quantum migration constraints, as well as other similarly-constrained issuer-side PKI transitions. In all cases, however, this is a temporary transitionary tool until services can deploy multiple certificates directly. <a href="#legacy-services" class="auto internal xref">Section 6.1</a> discusses this in more detail.<a href="#section-1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1402,6 +1358,11 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <dt id="section-2.1-1.11">Alternate CA:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.12">
             <p id="section-2.1-1.12.1">A CA that issues one of the alternate certificates.<a href="#section-2.1-1.12.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.13">Post-quantum opt-out certificate:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.14">
+            <p id="section-2.1-1.14.1">An end-entity certificate with a traditional subject key and post-quantum issuer. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deployed them independently, without using this specification.<a href="#section-2.1-1.14.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1454,7 +1415,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             </ol>
 </li>
           <li id="section-3.1-2.3">
-            <p id="section-3.1-2.3.1">If the outer CA participates in Certificate Transparency (CT), run the following steps. These steps <span class="bcp14">MAY</span> run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.3.1">If the outer CA participates in CT, run the following steps. These steps <span class="bcp14">MAY</span> run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
 <ol start="1" type="a" class="normal type-a" id="section-3.1-2.3.2">
 <li id="section-3.1-2.3.2.1">
                 <p id="section-3.1-2.3.2.1.1">The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>.<a href="#section-3.1-2.3.2.1.1" class="pilcrow">¶</a></p>
@@ -1960,8 +1921,8 @@ ext-outerCertificateBinding EXTENSION ::= {
         <h3 id="name-certificate-transparency-lo">
 <a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-certificate-transparency-lo" class="section-name selfRef">Certificate Transparency Log Sizes</a>
         </h3>
-<p id="section-6.2-1">In deployments that use Certificate Transparency (CT) <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, a direct post-quantum transition risks significantly increasing the sizes of CT logs. (<span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses the definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.) <span>[<a href="#IETF124-PLANTS" class="cite xref">IETF124-PLANTS</a>]</span> estimated an 8.3x size increase from migrating to ML-DSA-44.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.2-2">Merkle Tree Certificates <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span> provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-1">In deployments that use CT <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, a direct post-quantum transition risks significantly increasing the sizes of CT logs. (<span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses the definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.) <span>[<a href="#IETF124-PLANTS" class="cite xref">IETF124-PLANTS</a>]</span> estimated an 8.3x size increase from migrating to ML-DSA-44.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">Merkle Tree Certificates <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span> provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
 <p id="section-6.2-3"><a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a> partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
 <p id="section-6.2-4">This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus <span class="bcp14">SHOULD</span> permit CT logs to reject logging of any certificates with embedded SCTs of type <code>alternate_issuer_info</code>. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
 </section>
@@ -2151,10 +2112,6 @@ ext-outerCertificateBinding EXTENSION ::= {
 <a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
-<dt id="FIPS204">[FIPS204]</dt>
-        <dd>
-<span class="refTitle">"Module-lattice-based digital signature standard"</span>, <span class="refContent">National Institute of Standards and Technology (U.S.)</span>, <span class="seriesInfo">DOI 10.6028/nist.fips.204</span>, <time datetime="2024-08" class="refDate">August 2024</time>, <span>&lt;<a href="https://doi.org/10.6028/nist.fips.204">https://doi.org/10.6028/nist.fips.204</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="I-D.bonnell-lamps-chameleon-certs">[I-D.bonnell-lamps-chameleon-certs]</dt>
         <dd>
 <span class="refAuthor">Bonnell, C.</span>, <span class="refAuthor">Gray, J.</span>, <span class="refAuthor">Hook, D.</span>, <span class="refAuthor">Okubo, T.</span>, and <span class="refAuthor">M. Ounsworth</span>, <span class="refTitle">"A Mechanism for Encoding Differences in Paired Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-bonnell-lamps-chameleon-certs-07</span>, <time datetime="2025-10-18" class="refDate">18 October 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-bonnell-lamps-chameleon-certs-07">https://datatracker.ietf.org/doc/html/draft-bonnell-lamps-chameleon-certs-07</a>&gt;</span>. </dd>
@@ -2166,10 +2123,6 @@ ext-outerCertificateBinding EXTENSION ::= {
 <dt id="I-D.ietf-plants-merkle-tree-certs">[I-D.ietf-plants-merkle-tree-certs]</dt>
         <dd>
 <span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, <span class="refAuthor">Westerbaan, B.</span>, <span class="refAuthor">Valenta, L.</span>, and <span class="refAuthor">F. Valsorda</span>, <span class="refTitle">"Merkle Tree Certificates"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-plants-merkle-tree-certs-07</span>, <time datetime="2026-10-07" class="refDate">7 October 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-plants-merkle-tree-certs-07">https://datatracker.ietf.org/doc/html/draft-ietf-plants-merkle-tree-certs-07</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="I-D.ietf-tls-trust-anchor-ids">[I-D.ietf-tls-trust-anchor-ids]</dt>
-        <dd>
-<span class="refAuthor">Beck, B.</span>, <span class="refAuthor">Benjamin, D.</span>, <span class="refAuthor">O'Brien, D.</span>, and <span class="refAuthor">K. Nekritz</span>, <span class="refTitle">"TLS Trust Anchor Identifiers"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-trust-anchor-ids-06</span>, <time datetime="2026-09-30" class="refDate">30 September 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-trust-anchor-ids-06">https://datatracker.ietf.org/doc/html/draft-ietf-tls-trust-anchor-ids-06</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="IETF124-PLANTS">[IETF124-PLANTS]</dt>
         <dd>
@@ -2198,10 +2151,6 @@ ext-outerCertificateBinding EXTENSION ::= {
 <dt id="RFC7299">[RFC7299]</dt>
         <dd>
 <span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Object Identifier Registry for the PKIX Working Group"</span>, <span class="seriesInfo">RFC 7299</span>, <span class="seriesInfo">DOI 10.17487/RFC7299</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7299">https://www.rfc-editor.org/rfc/rfc7299</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8555">[RFC8555]</dt>
-        <dd>
-<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Hoffman-Andrews, J.</span>, <span class="refAuthor">McCarney, D.</span>, and <span class="refAuthor">J. Kasten</span>, <span class="refTitle">"Automatic Certificate Management Environment (ACME)"</span>, <span class="seriesInfo">RFC 8555</span>, <span class="seriesInfo">DOI 10.17487/RFC8555</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8555">https://www.rfc-editor.org/rfc/rfc8555</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9618">[RFC9618]</dt>
       <dd>
