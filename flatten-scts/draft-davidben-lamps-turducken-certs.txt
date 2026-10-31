@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 3 May 2027                            TurboLight Solutions, LLC
+Expires: 4 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         30 October 2026
+                                                         31 October 2026
 
 
                        Embedded Alternate Issuers
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 May 2027.
+   This Internet-Draft will expire on 4 May 2027.
 
 Copyright Notice
 
@@ -337,16 +337,22 @@ Table of Contents
            information for the relying party to reconstruct the
            alternate certificate.
 
-   3.  If the outer CA participates in Certificate Transparency (CT), it
-       additionally signs a precertificate for its initial
-       TBSCertificate, including the critical poison extension, as
-       described in Section 3.1 of [RFC6962].  The outer CA then
-       requests Signed Certificate Timestamps (SCTs) from CT logs.  This
-       step MAY run in parallel with step 2.
+   3.  If the outer CA participates in Certificate Transparency (CT),
+       run the following steps.  These steps MAY run in parallel with
+       step 2.
 
-   4.  The outer CA collects all AlternateIssuerInfos and SCTs and
-       appends an id-ce-embeddedSCT-CTv1 extension to its initial
-       TBSCertificate.
+       a.  The outer CA signs a precertificate for its initial
+           TBSCertificate, including the critical poison extension, as
+           described in Section 3.1 of [RFC6962].
+
+       b.  The outer CA then requests Signed Certificate Timestamps
+           (SCTs) from CT logs.
+
+       If the outer CA does not participate in CT, skip this step.
+
+   4.  The outer CA appends an id-ce-embeddedSCT-CTv1 extension to its
+       initial TBSCertificate.  The extension contains the
+       AlternateIssuerInfo and, if applicable, SCTs collected above.
 
    5.  The outer CA signs its final TBSCertificate to issue the outer
        certificate.  This TBSCertificate MUST satisfy the policies of
@@ -561,21 +567,21 @@ Table of Contents
 
    Each AlternateIssuerInfo is formatted as an SCT using the TransItem
    (Section 4.5 of [RFC9162]) structure with a versioned_type of
-   embedded_alternate_issuer, defined below:
+   alternate_issuer_info, defined below:
 
    enum {
-       embedded_alternate_issuer(TBD3), (0xFFFF)
+       alternate_issuer_info(TBD3), (0xFFFF)
    } VersionedTransType;
 
    struct {
        VersionedTransType versioned_type;
        select (versioned_type) {
-           case embedded_alternate_issuer:
-               opaque alternate_issuer_info<1..2^16-1>;
+           case alternate_issuer_info:
+               opaque contents<1..2^16-1>;
        } data;
    } TransItem;
 
-   The alternate_issuer_info field contains the DER encoding of the
+   The contents field contains the DER encoding of the
    AlternateIssuerInfo.
 
    Note: This structure uses a two-byte version, while the
@@ -817,10 +823,9 @@ Table of Contents
    will still be logged when the final certificate with embedded SCTs is
    logged.  Deployments using embedded alternate issuers to transition
    away from a CT-based PKI thus SHOULD permit CT logs to reject logging
-   of any certificates with embedded SCTs of type
-   embedded_alternate_issuer.  This will not impact other embedded SCTs,
-   which refer to logged precertificates rather than logged final
-   certificates.
+   of any certificates with embedded SCTs of type alternate_issuer_info.
+   This will not impact other embedded SCTs, which refer to logged
+   precertificates rather than logged final certificates.
 
 7.  Security Considerations
 
@@ -943,11 +948,11 @@ Table of Contents
    IANA is requested to add the following entry in the
    "VersionedTransTypes" registry [RFC9162]:
 
-            +=======+===========================+============+
-            | Value | Type and Version          | Reference  |
-            +=======+===========================+============+
-            | TBD3  | embedded_alternate_issuer | [this-RFC] |
-            +-------+---------------------------+------------+
+              +=======+=======================+============+
+              | Value | Type and Version      | Reference  |
+              +=======+=======================+============+
+              | TBD3  | alternate_issuer_info | [this-RFC] |
+              +-------+-----------------------+------------+
 
                                  Table 3
 
