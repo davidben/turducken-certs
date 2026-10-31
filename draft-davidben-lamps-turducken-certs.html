@@ -10,7 +10,7 @@
 <meta content="John Gray" name="author">
 <meta content="Mike Ounsworth" name="author">
 <meta content="
-       This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. 
+       This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. 
     " name="description">
 <meta content="xml2rfc 3.34.1" name="generator">
 <meta content="draft-davidben-lamps-turducken-certs-latest" name="ietf.draft">
@@ -1047,7 +1047,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 3 May 2027</td>
+<td class="center">Expires 4 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1060,12 +1060,12 @@ svg {
 <dd class="internet-draft">draft-davidben-lamps-turducken-certs-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-30" class="published">30 October 2026</time>
+<time datetime="2026-10-31" class="published">31 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-03">3 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-04">4 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1090,7 +1090,7 @@ svg {
 <h1 id="title">Embedded Alternate Issuers</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1127,7 +1127,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 4 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1414,7 +1414,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-3-1">Outer and alternate certificates are closely related and issued in an integrated process:<a href="#section-3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3-2.1">
-          <p id="section-3-2.1.1">All certificates contain the same subject information, including subjectPublicKeyInfo and subjectAltNames, but they differ in signature and issuer-specific information. The common subject-specific extensions all share an ordering.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
+          <p id="section-3-2.1.1">All certificates contain the same subject information, including <code>subjectPublicKeyInfo</code> and <code>subjectAltName</code>, but they differ in signature and issuer-specific information. The common subject-specific extensions all share an ordering.<a href="#section-3-2.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-3-2.2">
           <p id="section-3-2.2.1">The outer certificate embeds an AlternateIssuerInfo for each alternate certificate. This contains both the signature and issuer-specific information for the alternate certificate. It is sufficient to reconstruct the alternate certificate.<a href="#section-3-2.2.1" class="pilcrow">¶</a></p>
@@ -1451,10 +1451,18 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             </ol>
 </li>
           <li id="section-3.1-2.3">
-            <p id="section-3.1-2.3.1">If the outer CA participates in Certificate Transparency (CT), it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step <span class="bcp14">MAY</span> run in parallel with step 2.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.3.1">If the outer CA participates in Certificate Transparency (CT), run the following steps. These steps <span class="bcp14">MAY</span> run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+<ol start="1" type="a" class="normal type-a" id="section-3.1-2.3.2">
+<li id="section-3.1-2.3.2.1">
+                <p id="section-3.1-2.3.2.1.1">The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>.<a href="#section-3.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+</li>
+              <li id="section-3.1-2.3.2.2">
+                <p id="section-3.1-2.3.2.2.1">The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.<a href="#section-3.1-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+            </ol>
 </li>
           <li id="section-3.1-2.4">
-            <p id="section-3.1-2.4.1">The outer CA collects all AlternateIssuerInfos and SCTs and appends an <code>id-ce-embeddedSCT-CTv1</code> extension to its initial TBSCertificate.<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-3.1-2.4.1">The outer CA appends an <code>id-ce-embeddedSCT-CTv1</code> (OID 1.3.6.1.4.1.11129.2.4.2) extension to its initial TBSCertificate. The extension contains the AlternateIssuerInfo and, if applicable, SCTs collected above.<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.1-2.5">
             <p id="section-3.1-2.5.1">The outer CA signs its final TBSCertificate to issue the outer certificate. This TBSCertificate <span class="bcp14">MUST</span> satisfy the policies of the outer CA.<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
@@ -1587,10 +1595,10 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-3.2-1">When the certificate subject presents the outer certificate to a relying party, relying parties will attempt to validate one of several certificates:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.2-2.1">
-            <p id="section-3.2-2.1.1">Older relying parties that are not aware of this protocol will ignore the unrecognized SCT and validate the outer certificate as usual.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.1.1">Older relying parties that are not aware of this protocol will ignore the unrecognized SCTs and validate the outer certificate as usual.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-3.2-2.2">
-            <p id="section-3.2-2.2.1">Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>. If it finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-3.2-2.2.1">Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>. If a relying party finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-3.2-3">This allows the same certificate to serve both older relying parties that expect the outer CA, and newer relying parties that expect one of the alternate CAs.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
@@ -1609,7 +1617,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-certificate-constraints">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-certificate-constraints" class="section-name selfRef">Certificate Constraints</a>
         </h3>
-<p id="section-4.1-1">Although outer and alternate certificates are conceptually separate, with relying parties accepting one or the other, they are constrained to both share subject information and incorporates parts of each other. Alternate certificates are incorporated into the outer certificate to transmit them. The outer certificate is also partially incorporated into the alternate certificate to mitigate a class of security risks in relying parties. These are described in more detail in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">Although outer and alternate certificates are conceptually separate, with relying parties accepting one or the other, they are constrained to both share subject information and incorporate parts of each other. Alternate certificates are incorporated into the outer certificate to transmit them. The outer certificate is also partially incorporated into the alternate certificate to mitigate a class of security risks in relying parties. These are described in more detail in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1-2">This means outer and alternate CAs are expected to coordinate their certificate profiles and issuance processes, as outlined in <a href="#issuing-certificates" class="auto internal xref">Section 3.1</a>. Concretely, the certificates are constrained as follows:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <p id="section-4.1-3">The outer and alternate certificates <span class="bcp14">MUST</span> have a <code>version</code> of v3 and <span class="bcp14">MUST</span> omit <code>issuerUniqueID</code> and <code>subjectUniqueID</code>. These are preexisting requirements from Sections <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.1" class="relref">4.1.2.1</a> and <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.8" class="relref">4.1.2.8</a> of <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">The outer and alternate certificates <span class="bcp14">MUST</span> have the same <code>validity</code>, <code>subject</code>, and <code>subjectPublicKeyInfo</code> values.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
@@ -1651,7 +1659,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             </ul>
 </li>
           <li class="normal" id="section-4.1-6.3">
-            <p id="section-4.1-6.3.1">PKI deployments <span class="bcp14">MAY</span> impose additional restrictions on issuer-specific extensions by policy. In particular, deployments <span class="bcp14">SHOULD</span> forbid extensions which would change the certificate's subject information in ways which would risk issues the described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>. The following is a non-exhaustive list of extensions which would be safe to permit as issuer-specific in most applications:<a href="#section-4.1-6.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-6.3.1">PKI deployments <span class="bcp14">MAY</span> impose additional restrictions on issuer-specific extensions by policy. In particular, deployments <span class="bcp14">SHOULD</span> forbid extensions which would change the certificate's subject information in ways which would risk the issues described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>. The following is a non-exhaustive list of extensions which would be safe to permit as issuer-specific in most applications:<a href="#section-4.1-6.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.1-6.3.2.1">
                 <p id="section-4.1-6.3.2.1.1"><code>id-ce-authorityKeyIdentifier</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.1" class="relref">Section 4.2.1.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.3.2.1.1" class="pilcrow">¶</a></p>
@@ -1702,8 +1710,6 @@ AlternateIssuerInfo ::= SEQUENCE {
     issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
     signatureValue       BIT STRING
 }
-
-AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
 </pre><a href="#section-4.2-2" class="pilcrow">¶</a>
 </div>
 <p id="section-4.2-3">An AlternateIssuerInfo's fields are defined as follows:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
@@ -1732,26 +1738,26 @@ AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
           <h4 id="name-signed-certificate-timestam">
 <a href="#section-4.2.1" class="section-number selfRef">4.2.1. </a><a href="#name-signed-certificate-timestam" class="section-name selfRef">Signed Certificate Timestamp Encoding</a>
           </h4>
-<p id="section-4.2.1-1">The AlternateIssuerInfos for each alternate certificate are collected in an AlternateIssuerInfoList, which is embedded in the outer certificate. Instead of a custom extension, this document embeds them as a SignedCertificateTimestamp (SCT) in the outer certificate's <code>id-ce-embeddedSCT-CTv1</code> (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. This extension <span class="bcp14">MUST</span> be the final extension in the outer certificate. <a href="#certificate-transparency-log-sizes" class="auto internal xref">Section 6.2</a> discusses the motivation for embedding in an SCT.<a href="#section-4.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-1">The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a new type of SCT in the outer certificate's <code>id-ce-embeddedSCT-CTv1</code> extension, as defined in <span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. This extension <span class="bcp14">MUST</span> be the final extension in the outer certificate. <a href="#certificate-transparency-log-sizes" class="auto internal xref">Section 6.2</a> discusses the motivation for embedding as SCTs.<a href="#section-4.2.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.2.1-2">Note: <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses some definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.<a href="#section-4.2.1-2" class="pilcrow">¶</a></p>
-<p id="section-4.2.1-3">The SCT is formatted as a TransItem (<span><a href="https://rfc-editor.org/rfc/rfc9162#section-4.5" class="relref">Section 4.5</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>) with a <code>versioned_type</code> of <code>embedded_alternate_issuers</code>, defined below:<a href="#section-4.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-3">Each AlternateIssuerInfo is formatted as an SCT using the TransItem (<span><a href="https://rfc-editor.org/rfc/rfc9162#section-4.5" class="relref">Section 4.5</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>) structure with a <code>versioned_type</code> of <code>alternate_issuer_info</code>, defined below:<a href="#section-4.2.1-3" class="pilcrow">¶</a></p>
 <div class="lang-tls-presentation sourcecode" id="section-4.2.1-4">
 <pre>
 enum {
-    embedded_alternate_issuers(TBD3), (0xFFFF)
+    alternate_issuer_info(TBD3), (0xFFFF)
 } VersionedTransType;
 
 struct {
     VersionedTransType versioned_type;
     select (versioned_type) {
-        case embedded_alternate_issuers:
-            opaque alternate_issuer_infos&lt;1..2^24-1&gt;;
+        case alternate_issuer_info:
+            opaque contents&lt;1..2^16-1&gt;;
     } data;
 } TransItem;
 </pre><a href="#section-4.2.1-4" class="pilcrow">¶</a>
 </div>
-<p id="section-4.2.1-5">The <code>alternate_issuer_infos</code> field contains the DER encoding of the AlternateIssuerInfoList.<a href="#section-4.2.1-5" class="pilcrow">¶</a></p>
-<p id="section-4.2.1-6">Note: This structure uses a two-byte version, while the SignedCertificateTimestamp uses a one-byte version. The VersionedTransType type from <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> reserves 0x0000..0x00FF to avoid overlapping with the <code>v1(0)</code> version value from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>. The above structure is defined using <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> to preserve this property and to make use of the registry defined in <span><a href="https://rfc-editor.org/rfc/rfc9162#section-10.2.3" class="relref">Section 10.2.3</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>. The version allocation means it still can and is used in place of a SignedCertificateTimestamp and not the protocols defined in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.<a href="#section-4.2.1-6" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-5">The <code>contents</code> field contains the DER encoding of the AlternateIssuerInfo.<a href="#section-4.2.1-5" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-6">Note: This structure uses a two-byte version, while SignedCertificateTimestamp (<span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.2" class="relref">Section 3.2</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>) uses a one-byte version. The VersionedTransType type from <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> reserves 0x0000..0x00FF to avoid overlapping with SignedCertificateTimestamp's <code>v1(0)</code> version value. The above structure is defined using <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span> to preserve this property and to make use of the registry defined in <span><a href="https://rfc-editor.org/rfc/rfc9162#section-10.2.3" class="relref">Section 10.2.3</a> of [<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but it is still used in place of a SignedCertificateTimestamp and not the protocols defined in <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.<a href="#section-4.2.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1796,14 +1802,14 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-4.3-4.3.1"><code>issuer</code> is the outer certificate's issuer name.<a href="#section-4.3-4.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.3-4.4">
-            <p id="section-4.3-4.4.1"><code>commonExtensionCount</code> is the number of common extensions, as defined in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>. This value <span class="bcp14">MUST</span> be strictly less than the number of extensions in the alternate certificate, to exclude outer certificate binding extension itself.<a href="#section-4.3-4.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-4.4.1"><code>commonExtensionCount</code> is the number of common extensions, as defined in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>. This value <span class="bcp14">MUST</span> be strictly less than the number of extensions in the alternate certificate, to exclude the outer certificate binding extension itself.<a href="#section-4.3-4.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.3-4.5">
             <p id="section-4.3-4.5.1"><code>issuerExtensions</code> is the outer certificate's issuer-specific extensions, as defined in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>.<a href="#section-4.3-4.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-4.3-5">The outer certificate binding extension <span class="bcp14">MUST</span> be the final extension in the alternate certificate. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see <a href="#issuing-certificates" class="auto internal xref">Section 3.1</a>). CAs <span class="bcp14">MUST NOT</span> issue an outer certificate binding extension if this reconstructed TBSCertificate violates the constraints in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>, or is otherwise inconsistent with applicable policies. In particular, the <code>issuerExtensions</code> field <span class="bcp14">MUST NOT</span> contain any issuer-specific extensions forbidden by <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> or applicable policies.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">This binding mitigates the security risks described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> by authenticating most of the replaced outer certificate by alternate CA.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-5">The outer certificate binding extension <span class="bcp14">MUST</span> be the final extension in the alternate certificate and <span class="bcp14">MUST</span> be non-critical. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see <a href="#issuing-certificates" class="auto internal xref">Section 3.1</a>). CAs <span class="bcp14">MUST NOT</span> issue an outer certificate binding extension if this reconstructed TBSCertificate violates the constraints in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>, or is otherwise inconsistent with applicable policies. In particular, the <code>issuerExtensions</code> field <span class="bcp14">MUST NOT</span> contain any issuer-specific extensions forbidden by <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> or applicable policies.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">This binding mitigates the security risks described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> by authenticating most of the replaced outer certificate by the alternate CA.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1813,9 +1819,9 @@ ext-outerCertificateBinding EXTENSION ::= {
       <h2 id="name-relying-parties">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-relying-parties" class="section-name selfRef">Relying Parties</a>
       </h2>
-<p id="section-5-1">When verifying a certificate, a relying party checks if the outer certificate's final extension is <code>id-ce-embeddedSCT-CTv1</code>. If so, it looks for an SCT formatted as in <a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a>. If found, it decodes the SCT's <code>signature</code> value as a DER-encoded AlternateIssuerInfoList structure.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">If any AlternateIssuerInfo has a recognized <code>issuer</code>, the relying party reconstructs the alternate certificate as described in <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a>. If successful, the alternate certificate is used as a candidate target certificate when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<p id="section-5-3">If certification path validation (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-6" class="relref">Section 6</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) succeeds for any path ending at an alternate certificate, the relying party accepts the certificate, even if it would otherwise not accept the outer certificate.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-1">When verifying a certificate, a relying party checks if the outer certificate's final extension is <code>id-ce-embeddedSCT-CTv1</code>. If so, it looks for SCTs formatted as in <a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a>. For each such SCT, it decodes the AlternateIssuerInfo structure.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">For each successfully-decoded AlternateIssuerInfo, the relying party then reconstructs the alternate certificate as described in <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a>. If successful, the alternate certificate is used as a candidate target certificate when building certification paths <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">If certification path validation (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-6" class="relref">Section 6</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>) succeeds for any path ending at an alternate certificate, the relying party proceeds with this certification path, even if it would otherwise reject the outer certificate.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <p id="section-5-4">An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself <span>[<a href="#RFC4158" class="cite xref">RFC4158</a>]</span>, X.509 policy validation <span>[<a href="#RFC9618" class="cite xref">RFC9618</a>]</span>, certification path length, and other factors that contribute to X.509 scaling. Relying parties <span class="bcp14">SHOULD</span> limit the number of alternate certificates they will consider. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.<a href="#section-5-4" class="pilcrow">¶</a></p>
 <div id="reconstructing-the-alternate-certificate">
 <section id="section-5.1">
@@ -1831,7 +1837,7 @@ ext-outerCertificateBinding EXTENSION ::= {
                 <p id="section-5.1-2.1.2.1.1">The outer certificate's <code>version</code> is <code>v3</code>.<a href="#section-5.1-2.1.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-5.1-2.1.2.2">
-                <p id="section-5.1-2.1.2.2.1">The outer certificate's <code>signatureAlgorithm</code> and <code>signature</code> fields are equal.<a href="#section-5.1-2.1.2.2.1" class="pilcrow">¶</a></p>
+                <p id="section-5.1-2.1.2.2.1">The outer certificate's <code>signatureAlgorithm</code> and its TBSCertificate's <code>signature</code> fields are equal.<a href="#section-5.1-2.1.2.2.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-5.1-2.1.2.3">
                 <p id="section-5.1-2.1.2.3.1">The outer certificate has no <code>subjectUniqueID</code> or <code>issuerUniqueID</code> field.<a href="#section-5.1-2.1.2.3.1" class="pilcrow">¶</a></p>
@@ -1860,7 +1866,7 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-5.1-2.7.1">Remove all but the first <code>commonExtensionCount</code> extensions in the TBSCertificate. Let <code>outerIssuerExtensions</code> be the removed extensions.<a href="#section-5.1-2.7.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.8">
-            <p id="section-5.1-2.8.1">Check <code>outerIssuerExtensions</code> and the AlternateIssuerInfo's <code>issuerExtensions</code> as described in <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a>. If rejected, above this procedure.<a href="#section-5.1-2.8.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-2.8.1">Check <code>outerIssuerExtensions</code> and the AlternateIssuerInfo's <code>issuerExtensions</code> as described in <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a>. If rejected, abort this procedure.<a href="#section-5.1-2.8.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.9">
             <p id="section-5.1-2.9.1">Append the AlternateIssuerInfo's <code>issuerExtensions</code> to the TBSCertificate.<a href="#section-5.1-2.9.1" class="pilcrow">¶</a></p>
@@ -1933,8 +1939,8 @@ ext-outerCertificateBinding EXTENSION ::= {
         </h3>
 <p id="section-6.2-1">In deployments that use Certificate Transparency (CT) <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span>, a direct post-quantum transition risks significantly increasing the sizes of CT logs. (<span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> was obsoleted by <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>, but the two protocols are incompatible. This document uses the definitions from <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> for compatibility with existing deployments.) <span>[<a href="#IETF124-PLANTS" class="cite xref">IETF124-PLANTS</a>]</span> estimated an 8.3x size increase from migrating to ML-DSA-44.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2-2">Merkle Tree Certificates <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span> provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
-<p id="section-6.2-3"><a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a> partially mitigates this new increase by embedding AlternateIssuerInfo structures in an SCT. When the outer certificate's precertificate is logged, the precertificate will omit this SCT and thus the added structures.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
-<p id="section-6.2-4">This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus <span class="bcp14">SHOULD</span> permit CT logs to reject logging of any certificates with an embedded AlternateIssuerInfoList. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<p id="section-6.2-3"><a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a> partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus <span class="bcp14">SHOULD</span> permit CT logs to reject logging of any certificates with embedded SCTs of type <code>alternate_issuer_info</code>. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1957,10 +1963,10 @@ ext-outerCertificateBinding EXTENSION ::= {
         <h3 id="name-certificate-mismatch">
 <a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-certificate-mismatch" class="section-name selfRef">Certificate Mismatch</a>
         </h3>
-<p id="section-7.2-1">A relying party that implements this specification will sometimes validate a certification path for an alternate certificate. This presents a security risk of other parts of the system check the original target certificate instead.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-1">A relying party that implements this specification will sometimes validate a certification path for an alternate certificate. This presents a security risk if other parts of the system check the original target certificate instead.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.2-2">Access checks in the relying party <span class="bcp14">SHOULD</span> act on the certification path that was ultimately validated. In support of this, APIs that return the validated certification path <span class="bcp14">SHOULD</span> reflect the correct target certificate.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
 <p id="section-7.2-3">However, this breaks an application invariant: previously, the target certificate would never change after path building. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, the above measure might fail.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2-4">X.509 implementations <span class="bcp14">MAY</span> further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt-in, yet forget to update some component.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
+<p id="section-7.2-4">X.509 implementations <span class="bcp14">MAY</span> further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt in, yet forget to update some component.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
 <p id="section-7.2-5">This document further mitigates this risk in two ways:<a href="#section-7.2-5" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-7.2-6">
 <li id="section-7.2-6.1">
@@ -1973,7 +1979,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 <p id="section-7.2-7">This contrasts with <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span>, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
 <p id="section-7.2-8">If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the <code>subjectPublicKeyInfo</code> field.<a href="#section-7.2-8" class="pilcrow">¶</a></p>
 <p id="section-7.2-9">X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, and a relying party cannot classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on.<a href="#section-7.2-9" class="pilcrow">¶</a></p>
-<p id="section-7.2-10">Instead, the outer certificate binding extension mitigates this risk more generally. Except for <code>id-ce-embeddedSCT-CTv1</code>, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> additionally holds the alternate CA responsible for meeting the requirements in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other deployment-specific policies, to prevent the alternate CA themselves from enabling an attack. CAs are expected to not sign unknown extensions, so this does no conflict with extensibility.<a href="#section-7.2-10" class="pilcrow">¶</a></p>
+<p id="section-7.2-10">Instead, the outer certificate binding extension mitigates this risk more generally. Except for <code>id-ce-embeddedSCT-CTv1</code>, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> additionally holds the alternate CA responsible for meeting the requirements in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other deployment-specific policies, to forbid the alternate CA itself from enabling an attack. CAs are expected to not sign unknown extensions, so this does not conflict with extensibility.<a href="#section-7.2-10" class="pilcrow">¶</a></p>
 <p id="section-7.2-11">However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.10" class="relref">Section 4.2.1.10</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a> recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.<a href="#section-7.2-11" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -2052,7 +2058,7 @@ ext-outerCertificateBinding EXTENSION ::= {
           <tbody>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">TBD3</td>
-              <td class="text-left" rowspan="1" colspan="1">embedded_alternate_issuers</td>
+              <td class="text-left" rowspan="1" colspan="1">alternate_issuer_info</td>
               <td class="text-left" rowspan="1" colspan="1">[this-RFC]</td>
             </tr>
           </tbody>
@@ -2080,14 +2086,6 @@ ext-outerCertificateBinding EXTENSION ::= {
         <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="RFC3739">[RFC3739]</dt>
-        <dd>
-<span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Nystrom, M.</span>, and <span class="refAuthor">T. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Qualified Certificates Profile"</span>, <span class="seriesInfo">RFC 3739</span>, <span class="seriesInfo">DOI 10.17487/RFC3739</span>, <time datetime="2004-03" class="refDate">March 2004</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3739">https://www.rfc-editor.org/rfc/rfc3739</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC4158">[RFC4158]</dt>
-        <dd>
-<span class="refAuthor">Cooper, M.</span>, <span class="refAuthor">Dzambasow, Y.</span>, <span class="refAuthor">Hesse, P.</span>, <span class="refAuthor">Joseph, S.</span>, and <span class="refAuthor">R. Nicholas</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Certification Path Building"</span>, <span class="seriesInfo">RFC 4158</span>, <span class="seriesInfo">DOI 10.17487/RFC4158</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4158">https://www.rfc-editor.org/rfc/rfc4158</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="RFC5280">[RFC5280]</dt>
         <dd>
 <span class="refAuthor">Cooper, D.</span>, <span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Farrell, S.</span>, <span class="refAuthor">Boeyen, S.</span>, <span class="refAuthor">Housley, R.</span>, and <span class="refAuthor">W. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure Certificate and Certificate Revocation List (CRL) Profile"</span>, <span class="seriesInfo">RFC 5280</span>, <span class="seriesInfo">DOI 10.17487/RFC5280</span>, <time datetime="2008-05" class="refDate">May 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5280">https://www.rfc-editor.org/rfc/rfc5280</a>&gt;</span>. </dd>
@@ -2099,10 +2097,6 @@ ext-outerCertificateBinding EXTENSION ::= {
 <dt id="RFC6962">[RFC6962]</dt>
         <dd>
 <span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Langley, A.</span>, and <span class="refAuthor">E. Kasper</span>, <span class="refTitle">"Certificate Transparency"</span>, <span class="seriesInfo">RFC 6962</span>, <span class="seriesInfo">DOI 10.17487/RFC6962</span>, <time datetime="2013-06" class="refDate">June 2013</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6962">https://www.rfc-editor.org/rfc/rfc6962</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC7299">[RFC7299]</dt>
-        <dd>
-<span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Object Identifier Registry for the PKIX Working Group"</span>, <span class="seriesInfo">RFC 7299</span>, <span class="seriesInfo">DOI 10.17487/RFC7299</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7299">https://www.rfc-editor.org/rfc/rfc7299</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
@@ -2157,6 +2151,18 @@ ext-outerCertificateBinding EXTENSION ::= {
         <dd>
 <span class="refAuthor">Benjamin, D.</span> and <span class="refAuthor">J. DeBlasio</span>, <span class="refTitle">"Post-Quantum HTTPS Authentication Roadmap"</span>, <time datetime="2026-02-27" class="refDate">27 February 2026</time>, <span>&lt;<a href="https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/">https://www.chromium.org/Home/chromium-security/post-quantum-auth-roadmap/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC3739">[RFC3739]</dt>
+        <dd>
+<span class="refAuthor">Santesson, S.</span>, <span class="refAuthor">Nystrom, M.</span>, and <span class="refAuthor">T. Polk</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Qualified Certificates Profile"</span>, <span class="seriesInfo">RFC 3739</span>, <span class="seriesInfo">DOI 10.17487/RFC3739</span>, <time datetime="2004-03" class="refDate">March 2004</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3739">https://www.rfc-editor.org/rfc/rfc3739</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4158">[RFC4158]</dt>
+        <dd>
+<span class="refAuthor">Cooper, M.</span>, <span class="refAuthor">Dzambasow, Y.</span>, <span class="refAuthor">Hesse, P.</span>, <span class="refAuthor">Joseph, S.</span>, and <span class="refAuthor">R. Nicholas</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Certification Path Building"</span>, <span class="seriesInfo">RFC 4158</span>, <span class="seriesInfo">DOI 10.17487/RFC4158</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4158">https://www.rfc-editor.org/rfc/rfc4158</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7299">[RFC7299]</dt>
+        <dd>
+<span class="refAuthor">Housley, R.</span>, <span class="refTitle">"Object Identifier Registry for the PKIX Working Group"</span>, <span class="seriesInfo">RFC 7299</span>, <span class="seriesInfo">DOI 10.17487/RFC7299</span>, <time datetime="2014-07" class="refDate">July 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7299">https://www.rfc-editor.org/rfc/rfc7299</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8555">[RFC8555]</dt>
         <dd>
 <span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Hoffman-Andrews, J.</span>, <span class="refAuthor">McCarney, D.</span>, and <span class="refAuthor">J. Kasten</span>, <span class="refTitle">"Automatic Certificate Management Environment (ACME)"</span>, <span class="seriesInfo">RFC 8555</span>, <span class="seriesInfo">DOI 10.17487/RFC8555</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8555">https://www.rfc-editor.org/rfc/rfc8555</a>&gt;</span>. </dd>
@@ -2175,7 +2181,7 @@ ext-outerCertificateBinding EXTENSION ::= {
       <h2 id="name-asn1-module">
 <a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-asn1-module" class="section-name selfRef">ASN.1 Module</a>
       </h2>
-<p id="appendix-A-1">This module uses structures defined in <span>[<a href="#RFC5912" class="cite xref">RFC5912</a>]</span> and <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-1">This module uses structures defined in <span>[<a href="#RFC5912" class="cite xref">RFC5912</a>]</span>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div class="breakable lang-asn.1 sourcecode" id="appendix-A-2">
 <pre>
 EmbeddedAlternateIssuers-2026
@@ -2218,8 +2224,6 @@ AlternateIssuerInfo ::= SEQUENCE {
     issuerExtensions     SEQUENCE OF Extension{{CertExtensions}},
     signatureValue       BIT STRING
 }
-
-AlternateIssuerInfoList ::= SEQUENCE OF AlternateIssuerInfo
 
 OuterCertificateBinding ::= SEQUENCE {
     serialNumber         CertificateSerialNumber,
