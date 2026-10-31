@@ -195,14 +195,12 @@ After subject information is validated according to the policies of each CA invo
 
    4. The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.
 
-3. If the outer CA participates in Certificate Transparency (CT), run the following steps. These steps MAY run in parallel with step 2.
+3. If the outer CA participates in Certificate Transparency (CT), run the following steps. These steps MAY run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.
 
    {:type="a"}
    1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}.
 
    2. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.
-
-   If the outer CA does not participate in CT, skip these steps.
 
 4. The outer CA appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate. The extension contains the AlternateIssuerInfo and, if applicable, SCTs collected above.
 
