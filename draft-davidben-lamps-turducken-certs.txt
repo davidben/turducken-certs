@@ -95,11 +95,12 @@ Table of Contents
    5.  Relying Parties
      5.1.  Reconstructing the Alternate Certificate
      5.2.  Checking Issuer-Specific Extensions
+     5.3.  Input Certificates and Validated Certificates
    6.  Deployment Considerations
      6.1.  Legacy Services
      6.2.  Certificate Transparency Log Sizes
    7.  Security Considerations
-     7.1.  Validation
+     7.1.  Separate Certificates
      7.2.  Certificate Mismatch
    8.  IANA Considerations
      8.1.  PKIX Module Identifier
@@ -763,6 +764,36 @@ Table of Contents
    checks reliably inspect the correct certificate, as described in
    Section 7.2.
 
+5.3.  Input Certificates and Validated Certificates
+
+   If the relying party validated a certification path via an alternate
+   certificate, the validated target certificate and the input
+   certificate will be different.  The relying party uses different ones
+   in different contexts.
+
+   In contexts that are defined based on the certificate that was sent
+   over the wire, the input certificate is used.  For example:
+
+   *  The TLS transcript hash (Section 4.1 of [RFC9846]) is computed
+      from the Certificate message and thus the input certificate.
+
+   *  The tls-server-end-point channel binding (Section 4 of [RFC5929])
+      is computed from the input certificate.
+
+   Note that the input certificate will always contain the validated
+   target certificate, but does not specify which one it is.
+
+   In contexts that are defined based on the certificate that was
+   validated, notably access control checks, the validated certificate
+   is used.  Section 7.2 discusses this case in more detail.
+
+   This distinction is a generalization of an existing distinction in
+   path-building X.509 applications.  The input list of certificates may
+   differ from the final certification path that was built.
+   Applications are already expected to separate these cases, but they
+   were not previously required to consider different target
+   certificates.
+
 6.  Deployment Considerations
 
 6.1.  Legacy Services
@@ -830,15 +861,28 @@ Table of Contents
 
 7.  Security Considerations
 
-7.1.  Validation
+7.1.  Separate Certificates
 
    Although each alternate certificate is ultimately encoded relative to
    the outer certificate, the alternate CA's signature is on the
    reconstructed alternate TBSCertificate, so it is still considered to
-   have issued the reconstructed alternate certificate.  The alternate
-   TBSCertificate MUST satisfy the policies of the alternate CA,
-   including any domain validation.  Misissuance of an alternate
-   certificate remains misissuance.
+   have separately issued the reconstructed alternate certificate.  In
+   particular:
+
+   *  The alternate TBSCertificate MUST satisfy the policies of the
+      alternate CA, including any domain validation.  Misissuance of an
+      alternate certificate remains misissuance.
+
+   *  Revocation of each certificate is independent.  Revoking the outer
+      certificate does not revoke the alternate certificates and vice
+      versa.
+
+   When relying parties evaluate candidate certification paths, they
+   likewise treat each possible target certificate separately.  If the
+   relying party accepts an alternate certificate, it does not verify
+   outer certificate or even necessarily trust the outer CA.  In
+   particular, in the post-quantum transition, the outer CA is a
+   traditional CA, so its key could be compromised by a CRQC.
 
 7.2.  Certificate Mismatch
 
@@ -1067,6 +1111,10 @@ Table of Contents
               Certification Path Building", RFC 4158,
               DOI 10.17487/RFC4158, September 2005,
               <https://www.rfc-editor.org/rfc/rfc4158>.
+
+   [RFC5929]  Altman, J., Williams, N., and L. Zhu, "Channel Bindings
+              for TLS", RFC 5929, DOI 10.17487/RFC5929, July 2010,
+              <https://www.rfc-editor.org/rfc/rfc5929>.
 
    [RFC7299]  Housley, R., "Object Identifier Registry for the PKIX
               Working Group", RFC 7299, DOI 10.17487/RFC7299, July 2014,

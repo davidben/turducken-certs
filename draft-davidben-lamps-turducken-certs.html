@@ -1214,6 +1214,9 @@ svg {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
                 <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-checking-issuer-specific-ex" class="internal xref">Checking Issuer-Specific Extensions</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-input-certificates-and-vali" class="internal xref">Input Certificates and Validated Certificates</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
@@ -1231,7 +1234,7 @@ svg {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-validation" class="internal xref">Validation</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-separate-certificates" class="internal xref">Separate Certificates</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
                 <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-certificate-mismatch" class="internal xref">Certificate Mismatch</a></p>
@@ -1906,6 +1909,26 @@ ext-outerCertificateBinding EXTENSION ::= {
 <p id="section-5.2-2">The relying party <span class="bcp14">SHOULD</span> check for and reject the forbidden issuer-specific extensions listed in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other issuer-specific extensions known to be forbidden by local policy. The relying party <span class="bcp14">MAY</span> skip this check for any extension that its path verifier does not recognize. It also <span class="bcp14">MAY</span> skip this check if all subsequent access checks reliably inspect the correct certificate, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
+<div id="input-certificates-and-validated-certificates">
+<section id="section-5.3">
+        <h3 id="name-input-certificates-and-vali">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-input-certificates-and-vali" class="section-name selfRef">Input Certificates and Validated Certificates</a>
+        </h3>
+<p id="section-5.3-1">If the relying party validated a certification path via an alternate certificate, the validated target certificate and the input certificate will be different. The relying party uses different ones in different contexts.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">In contexts that are defined based on the certificate that was sent over the wire, the input certificate is used. For example:<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.3-3.1">
+            <p id="section-5.3-3.1.1">The TLS transcript hash (<span><a href="https://rfc-editor.org/rfc/rfc9846#section-4.1" class="relref">Section 4.1</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>) is computed from the Certificate message and thus the input certificate.<a href="#section-5.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.3-3.2">
+            <p id="section-5.3-3.2.1">The tls-server-end-point channel binding (<span><a href="https://rfc-editor.org/rfc/rfc5929#section-4" class="relref">Section 4</a> of [<a href="#RFC5929" class="cite xref">RFC5929</a>]</span>) is computed from the input certificate.<a href="#section-5.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-5.3-4">Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-5">In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> discusses this case in more detail.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
+<p id="section-5.3-6">This distinction is a generalization of an existing distinction in path-building X.509 applications. The input list of certificates may differ from the final certification path that was built. Applications are already expected to separate these cases, but they were not previously required to consider different target certificates.<a href="#section-5.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="deployment-considerations">
@@ -1950,12 +1973,21 @@ ext-outerCertificateBinding EXTENSION ::= {
       <h2 id="name-security-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<div id="validation">
+<div id="separate-certificates">
 <section id="section-7.1">
-        <h3 id="name-validation">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-validation" class="section-name selfRef">Validation</a>
+        <h3 id="name-separate-certificates">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-separate-certificates" class="section-name selfRef">Separate Certificates</a>
         </h3>
-<p id="section-7.1-1">Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have issued the reconstructed alternate certificate. The alternate TBSCertificate <span class="bcp14">MUST</span> satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have separately issued the reconstructed alternate certificate. In particular:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1-2.1">
+            <p id="section-7.1-2.1.1">The alternate TBSCertificate <span class="bcp14">MUST</span> satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.<a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.2">
+            <p id="section-7.1-2.2.1">Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.1-3">When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-mismatch">
@@ -2158,6 +2190,10 @@ ext-outerCertificateBinding EXTENSION ::= {
 <dt id="RFC4158">[RFC4158]</dt>
         <dd>
 <span class="refAuthor">Cooper, M.</span>, <span class="refAuthor">Dzambasow, Y.</span>, <span class="refAuthor">Hesse, P.</span>, <span class="refAuthor">Joseph, S.</span>, and <span class="refAuthor">R. Nicholas</span>, <span class="refTitle">"Internet X.509 Public Key Infrastructure: Certification Path Building"</span>, <span class="seriesInfo">RFC 4158</span>, <span class="seriesInfo">DOI 10.17487/RFC4158</span>, <time datetime="2005-09" class="refDate">September 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4158">https://www.rfc-editor.org/rfc/rfc4158</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5929">[RFC5929]</dt>
+        <dd>
+<span class="refAuthor">Altman, J.</span>, <span class="refAuthor">Williams, N.</span>, and <span class="refAuthor">L. Zhu</span>, <span class="refTitle">"Channel Bindings for TLS"</span>, <span class="seriesInfo">RFC 5929</span>, <span class="seriesInfo">DOI 10.17487/RFC5929</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5929">https://www.rfc-editor.org/rfc/rfc5929</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7299">[RFC7299]</dt>
         <dd>
