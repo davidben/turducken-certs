@@ -421,14 +421,16 @@ The relying party SHOULD check for and reject the forbidden issuer-specific exte
 
 ## Input Certificates and Validated Certificates
 
-If the relying party validated a certification path via an alternate certificate, the validated target certificate and the input certificate will be different. The relying party uses different ones in different contexts.
+For the section, we define the input certificate to be the entire certificate being processed (typically the outer certificate), and the validated certificate to be the one for which the certification path was checked, which may be the inner or outer certificate.
+Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
+This section considers potential impacts of the input certificate and the validated certificate being different.
 
 In contexts that are defined based on the certificate that was sent over the wire, the input certificate is used. For example:
 
-* The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the input certificate.
-* The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the input certificate.
+* The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the bytes of the input certificate.
+* The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the bytes of the input certificate.
 
-Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
+Similar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.
 
 In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. {{certificate-mismatch}} discusses this case in more detail.
 
@@ -473,11 +475,9 @@ When relying parties evaluate candidate certification paths, they likewise treat
 
 ## Certificate Mismatch
 
-A relying party that implements this specification will sometimes validate a certification path for an alternate certificate. This presents a security risk if other parts of the system check the original target certificate instead.
+Access checks in the relying party SHOULD act on the certification path that was ultimately validated, failing to do so can result in access control bypass vulnerabilities. In support of this, APIs that return the validated certification path SHOULD reflect the correct target certificate.
 
-Access checks in the relying party SHOULD act on the certification path that was ultimately validated. In support of this, APIs that return the validated certification path SHOULD reflect the correct target certificate.
-
-However, this breaks an application invariant: previously, the target certificate would never change after path building. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, the above measure might fail.
+However, this breaks an application invariant: previously, the target certificate would never change as a result of path building; which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, the above measure might fail, which could carry security implications if the content of the inner and outer certificate differ.
 
 X.509 implementations MAY further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt in, yet forget to update some component.
 
@@ -488,13 +488,15 @@ This document further mitigates this risk in two ways:
 
 This contrasts with {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}}, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.
 
-If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unchecked public key in the outer certificate. This would allow an attacker to bypass certificate-based authentication. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
+If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unverified public key in the outer certificate. This could allow an attacker to bypass certificate-based authentication, especially in the case of a malicious or compromised outer CA. This is not possible here because alternate certificates cannot replace the `subjectPublicKeyInfo` field.
 
-X.509 extensions complicate this mitigation. X.509 does not distinguish between subject and issuer extensions, and a relying party cannot classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on.
+X.509 extensions complicate this mitigation. X.509 does not structurally distinguish between subject and issuer extensions, in a way that would allow a relying party to classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on being the same between the inner and outer certificate.
 
 Instead, the outer certificate binding extension mitigates this risk more generally. Except for `id-ce-embeddedSCT-CTv1`, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. {{outer-certificate-binding}} additionally holds the alternate CA responsible for meeting the requirements in {{certificate-constraints}} and other deployment-specific policies, to forbid the alternate CA itself from enabling an attack. CAs are expected to not sign unknown extensions, so this does not conflict with extensibility.
 
-However, there are some cases where the relying party constrains the CA. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{checking-issuer-specific-extensions}} recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.
+Ultimately, final responsibility lies with both the inner and outer CA to ensure that any extensions removed or modified will not cause interoperability or security problems among the target relying party base.
+
+However, there are some cases where this is complicated by relying-party-imposed constraints on the CA that may not be known to the issuing CAs. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{checking-issuer-specific-extensions}} recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.
 
 # IANA Considerations
 
