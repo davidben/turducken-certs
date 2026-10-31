@@ -421,14 +421,16 @@ The relying party SHOULD check for and reject the forbidden issuer-specific exte
 
 ## Input Certificates and Validated Certificates
 
-If the relying party validated a certification path via an alternate certificate, the validated target certificate and the input certificate will be different. The relying party uses different ones in different contexts.
+For the section, we define the input certificate to be the entire certificate being processed (typically the outer certificate), and the validated certificate to be the one for which the certification path was checked, which may be the inner or outer certificate.
+Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
+This section considers potential impacts of the input certificate and the validated certificate being different.
 
 In contexts that are defined based on the certificate that was sent over the wire, the input certificate is used. For example:
 
-* The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the input certificate.
-* The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the input certificate.
+* The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the bytes of the input certificate.
+* The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the bytes of the input certificate.
 
-Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
+Similar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.  
 
 In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. {{certificate-mismatch}} discusses this case in more detail.
 
