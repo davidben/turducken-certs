@@ -1,5 +1,5 @@
 ---
-title: "Embedded Alternate Issuers"
+title: "Embedded Alternate Issuer Certificates"
 category: std
 
 docname: draft-davidben-lamps-turducken-certs-latest
@@ -81,36 +81,36 @@ informative:
 
 --- abstract
 
-This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments.
+This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. Specifically, they solve the problem of adding post-quantum trust anchors to an environment where an end entity must sign protocol messages supporting both legacy and upgraded peers, but where the end entity itself is not capable of using a post-quantum signing key.
 
 --- middle
 
 # Introduction
 
-In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors. Otherwise, post-quantum certificates do not prevent downgrade attacks. Even if some service has deployed a post-quantum certificate, a cryptographically relevant quantum computer (CRQC) can simply break the key of some unrelated traditional certification authority (CA) and forge a certificate for that service. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
+In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificates does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
 
-Some applications, such as the Web, have constraints that make this particularly challenging:
+Some applications, such as Web TLS, have constraints that make this particularly challenging:
 
-* Relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
+* Upgraded relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
 
-* Relying parties support enough services that pre-configuring different trust anchors for different services is impractical.
+* Relying parties support enough services that out-of-band configuration of which services have migrated to post-quantum is impractical.
 
 * Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
 
-* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates.
+* Even if they do support post-quantum algorithms, some services' technology stacks are unable to configure and select between multiple certificates based on advertised client algorithm support. While this could in theory be fixed, it would introduce further latency into the migration.
 
 {{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
 
-1. Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service is not yet post-quantum-capable.
+1. Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service is continuing to use a traditional algorithm.
 
-2. Relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.
+2. Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.
 
-This issuer-side transition protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties.
+This issuer-side transition protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.
 
-This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
+This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy clients unaware of this specification. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
 
 * It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in {{certificate-transparency-log-sizes}}.
-* It aims to mitigate security risks if some components consume alternate certificates without awareness of other components, as described in {{certificate-mismatch}}.
+* It aims to mitigate security risks of mismatched certificate contents between the outer traditional and alternate post-quantum opt-out certificates, as described in {{certificate-mismatch}}.
 
 While the Web PKI is the primary motivator, this mechanism may be appropriate for other PKIs with similar post-quantum migration constraints, as well as other similarly-constrained issuer-side PKI transitions. In all cases, however, this is a temporary transitionary tool until services can deploy multiple certificates directly. {{legacy-services}} discusses this in more detail.
 
@@ -164,7 +164,7 @@ After subject information is validated according to the policies of each CA invo
    {:type="a"}
    1. The alternate CA constructs a TBSCertificate based on the outer CA's initial TBSCertificate. The outer CA's issuer-specific fields are removed and replaced with ones reflecting the alternate CA.
 
-   2. The alternate CA appends an outer certificate binding extension to its TBSCertificate, containing all fields removed from the initial TBSCertificate, above. This authenticates the removed fields to a relying party that only trusts the alternate CA.
+   2. The alternate CA appends an outer certificate binding extension to its TBSCertificate, containing all fields removed or modified from the initial TBSCertificate, above. This authenticates the removed fields to a relying party that only trusts the alternate CA.
 
    3. The alternate CA signs its TBSCertificate to issue an alternate certificate. This TBSCertificate MUST satisfy the policies of the alternate CA.
 
@@ -173,7 +173,7 @@ After subject information is validated according to the policies of each CA invo
 3. If the outer CA participates in CT, run the following steps. These steps MAY run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.
 
    {:type="a"}
-   1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}.
+   1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. Note that this does not include any evidence of the alternate certificate(s), which is by design to reduce the size of the logged precertificates.
 
    2. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.
 
@@ -222,15 +222,15 @@ Outer Certificate                +--+--------------+---+
 ~~~
 {: #fig-turducken-issuance title="A diagram of how the alternate and outer certificates are issued. A is the outer CA, and B is an alternate CA."}
 
-{{certification-authorities}} discusses this in more detail.
+While these are conceptually two distinct CAs, it implies a tight trust coupling and policy alignment between them. In practice, these will typically be two sub-components of the same operational CA. {{certification-authorities}} discusses this in more detail.
 
 ## Verifying Certificates
 
 When the certificate subject presents the outer certificate to a relying party, relying parties will attempt to validate one of several certificates:
 
-* Older relying parties that are not aware of this protocol will ignore the unrecognized SCTs and validate the outer certificate as usual.
+* Relying parties that are not aware of this protocol will ignore the unrecognized SCT type of `alternate_issuer_info` and validate the outer certificate as usual. {{legacy-relying-parties}} discusses this further.
 
-* Newer relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths {{?RFC4158}}. If a relying party finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path.
+* Upgraded relying parties will reconstruct the alternate certificates and use them as candidate target certificates when building certification paths {{?RFC4158}}. If a relying party finds some valid certification path from some target certificate, outer or alternate, it proceeds with that certification path. This specification does not impose a preference for whether outer or alternate is used in a case where both have a valid certification path.
 
 This allows the same certificate to serve both older relying parties that expect the outer CA, and newer relying parties that expect one of the alternate CAs.
 
@@ -305,7 +305,7 @@ An AlternateIssuerInfo's fields are defined as follows:
 
 ### Signed Certificate Timestamp Encoding
 
-The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a new type of SCT in the outer certificate's `id-ce-embeddedSCT-CTv1` extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding as SCTs.
+The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a new type of SCT in the outer certificate's `id-ce-embeddedSCT-CTv1` extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding the alternate certificates as SCTs.
 
 Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
 
@@ -366,7 +366,11 @@ The outer certificate binding extension MUST be the final extension in the alter
 
 This binding mitigates the security risks described in {{certificate-mismatch}} by authenticating most of the replaced outer certificate by the alternate CA.
 
+Note that the design of this mechanism precludes nested alternate certificates since both the outer certificate's `id-ce-embeddedSCT-CTv1` extension, and the alternate certificate's `id-pe-outerCertificateBinding` extension must be last, thereby precluding a certificate from simultaneously being both an outer and alternate certificate. This does not preclude the alternate certificate from embedding SCTs because RFC6962 does not have an ordering requirement.
+
 # Relying Parties
+
+Typically, when a certificate is untrusted -s I.E. a valid certification path cannot be established -- processing should stop and no further contents of the certificate should be processed. A `id-ce-embeddedSCT-CTv1` extension as the final extension as described below is an exception and MAY be processed regardless of the trust, revocation, or expiry status of the outer certificate.
 
 When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for SCTs formatted as in {{signed-certificate-timestamp-encoding}}. For each such SCT, it decodes the AlternateIssuerInfo structure.
 
@@ -374,7 +378,7 @@ For each successfully-decoded AlternateIssuerInfo, the relying party then recons
 
 If certification path validation ({{Section 6 of !RFC5280}}) succeeds for any path ending at an alternate certificate, the relying party proceeds with this certification path, even if it would otherwise reject the outer certificate.
 
-An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates they will consider. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.
+An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process, as this could become a trivial denial-of-service vector when processing untrusted outer certificates. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.
 
 ## Reconstructing the Alternate Certificate
 
@@ -395,7 +399,7 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 5. Replace the TBSCertificate's `issuer` field with the AlternateIssuerInfo's `issuer`. Let `outerIssuer` be the replaced value.
 
-6. Remove the TBSCertificate's final extension, which will be `id-ce-embeddedSCT-CTv1`.
+6. Remove the TBSCertificate's final extension, which MUST be `id-ce-embeddedSCT-CTv1` formatted as described in {{signed-certificate-timestamp-encoding}}.
 
 7. Remove all but the first `commonExtensionCount` extensions in the TBSCertificate. Let `outerIssuerExtensions` be the removed extensions.
 
@@ -440,7 +444,7 @@ This distinction is a generalization of an existing distinction in path-building
 
 Embedded alternate issuers are a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly SHOULD NOT use this mechanism. Deployments are RECOMMENDED to enforce this in CAs and relying parties.
 
-For example, in a post-quantum transition for TLS, embedded alternate issuers are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. Such a service would have no need for embedded alternate issuers. Accordingly, in a TLS deployment using embedded alternate issuers for a post-quantum transition:
+For example, in a post-quantum transition for TLS, embedded alternate issuers are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties, switching which is served based on `ClientHello.SignatureScheme` {{?RFC9846}}. Such a service would have no need for embedded alternate issuers. Accordingly, in a TLS deployment using embedded alternate issuers for a post-quantum transition:
 
 * CAs SHOULD NOT issue embedded alternate issuers if the end-entity key is post-quantum.
 * Relying parties SHOULD ignore embedded alternate issuers if the end-entity key is post-quantum.
@@ -448,6 +452,20 @@ For example, in a post-quantum transition for TLS, embedded alternate issuers ar
 This ensures that, when the post-quantum transition is completed, there will be no embedded alternate issuers remaining and implementations can remove the supporting logic.
 
 A given deployment SHOULD only deploy embedded alternate issuers once, for only one transition. After that transition has completed, the deployment SHOULD have transitioned to a state where certificate holders support multiple certificates.
+
+## Legacy Relying Parties
+
+The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This makes an assumption that existing certificate parsers will treat an un-recognized SCT of type `alternate_issuer_info` as non-fatal and continue processing the outer certificate as usual.
+
+This is believed to be the behaviour of all existing parsers, and is supported by the specifications of both CT and CTv2.
+
+[Section 3.3 of RFC6962] says:
+"This encoding ensures that TLS clients can
+decode each SCT individually (i.e., if there is a version upgrade,
+out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand)."
+
+[Section 6.3 of RFC9162] says:
+"This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand)."
 
 ## Certificate Transparency Log Sizes
 
