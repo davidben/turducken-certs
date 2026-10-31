@@ -430,7 +430,7 @@ In contexts that are defined based on the certificate that was sent over the wir
 * The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the bytes of the input certificate.
 * The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the bytes of the input certificate.
 
-Similar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.  
+Similar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.
 
 In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. {{certificate-mismatch}} discusses this case in more detail.
 
