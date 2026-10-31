@@ -444,14 +444,14 @@ This distinction is a generalization of an existing distinction in path-building
 
 Embedded alternate issuers are a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly SHOULD NOT use this mechanism. Deployments are RECOMMENDED to enforce this in CAs and relying parties.
 
-For example, in a post-quantum transition for TLS, embedded alternate issuers are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties, switching which is served based on `ClientHello.SignatureScheme` {{?RFC9846}}. Such a service would have no need for embedded alternate issuers. Accordingly, in a TLS deployment using embedded alternate issuers for a post-quantum transition:
+For example, in a post-quantum transition for TLS, embedded alternate issuer certificates are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties, switching which is served based on `ClientHello.SignatureScheme` {{?RFC9846}}. Such a service would have no need for embedded alternate issuer certificates. Accordingly, in a TLS deployment using embedded alternate issuer certificates for a post-quantum transition:
 
-* CAs SHOULD NOT issue embedded alternate issuers if the end-entity key is post-quantum.
-* Relying parties SHOULD ignore embedded alternate issuers if the end-entity key is post-quantum.
+* CAs SHOULD NOT issue embedded alternate issuer certificates if the end-entity key is post-quantum.
+* Relying parties SHOULD ignore embedded alternate issuer certificates if the end-entity key is post-quantum.
 
-This ensures that, when the post-quantum transition is completed, there will be no embedded alternate issuers remaining and implementations can remove the supporting logic.
+This ensures that, when the post-quantum transition is completed, there will be no embedded alternate issuer certificates remaining and implementations can remove the supporting logic.
 
-A given deployment SHOULD only deploy embedded alternate issuers once, for only one transition. After that transition has completed, the deployment SHOULD have transitioned to a state where certificate holders support multiple certificates.
+A given deployment SHOULD only deploy embedded alternate issuer certificates once, for only one transition. After that transition has completed, the deployment SHOULD have transitioned to a state where certificate holders support multiple certificates.
 
 ## Legacy Relying Parties
 
@@ -471,11 +471,11 @@ out-of-date clients can still parse old SCTs while skipping over new SCTs whose 
 
 In deployments that use CT {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
 
-Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
+Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuer certificates, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
 
 {{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.
 
-This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
+This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuer certificates to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
 
