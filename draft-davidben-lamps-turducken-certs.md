@@ -195,9 +195,16 @@ After subject information is validated according to the policies of each CA invo
 
    4. The alternate CA extracts the alternate certificate's issuer-specific fields and signature. It returns these to the outer CA as an AlternateIssuerInfo. This contains enough information for the relying party to reconstruct the alternate certificate.
 
-3. If the outer CA participates in Certificate Transparency (CT), it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step MAY run in parallel with step 2.
+3. If the outer CA participates in Certificate Transparency (CT), run the following steps. These steps MAY run in parallel with step 2.
 
-4. The outer CA collects all AlternateIssuerInfos and SCTs and appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate.
+   {:type="a"}
+   1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}.
+
+   2. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.
+
+   If the outer CA does not participate in CT, skip this step.
+
+4. The outer CA appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate. The extension contains the AlternateIssuerInfo and, if applicable, SCTs collected above.
 
 5. The outer CA signs its final TBSCertificate to issue the outer certificate. This TBSCertificate MUST satisfy the policies of the outer CA.
 
@@ -329,23 +336,23 @@ The AlternateIssuerInfos for each alternate certificate are embedded in the oute
 
 Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
 
-Each AlternateIssuerInfo is formatted as an SCT using the TransItem ({{Section 4.5 of !RFC9162}}) structure with a `versioned_type` of `embedded_alternate_issuer`, defined below:
+Each AlternateIssuerInfo is formatted as an SCT using the TransItem ({{Section 4.5 of !RFC9162}}) structure with a `versioned_type` of `alternate_issuer_info`, defined below:
 
 ~~~ tls-presentation
 enum {
-    embedded_alternate_issuer(TBD3), (0xFFFF)
+    alternate_issuer_info(TBD3), (0xFFFF)
 } VersionedTransType;
 
 struct {
     VersionedTransType versioned_type;
     select (versioned_type) {
-        case embedded_alternate_issuer:
-            opaque alternate_issuer_info<1..2^16-1>;
+        case alternate_issuer_info:
+            opaque contents<1..2^16-1>;
     } data;
 } TransItem;
 ~~~
 
-The `alternate_issuer_info` field contains the DER encoding of the AlternateIssuerInfo.
+The `contents` field contains the DER encoding of the AlternateIssuerInfo.
 
 Note: This structure uses a two-byte version, while the SignedCertificateTimestamp uses a one-byte version. The VersionedTransType type from {{?RFC9162}} reserves 0x0000..0x00FF to avoid overlapping with the `v1(0)` version value from {{?RFC6962}}. The above structure is defined using {{?RFC9162}} to preserve this property and to make use of the registry defined in {{Section 10.2.3 of ?RFC9162}}. The version allocation means it still can and is used in place of a SignedCertificateTimestamp and not the protocols defined in {{?RFC9162}}.
 
@@ -462,7 +469,7 @@ Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantu
 
 {{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.
 
-This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `embedded_alternate_issuer`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
+This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuers to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
 
@@ -517,9 +524,9 @@ IANA is requested to add the following entry in the "SMI Security for PKIX Certi
 
 IANA is requested to add the following entry in the "VersionedTransTypes" registry {{!RFC9162}}:
 
-| Value | Type and Version          | Reference  |
-|-------|---------------------------|------------|
-| TBD3  | embedded_alternate_issuer | [this-RFC] |
+| Value | Type and Version      | Reference  |
+|-------|-----------------------|------------|
+| TBD3  | alternate_issuer_info | [this-RFC] |
 
 --- back
 
