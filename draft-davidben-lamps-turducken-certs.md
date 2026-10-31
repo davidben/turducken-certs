@@ -141,7 +141,7 @@ Alternate CA:
 : A CA that issues one of the alternate certificates.
 
 Post-quantum opt-out certificate:
-: An end-entity certificate with a traditional subject key and post-quantum issuer. It can be embedded as an alternate certificate in a fully traditional outer certificate.
+: An end-entity certificate with a traditional subject key and post-quantum issuer. {{PQ-AUTH-ROADMAP}} embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deployed them independently, without using this specification.
 
 # Overview
 
