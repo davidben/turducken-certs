@@ -89,7 +89,7 @@ This document defines a mechanism to embed one or more alternate certificates wi
 
 In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificates does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
 
-Some applications, such as Web TLS, have constraints that make this particularly challenging:
+Some applications, such as TLS on the Web, have constraints that make this particularly challenging:
 
 * Upgraded relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
 
