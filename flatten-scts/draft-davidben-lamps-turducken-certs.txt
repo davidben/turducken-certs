@@ -553,12 +553,12 @@ Table of Contents
 
    The AlternateIssuerInfos for each alternate certificate are embedded
    in the outer certificate.  Instead of a custom extension, this
-   document embeds each AlternateIssuerInfo as a
-   SignedCertificateTimestamp (SCT) in the outer certificate's id-ce-
-   embeddedSCT-CTv1 (OID 1.3.6.1.4.1.11129.2.4.2) extension, as defined
-   in Section 3.3 of [RFC6962].  This extension MUST be the final
-   extension in the outer certificate.  Section 6.2 discusses the
-   motivation for embedding as SCTs.
+   document embeds each AlternateIssuerInfo as a new type of SCT in the
+   outer certificate's id-ce-embeddedSCT-CTv1 (OID
+   1.3.6.1.4.1.11129.2.4.2) extension, as defined in Section 3.3 of
+   [RFC6962].  This extension MUST be the final extension in the outer
+   certificate.  Section 6.2 discusses the motivation for embedding as
+   SCTs.
 
    Note: [RFC6962] was obsoleted by [RFC9162], but the two protocols are
    incompatible.  This document uses some definitions from [RFC6962] for
@@ -583,15 +583,15 @@ Table of Contents
    The contents field contains the DER encoding of the
    AlternateIssuerInfo.
 
-   Note: This structure uses a two-byte version, while the
-   SignedCertificateTimestamp uses a one-byte version.  The
-   VersionedTransType type from [RFC9162] reserves 0x0000..0x00FF to
-   avoid overlapping with the v1(0) version value from [RFC6962].  The
-   above structure is defined using [RFC9162] to preserve this property
-   and to make use of the registry defined in Section 10.2.3 of
-   [RFC9162].  The version allocation means it still can and is used in
-   place of a SignedCertificateTimestamp and not the protocols defined
-   in [RFC9162].
+   Note: This structure uses a two-byte version, while
+   SignedCertificateTimestamp (Section 3.2 of [RFC6962]) uses a one-byte
+   version.  The VersionedTransType type from [RFC9162] reserves
+   0x0000..0x00FF to avoid overlapping with SignedCertificateTimestamp's
+   v1(0) version value.  The above structure is defined using [RFC9162]
+   to preserve this property and to make use of the registry defined in
+   Section 10.2.3 of [RFC9162], but it is still used in place of a
+   SignedCertificateTimestamp and not the protocols defined in
+   [RFC9162].
 
 4.3.  Outer Certificate Binding
 
