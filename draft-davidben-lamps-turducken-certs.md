@@ -95,7 +95,7 @@ Some applications, such as the Web, have constraints that make this particularly
 
 * Relying parties support enough services that pre-configuring different trust anchors for different services is impractical.
 
-* Legacy services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
+* Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
 
 * In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates.
 
@@ -110,7 +110,7 @@ This issuer-side transition protects post-quantum services from downgrade, while
 This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
 
 * It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in {{certificate-transparency-log-sizes}}.
-* It aims to mitigate security risks if some components consume alternate certificates without awareness from other components, as described in {{certificate-mismatch}}.
+* It aims to mitigate security risks if some components consume alternate certificates without awareness of other components, as described in {{certificate-mismatch}}.
 
 While the Web PKI is the primary motivator, this mechanism may be appropriate for other PKIs with similar post-quantum migration constraints, as well as other similarly-constrained issuer-side PKI transitions. In all cases, however, this is a temporary transitionary tool until services can deploy multiple certificates directly. {{legacy-services}} discusses this in more detail.
 
