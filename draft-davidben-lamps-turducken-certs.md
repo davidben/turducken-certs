@@ -202,7 +202,7 @@ After subject information is validated according to the policies of each CA invo
 
    2. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.
 
-   If the outer CA does not participate in CT, skip this step.
+   If the outer CA does not participate in CT, skip these steps.
 
 4. The outer CA appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate. The extension contains the AlternateIssuerInfo and, if applicable, SCTs collected above.
 
