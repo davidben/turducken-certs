@@ -10,7 +10,7 @@
 <meta content="John Gray" name="author">
 <meta content="Mike Ounsworth" name="author">
 <meta content="
-       This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. Specifically, they solve the problem of adding post-quantum trust anchors to an environment where an end entity must sign protocol messages supporting both legacy and upgraded peers, but where the end entity itself is not capable of using a post-quantum signing key. 
+       This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. This can be used to help TLS on the Web transition securely to post-quantum authentication, as well as other PKI transitions with similar constraints. 
     " name="description">
 <meta content="xml2rfc 3.34.1" name="generator">
 <meta content="draft-davidben-lamps-turducken-certs-latest" name="ietf.draft">
@@ -1090,7 +1090,7 @@ svg {
 <h1 id="title">Embedded Alternate Issuer Certificates</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general-purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments. Specifically, they solve the problem of adding post-quantum trust anchors to an environment where an end entity must sign protocol messages supporting both legacy and upgraded peers, but where the end entity itself is not capable of using a post-quantum signing key.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. This can be used to help TLS on the Web transition securely to post-quantum authentication, as well as other PKI transitions with similar constraints.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
