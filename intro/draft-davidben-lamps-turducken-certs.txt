@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 3 May 2027                            TurboLight Solutions, LLC
+Expires: 4 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         30 October 2026
+                                                         31 October 2026
 
 
                        Embedded Alternate Issuers
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 3 May 2027.
+   This Internet-Draft will expire on 4 May 2027.
 
 Copyright Notice
 
@@ -208,9 +208,11 @@ Table of Contents
    Alternate CA:  A CA that issues one of the alternate certificates.
 
    Post-quantum opt-out certificate:  An end-entity certificate with a
-      traditional subject key and post-quantum issuer.  It can be
-      embedded as an alternate certificate in a fully traditional outer
-      certificate.
+      traditional subject key and post-quantum issuer.
+      [PQ-AUTH-ROADMAP] embeds post-quantum opt-out certificates as
+      alternate certificates in a fully traditional outer certificate.
+      Other applications might issue and deployed them independently,
+      without using this specification.
 
 3.  Overview
 
