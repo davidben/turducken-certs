@@ -132,7 +132,7 @@ Table of Contents
    *  Relying parties support enough services that pre-configuring
       different trust anchors for different services is impractical.
 
-   *  Legacy services must themselves continue to support legacy relying
+   *  Services must themselves continue to support legacy relying
       parties that do not support post-quantum algorithms or trust
       anchors.
 
@@ -169,7 +169,7 @@ Table of Contents
       Certificate Transparency (CT), as described in Section 6.2.
 
    *  It aims to mitigate security risks if some components consume
-      alternate certificates without awareness from other components, as
+      alternate certificates without awareness of other components, as
       described in Section 7.2.
 
    While the Web PKI is the primary motivator, this mechanism may be
