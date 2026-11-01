@@ -225,7 +225,9 @@ Outer Certificate                +--+--------------+---+
 ~~~
 {: #fig-turducken-issuance title="A diagram of how the alternate and outer certificates are issued. A is the outer CA, and B is an alternate CA."}
 
-While these are conceptually two distinct CAs, it implies a tight trust coupling and policy alignment between them. In practice, these will typically be two sub-components of the same operational CA. {{certification-authorities}} discusses this in more detail.
+While these are two distinct CAs, their policies and certificate issuance have to be sufficiently aligned to issue these closely related certificates. Often the two CAs will be operated by the same entity.
+
+{{certification-authorities}} discusses certificate issuance in more detail.
 
 ## Verifying Certificates
 
