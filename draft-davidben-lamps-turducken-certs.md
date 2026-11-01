@@ -470,8 +470,9 @@ This is believed to be the behavior of all existing parsers, and is supported by
 > decode each SCT individually (i.e., if there is a version upgrade,
 > out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand).
 
-[Section 6.3 of RFC9162] says:
-"This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand)."
+{{Section 6.3 of ?RFC9162}} says:
+
+> This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand).
 
 ## Certificate Transparency Log Sizes
 
