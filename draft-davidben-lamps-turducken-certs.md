@@ -97,7 +97,7 @@ Some applications, such as TLS on the Web, have constraints that make this parti
 
 * Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
 
-* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are issued separate traditional and PQ-rooted-traditional certificate chains.
+* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.
 
 {{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
 
