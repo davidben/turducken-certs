@@ -383,7 +383,7 @@ For each successfully-decoded AlternateIssuerInfo, the relying party then recons
 
 If certification path validation ({{Section 6 of !RFC5280}}) succeeds for any path ending at an alternate certificate, the relying party proceeds with this certification path, even if it would otherwise reject the outer certificate.
 
-An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process, as this could become a trivial denial-of-service vector when processing untrusted outer certificates. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.
+An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit. An attacker can inject arbitrarily many AlternateIssuerInfo structures into an unverified outer certificate, so this avoids a denial of service vector.
 
 ## Reconstructing the Alternate Certificate
 
