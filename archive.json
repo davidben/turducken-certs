@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-29T05:16:11.629336+00:00",
+  "timestamp": "2026-11-01T05:29:06.702000+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOTGW8t88AAAABVcTydQ",
       "title": "Make outer certificate binding critical",
       "url": "https://github.com/davidben/turducken-certs/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@aarongable pointed out that, due to how ACME DV challenges work (sadness), we may need to make the semantics of the certificate somewhat dependent on the particular outer CA that the alternate CA is channeling. In that case, the outer certificate binding extension should be critical.",
       "createdAt": "2026-10-06T19:05:47Z",
-      "updatedAt": "2026-10-19T22:30:36Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-30T02:33:20Z",
+      "closedAt": "2026-10-30T02:33:20Z",
       "comments": [
         {
           "author": "davidben",
@@ -92,6 +92,13 @@
           "body": "Yep fair.",
           "createdAt": "2026-10-19T22:30:36Z",
           "updatedAt": "2026-10-19T22:30:36Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Closing this since it sounds like we'll solve this orthogonally, and #9 removed some of the explicit \"both CAs validate stuff\" text that made thing a bit awkward. Absent a reason to do it, I'm tempted to leave the outer binding extension non-critical; being able to extract the inner certificate standalone seems fine, and this is one less entry that your \"do I recognize this critical extension\" table needs to deal with.",
+          "createdAt": "2026-10-30T02:33:20Z",
+          "updatedAt": "2026-10-30T02:33:20Z"
         }
       ]
     },
@@ -100,15 +107,15 @@
       "id": "I_kwDOTGW8t88AAAABY1yOQA",
       "title": "Missing cabfOrganizationIdentifier and qcStatements extensions",
       "url": "https://github.com/davidben/turducken-certs/issues/3",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@cbonnell pointed out we're missing a couple:\nhttps://www.rfc-editor.org/info/rfc3739/\nhttps://cabforum.org/working-groups/server/extended-validation/guidelines/#7122-cabrowser-forum-organization-identifier-extension",
       "createdAt": "2026-10-21T13:58:42Z",
-      "updatedAt": "2026-10-21T13:58:42Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-30T02:31:28Z",
+      "closedAt": "2026-10-30T02:31:28Z",
       "comments": []
     },
     {
@@ -116,15 +123,15 @@
       "id": "I_kwDOTGW8t88AAAABY14RBg",
       "title": "Issuer vs subject classification is a little odd for certificatePolicies",
       "url": "https://github.com/davidben/turducken-certs/issues/4",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@CBonnell pointed out an awkwardness. We currently say certificatePolicies is a subject extension, but then you get things like CA-specific EV OIDs and whatnot.\n\nPossibly issuer vs subject is not the best name for the classification. What we really want is \"are you allowed to swap this\", with No constraining things and Yes adding some mismatch risk to the relying party. Here, since certificate policies is safe to swap out because you _already_ cannot interpret it without matching them up the chain, so a simple boolean result from your cert verification already wasn't sufficient.",
       "createdAt": "2026-10-21T14:04:39Z",
-      "updatedAt": "2026-10-21T14:04:39Z",
-      "closedAt": null,
+      "updatedAt": "2026-10-30T02:31:29Z",
+      "closedAt": "2026-10-30T02:31:29Z",
       "comments": []
     },
     {
@@ -156,14 +163,93 @@
       "id": "I_kwDOTGW8t88AAAABavWndw",
       "title": "Write down explicitly they the outer CA might even be compromised",
       "url": "https://github.com/davidben/turducken-certs/issues/14",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-10-28T23:30:24Z",
-      "updatedAt": "2026-10-28T23:30:24Z",
+      "updatedAt": "2026-10-31T14:12:21Z",
+      "closedAt": "2026-10-31T14:12:21Z",
+      "comments": []
+    },
+    {
+      "number": 16,
+      "id": "I_kwDOTGW8t88AAAABbAin8A",
+      "title": "Decide how much to care about the certificate mismatch issue",
+      "url": "https://github.com/davidben/turducken-certs/issues/16",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "We could potentially remove the binding mechanism, at the cost of opening relying parties to some risk. That risk would likely mean that libraries like OpenSSL cannot activate an embedding-based PQC transition by default. At some point down the line, evaluate this.",
+      "createdAt": "2026-10-29T19:58:46Z",
+      "updatedAt": "2026-10-29T19:58:46Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOTGW8t88AAAABbW7dDg",
+      "title": "Does this require SCT?",
+      "url": "https://github.com/davidben/turducken-certs/issues/25",
+      "state": "CLOSED",
+      "author": "johngray-dev",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The \"issuing certificates\" section seems to imply CT is not required, but then doesn't really describe how it works if CT is NOT used:\n\n3. If the outer CA participates in Certificate Transparency (CT), it additionally signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs. This step MAY run in parallel with step 2.\n\n4. The outer CA collects all AlternateIssuerInfos and SCTs and appends an `id-ce-embeddedSCT-CTv1` extension to its initial TBSCertificate.\n\nIf SCT's aren't used because it was in an enterprise PKI with many services (for example), they wouldn't have SCT's to embed.\n\nThe reason I point this out is because there is other text that seems to imply this isn't just for the web PKI:\n\n\"This document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. Rather than a general purpose mechanism, embedded alternate certificates are a temporary measure for PKI transitions, such as the post-quantum transition, in PKIs with significant legacy deployments.\"\n\nHowever, that leads to an issue:  The AlternateIssuerInfos is embedded as a new type for TransItem structure, so that seems to imply that SCT's MUST be used, otherwise that information cannot be imbedded.   So then I read this as it required SCT's to reconstruct these certificates.    \n\nIf the above is correct, then it further constrains where this mechanism can be used, and we should make it clear that this is only applicable to PKI environments that use SCT's.  \n\n",
+      "createdAt": "2026-10-31T04:06:39Z",
+      "updatedAt": "2026-10-31T14:45:56Z",
+      "closedAt": "2026-10-31T14:11:26Z",
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Oh I didn't mean for it to require SCTs. Step 3 says \"If the outer CA participates in Certificate Transparency (CT)\", so you just skip the step if it's irrelevant. And then step 4 there was meant to be read as:\n\n> 4\\. The outer CA collects all AlternateIssuerInfos and SCTs (if any) and appends ...\n\nIt is necessary to encode the AlternateIssuerInfos as goofy SCTs, but if you otherwise don't use SCTs, you don't put anything else in there.",
+          "createdAt": "2026-10-31T04:25:17Z",
+          "updatedAt": "2026-10-31T04:25:27Z"
+        },
+        {
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks David, that is much more clear now.",
+          "createdAt": "2026-10-31T14:45:56Z",
+          "updatedAt": "2026-10-31T14:45:56Z"
+        }
+      ]
+    },
+    {
+      "number": 26,
+      "id": "I_kwDOTGW8t88AAAABbcN52w",
+      "title": "Add a note about SCTs being processed last",
+      "url": "https://github.com/davidben/turducken-certs/issues/26",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-10-31T15:22:12Z",
+      "updatedAt": "2026-10-31T15:22:12Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 27,
+      "id": "I_kwDOTGW8t88AAAABbcSUUw",
+      "title": "Confirm SCT construction is actually compatible",
+      "url": "https://github.com/davidben/turducken-certs/issues/27",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "In inspected the source of folks' SCT validators and it seems to be fine, but later in the process we will need to test it for sure. (To test it, we need an actual CA to start embedding a new SCT version.)",
+      "createdAt": "2026-10-31T15:29:53Z",
+      "updatedAt": "2026-10-31T15:29:53Z",
       "closedAt": null,
       "comments": []
     }
@@ -446,24 +532,26 @@
       "id": "PR_kwDOTGW8t88AAAABLIKA_A",
       "title": "Simplify the text for issuing certificates",
       "url": "https://github.com/davidben/turducken-certs/pull/9",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Per discussion with @ounsworth today. How the two CA services communicate, whether they perform separate or combined validation, and even whether they are operated by the same entity or not, is all out of scope for this document.\r\n\r\nInstead, focus on the mechanics of constructing the certificate. Rather than say things like \"the alternate CA validates the TBSCertificate\", say things like \"the TBSCertificate MUST satisfy the policies of the alternate CA\". This wording leaves enough room for either:\r\n\r\n- Both CAs are operated by the same entity and the same domain validation applies to both, via some out-of-scope internal coordination.\r\n\r\n- Via some out-of-scope mechanism, each CA independently performs domain validation.\r\n\r\nI left the arrows in the (non-normative) diagram because I think they're useful for understanding the process, even if the exact nature of these arrows is situation-dependent. You can choose to interpret them as either actual messages being sent, or just dependency arrows.\r\n\r\n(Also CC @aarongable because this is very related to something we were talking about the other day.)",
       "createdAt": "2026-10-27T21:56:04Z",
-      "updatedAt": "2026-10-27T22:53:02Z",
+      "updatedAt": "2026-10-29T21:26:01Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "a846d9360da606c69c3880a3139c943d4a8ed6db",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "issuing-simplify",
       "headRefOid": "44c1c5ea09a1280452b8eeeaf5ae83773b01a89b",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-10-29T19:37:26Z",
+      "mergedAt": "2026-10-29T19:37:26Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "b5613ba881735eee6488aa9cd200e12c2523d787"
+      },
       "comments": [
         {
           "author": "aarongable",
@@ -471,56 +559,234 @@
           "body": "This reads much better to me.",
           "createdAt": "2026-10-27T22:53:02Z",
           "updatedAt": "2026-10-27T22:53:02Z"
+        },
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "> I would prefer to frame it, instead of \"each CA involved\", as just \"the CA\", and the fact that \"the CA\" contains multiple issuers is internal detail of the CA that this document doesn't need to concern itself with.\r\n\r\nSo, the point of this PR is to not opine on whether the two CAs share an operator or not. Saying \"the CA\" means we're opining on it.\r\n\r\nI think also what's happening is that what I call a \"CA\" you call an \"issuer\". What I call a \"CA operator\", you call a \"CA\".\r\n\r\nI think \"CA\" in specifications refers to the particular issuer service, not the operator. For example, we say \"intermediate certification authority\". We don't say \"intermediate issuer\". Another example is that RFC 5280 includes clauses like:\r\n\r\n> There is one exception; where a CA distributes its public key in the form of a \"self-signed\" certificate, the authority key identifier MAY be omitted.\r\n\r\nIf the \"CA\" were the overarching entity that ran multiple issuing services, you cannot talk about \"its public key\" because there are multiple ones. It only make senses if the \"CA\" is the single issuer.",
+          "createdAt": "2026-10-29T19:36:57Z",
+          "updatedAt": "2026-10-29T19:36:57Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-WqCQ",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T17:56:51Z",
+          "updatedAt": "2026-10-29T17:56:51Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "Just noodling here: the presentation flow is basically:\n\n* Construct Outer TBSCert\n* Construct Inner TBSCert\n* Sign Inner TBSCert\n* Stuff Inner TBSCert into Outer TBSCert\n* Sign Outer TBSCert\n\nIt would be a simpler flow if it was:\n\n* Construct & Sign Inner TBSCert\n* Construct & Sign Outer TBSCert (including Inner as an extn)",
+              "createdAt": "2026-10-29T17:56:51Z",
+              "updatedAt": "2026-10-29T17:56:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-acMA",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T18:01:30Z",
+          "updatedAt": "2026-10-29T18:01:31Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "Of course, you need the more complicated flow for the inner-to-outer binding. ... maybe?",
+              "createdAt": "2026-10-29T18:01:31Z",
+              "updatedAt": "2026-10-29T18:01:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-bTNg",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T18:02:36Z",
+          "updatedAt": "2026-10-29T18:02:36Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "Bullet numbering is out of order. Maybe this renders fine in HTML, but should probably be fixed.",
+              "createdAt": "2026-10-29T18:02:36Z",
+              "updatedAt": "2026-10-29T18:02:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-bcbw",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "I'm fine to merge this for -00, but I suggest that we could simplify this even further. For example:\n\n> After subject information is validated according to the policies of each CA involved, the certificates are issued in the following process:\n\nI would prefer to frame it, instead of \"each CA involved\", as just \"the CA\", and the fact that \"the CA\" contains multiple issuers is internal detail of the CA that this document doesn't need to concern itself with.",
+          "createdAt": "2026-10-29T18:02:46Z",
+          "updatedAt": "2026-10-29T18:02:46Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU_HZYw",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-29T18:55:26Z",
+          "updatedAt": "2026-10-29T18:55:26Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU_cjEQ",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T19:20:38Z",
+          "updatedAt": "2026-10-29T19:20:38Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "The more complicated flow is needed for the binding, yes. But also this flow just fits into what the CAs are *already* doing for SCTs, so I don't think this is particularly costly.",
+              "createdAt": "2026-10-29T19:20:38Z",
+              "updatedAt": "2026-10-29T19:20:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU_eiCg",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T19:23:09Z",
+          "updatedAt": "2026-10-29T19:23:09Z",
+          "comments": [
+            {
+              "originalPosition": 27,
+              "body": "Seems correct to me. The 4 above is from an indented child list, not the outer list.",
+              "createdAt": "2026-10-29T19:23:09Z",
+              "updatedAt": "2026-10-29T19:23:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVA4sLw",
+          "commit": {
+            "abbreviatedOid": "44c1c5e"
+          },
+          "author": "aarongable",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T21:26:00Z",
+          "updatedAt": "2026-10-29T21:26:01Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "More importantly, this whole construction is based on the idea that the entity requesting the cert (the Subscriber) has no idea that this is going on in the background. Therefore, by definition, the Subscriber must be communicating with the Outer CA. It's not possible for the Inner CA to construct the inner cert first, because they don't know what the contents of that cert should be until the Outer CA communicates with them.",
+              "createdAt": "2026-10-29T21:26:00Z",
+              "updatedAt": "2026-10-29T21:26:01Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 10,
       "id": "PR_kwDOTGW8t88AAAABLK8B8Q",
       "title": "Take another pass on the certificate mismatch section",
       "url": "https://github.com/davidben/turducken-certs/pull/10",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "In particular, recommend that the returned validated path actually reflect the target certificate. This probably covers a lot of applications. Also rearrange the first few paragraphs a bit so they read a bit better.",
       "createdAt": "2026-10-28T03:17:35Z",
-      "updatedAt": "2026-10-28T03:17:35Z",
+      "updatedAt": "2026-10-29T19:50:44Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "revise-cert-mismatch",
       "headRefOid": "58cfc6d6c991f5b851e582d39c88bd3df9b592dd",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "closedAt": "2026-10-29T19:50:44Z",
+      "mergedAt": "2026-10-29T19:50:44Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "a104ce6d2c180be6ea9dcd610cf9450c8342fd5b"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "(Merging per out-of-band conversation. We can always touch up the text later.)",
+          "createdAt": "2026-10-29T19:50:39Z",
+          "updatedAt": "2026-10-29T19:50:39Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU_ytiQ",
+          "commit": {
+            "abbreviatedOid": "58cfc6d"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-29T19:50:13Z",
+          "updatedAt": "2026-10-29T19:50:13Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 11,
       "id": "PR_kwDOTGW8t88AAAABLK8cAQ",
       "title": "I re-wrote the intro",
       "url": "https://github.com/davidben/turducken-certs/pull/11",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "* I did big snip snip on the Intro :) Focused on a concise description of the problem statement.\r\n* Added a section \"Detailed Design Requirements\" where we can lock-in precisely what we are trying to design here.\r\n* I added a cheeky title \"Smuggled Nested Additional-Issuer Layer (SNAIL) Certificates\"\r\n* I systematically renamed \"alternate issuer\" to \"additional issuer\" to reflect that these are not supposed to be a totally isolated certs.\r\n* I started renaming \"issuer\" to \"certification path\" where it makes sense; because the core idea is that you have one subject name / public key that gets captured in two (or more) different (but coupled) sets of TA -> ICA -> EE Cert. I think \"certification path\" is a better mental picture for that than \"issuer\".\r\n\r\n\r\n---\r\n\r\nBTW; I am still not convinced that the inner-to-outer binding is necessary, but we can sort that out later. Like, I'm not convinced that there's a serious security issue associated with split-views in the RP beyond what can be handled by saying \"BAD CA!\" if they issue certs that lead to weird behaviours.\r\n\r\nI suggest that we spend some cycles just on the Detailed Design Requirements before getting too into the exact shape of the solution.",
       "createdAt": "2026-10-28T03:18:19Z",
-      "updatedAt": "2026-10-29T04:04:11Z",
+      "updatedAt": "2026-10-31T18:49:59Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "mike_go_snip_snip",
       "headRefOid": "4295ff47f6372ec4b8b56e8c45f304914942e5ec",
-      "closedAt": null,
+      "closedAt": "2026-10-31T18:49:58Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -622,6 +888,13 @@
           "body": "To be fair, the application might not be completely reparsing the certificate. Maybe it's got `X509` object from OpenSSL and is just inspecting it a bit. Not totally far-fetched if the extension doesn't interact with path validation, so the path builder component doesn't support it.\r\n\r\nHere's a maybe more plausible strawman: an application uses the LogoType extension from [RFC 9399](https://www.rfc-editor.org/info/rfc9399/) (hahaha why...). `id-pe-logotype` doesn't interact with path building in any way, so the path verifier doesn't implement it at all. Rather, the application verifies with OpenSSL, and then extracts the logotype extension. If it looks at the wrong one, it won't get the logo that the CA actually signed over.\r\n\r\nThis is also an example where the binding is more robust than extension checking. In the extension-checking model, we expect OpenSSL to say \"no, `id-pe-logotype` is a subject extension, so it may not be changed\". But OpenSSL doesn't support this extension (it has no need to). If it doesn't know the extension, it can't possibly enforce it, unless it rejects all unknown extensions, but then we have the extensibility problem.\r\n\r\nIn the binding version, it's OK if OpenSSL doesn't enforce anything because, if `id-pe-logotype` was perturbed, the outer value will end up in the binding extension. That means one of two things will happen:\r\n* The signature doesn't check out because the alternate CA never signed over that\r\n* The signature checks out because the alternate CA _did_ sign over that. But if it did, _then_ we get to say \"BAD CA!\"\r\n\r\nAnyway, this is possibly getting in the weeds a bit. :-) Popping up the stack... did that help us answer the \"alternate\" or \"additional\" question? :-)",
           "createdAt": "2026-10-29T03:02:30Z",
           "updatedAt": "2026-10-29T03:02:30Z"
+        },
+        {
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing this PR. David has taken the useful bits out of it.",
+          "createdAt": "2026-10-31T18:49:58Z",
+          "updatedAt": "2026-10-31T18:49:58Z"
         }
       ],
       "reviews": [
@@ -656,6 +929,46 @@
               "updatedAt": "2026-10-29T04:04:11Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU_MrWQ",
+          "commit": {
+            "abbreviatedOid": "4295ff4"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T19:01:30Z",
+          "updatedAt": "2026-10-29T19:42:30Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Implied meaning that a replying party can't selectively trust different set of trust roots.  A single trust store is needed for everything.    So maybe \"A relying party must trust both post-quantum and traditional CAs to support both services because selectively trusting PQ and legacy trust is not scalable to the web PKI\"  or something like that...\n",
+              "createdAt": "2026-10-29T19:01:30Z",
+              "updatedAt": "2026-10-29T19:42:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVNqy8w",
+          "commit": {
+            "abbreviatedOid": "4295ff4"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T21:00:34Z",
+          "updatedAt": "2026-10-30T21:00:56Z",
+          "comments": [
+            {
+              "originalPosition": 76,
+              "body": "It's true that this poses the greatest risk, but I think there's a deeper point that this is missing: it is also *sufficient* to drop the classical trust anchors (and ICAs but that comes from forbidding PQ trust anchors from issuing classical ICAs by policy). You get downgrade protection on a per-service basis at that point.",
+              "createdAt": "2026-10-30T21:00:35Z",
+              "updatedAt": "2026-10-30T21:00:56Z"
+            }
+          ]
         }
       ]
     },
@@ -664,26 +977,1456 @@
       "id": "PR_kwDOTGW8t88AAAABLMC5ng",
       "title": "Simplify extension classification",
       "url": "https://github.com/davidben/turducken-certs/pull/12",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The extension classification mechanism is *broadly* redundant with outer certificate binding.\n\nCloses #3 by no longer requiring that every extension be enumerated. Still, I went ahead and added cabfOrganizationIdentifier since that is clearly a subject extension.\n\nCloses #4 by permitting it in issuer-specific extensions. Whether this one is an \"issuer extension\" or a \"subject extension\" is a little fuzzy, but it actually doesn't matter, as described in the bug.\n\nCC @CBonnell",
       "createdAt": "2026-10-28T05:41:01Z",
-      "updatedAt": "2026-10-28T05:41:01Z",
+      "updatedAt": "2026-10-30T14:33:21Z",
       "baseRepository": "davidben/turducken-certs",
-      "baseRefName": "revise-cert-mismatch",
-      "baseRefOid": "58cfc6d6c991f5b851e582d39c88bd3df9b592dd",
+      "baseRefName": "main",
+      "baseRefOid": "a104ce6d2c180be6ea9dcd610cf9450c8342fd5b",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "issuer-exts",
-      "headRefOid": "b10494dd9bd36fbefd6557682eda2163bae29367",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "fddff59c5356ab915b1169f99efd3f5c2aaf86a4",
+      "closedAt": "2026-10-30T02:31:27Z",
+      "mergedAt": "2026-10-30T02:31:27Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "245f298d4b252bcbcd4e554e089c5584d97bcdd5"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "Reworded this a bit to avoid MUST-level requirements on fussy \"same subject information\" rules. Instead we can just use the magical \"policy\" escape hatch. Also listed qcStatements per request. :-)\r\n\r\nCC @aarongable, suspect this PR will be of interest to you.",
+          "createdAt": "2026-10-29T21:33:32Z",
+          "updatedAt": "2026-10-29T21:33:32Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVBHFww",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T21:47:11Z",
+          "updatedAt": "2026-10-29T21:47:11Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "As a minor nit, it would be nice to re-use 5280's `Extensions` here (make the field optional to accommodate an empty list).",
+              "createdAt": "2026-10-29T21:47:11Z",
+              "updatedAt": "2026-10-29T21:48:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVBHZaw",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-29T21:47:45Z",
+          "updatedAt": "2026-10-29T21:47:45Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVBLStA",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T21:54:41Z",
+          "updatedAt": "2026-10-29T21:54:41Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "Hehe, that's exactly why I didn't but I hadn't thought of `OPTIONAL`. I guess the tradeoff is now:\r\n* We need a bunch of extra words like \"or omitted if empty\" and \"if present\"\r\n* The parser needs to have an extra case to tolerate a missing field, even though it'll never *actually* happen\r\n\r\n(X.509 had to make it non-empty + OPTIONAL just because it was extending an existing structure that previously didn't have one. But we have no such constraint.)",
+              "createdAt": "2026-10-29T21:54:41Z",
+              "updatedAt": "2026-10-29T21:54:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVBOQ-w",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T22:00:04Z",
+          "updatedAt": "2026-10-29T22:00:04Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "I prefer using `Extensions` since it already exists and is used in 5280, but I don't feel strongly.",
+              "createdAt": "2026-10-29T22:00:04Z",
+              "updatedAt": "2026-10-29T22:00:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVDBhLA",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T02:31:14Z",
+          "updatedAt": "2026-10-30T02:31:14Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "Hehe. I also don't feel strongly but think I would prefer leaving it be mostly because the extra parsing special case is another thing that can go wrong. (Just this or last year, I had to spend some time chasing down a series of cases where people were encoding certificates with an empty `Extensions` list.)\r\n\r\n*shrug* Probably can sort that out for a separate PR.",
+              "createdAt": "2026-10-30T02:31:14Z",
+              "updatedAt": "2026-10-30T02:31:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVJHX_g",
+          "commit": {
+            "abbreviatedOid": "fddff59"
+          },
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T14:33:21Z",
+          "updatedAt": "2026-10-30T14:33:21Z",
+          "comments": [
+            {
+              "originalPosition": 125,
+              "body": "I am not indifferent about adding a special case to the parser :). I'd really rather not. ",
+              "createdAt": "2026-10-30T14:33:21Z",
+              "updatedAt": "2026-10-30T14:33:21Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "id": "PR_kwDOTGW8t88AAAABLlD67w",
+      "title": "Add @CBonnell and @johngray-dev to authors",
+      "url": "https://github.com/davidben/turducken-certs/pull/15",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "(Names just sorted alphabetically.)\n\n@CBonnell @johngray-dev ",
+      "createdAt": "2026-10-29T16:45:39Z",
+      "updatedAt": "2026-10-29T19:49:53Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "8da13cb67cb508fb80addd8bbdc7a609ef303edf",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "add-corey-john",
+      "headRefOid": "d295644e50af5136618070c42d1f6678b136b884",
+      "closedAt": "2026-10-29T19:49:41Z",
+      "mergedAt": "2026-10-29T19:49:41Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "de1f8ee7bcc0ad104bee0072868fa092808ccf50"
+      },
       "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU905gw",
+          "commit": {
+            "abbreviatedOid": "14e59fb"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T17:15:17Z",
+          "updatedAt": "2026-10-29T17:15:18Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "```suggestion\n    organization: TurboLight Solutions, LLC\n```",
+              "createdAt": "2026-10-29T17:15:18Z",
+              "updatedAt": "2026-10-29T17:15:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU91Iig",
+          "commit": {
+            "abbreviatedOid": "14e59fb"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T17:15:34Z",
+          "updatedAt": "2026-10-29T17:15:34Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "```suggestion\n    email: corey.bonnell@turbolightsolutions.com\n```",
+              "createdAt": "2026-10-29T17:15:34Z",
+              "updatedAt": "2026-10-29T17:15:34Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-QE9Q",
+          "commit": {
+            "abbreviatedOid": "38cf9ce"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-29T17:48:59Z",
+          "updatedAt": "2026-10-29T17:48:59Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABU-WbMA",
+          "commit": {
+            "abbreviatedOid": "38cf9ce"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "You got my information right.  Thanks David!",
+          "createdAt": "2026-10-29T17:56:34Z",
+          "updatedAt": "2026-10-29T17:56:34Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDOTGW8t88AAAABLoGXWw",
+      "title": "Take another pass at the SCT text",
+      "url": "https://github.com/davidben/turducken-certs/pull/17",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Missing forward ref and, on another read, it could have been phrased better.",
+      "createdAt": "2026-10-29T20:40:39Z",
+      "updatedAt": "2026-10-29T20:54:51Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "a104ce6d2c180be6ea9dcd610cf9450c8342fd5b",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "sct-discuss",
+      "headRefOid": "6dce15b454fa4329e0cb27509378d3bd1d02fcfc",
+      "closedAt": "2026-10-29T20:54:49Z",
+      "mergedAt": "2026-10-29T20:54:48Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "c0f2b257e64649534c6bf4a3f8826e08df96ae89"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVAZqfg",
+          "commit": {
+            "abbreviatedOid": "30ce955"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-29T20:41:52Z",
+          "updatedAt": "2026-10-29T20:41:52Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "```suggestion\nMerkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuers, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The classical CT logs would increase in size during the transition to Merkle Tree Certificates.\n```",
+              "createdAt": "2026-10-29T20:41:52Z",
+              "updatedAt": "2026-10-29T20:41:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVAbEyQ",
+          "commit": {
+            "abbreviatedOid": "6dce15b"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-29T20:43:45Z",
+          "updatedAt": "2026-10-29T20:43:45Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOTGW8t88AAAABLsoPBA",
+      "title": "Apply improvements to the abstract by Mike Ounsworth",
+      "url": "https://github.com/davidben/turducken-certs/pull/18",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "I adapted some of the improvements to the abstract from https://github.com/davidben/turducken-certs/pull/11 by @ounsworth.\n\nI kept the naming at \"alternate\" instead of \"additional\", since it sounds like we're aligned that this is closer to OR than AND. I also kept it at \"certificate\" instead of \"certification path\" because this doesn't let you carry intermediates right now. (One option is to just lean on path building for that.)",
+      "createdAt": "2026-10-30T05:32:38Z",
+      "updatedAt": "2026-10-30T21:38:26Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "245f298d4b252bcbcd4e554e089c5584d97bcdd5",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "abstract",
+      "headRefOid": "6d5bd4dd1a1c617614b7c5dfa0de6566ea7a4bff",
+      "closedAt": "2026-10-30T21:38:23Z",
+      "mergedAt": "2026-10-30T21:38:23Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "229196f02255a4ee3b288292f5bbf911a83fa70b"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "(Merging per @CBonnell on chat)",
+          "createdAt": "2026-10-30T21:38:19Z",
+          "updatedAt": "2026-10-30T21:38:19Z"
+        }
+      ],
       "reviews": []
+    },
+    {
+      "number": 19,
+      "id": "PR_kwDOTGW8t88AAAABLzBPXw",
+      "title": "Add a note about relying party DoS limits",
+      "url": "https://github.com/davidben/turducken-certs/pull/19",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "From discussion with @bob-beck.\n\nUsing your existing path building limit seems a good hint.",
+      "createdAt": "2026-10-30T15:18:14Z",
+      "updatedAt": "2026-10-30T15:52:14Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "245f298d4b252bcbcd4e554e089c5584d97bcdd5",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "limits",
+      "headRefOid": "492c43f32dad84644535438a72a9472a07be83b8",
+      "closedAt": "2026-10-30T15:52:10Z",
+      "mergedAt": "2026-10-30T15:52:10Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "22dbc1e34ffaebc6d01095b5c70e7823ff06c22f"
+      },
+      "comments": [
+        {
+          "author": "bob-beck",
+          "authorAssociation": "NONE",
+          "body": "Yes. LGTM. \n\nThis works. ",
+          "createdAt": "2026-10-30T15:51:34Z",
+          "updatedAt": "2026-10-30T15:51:34Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 20,
+      "id": "PR_kwDOTGW8t88AAAABL3hv9A",
+      "title": "Rewrite the introduction, inspired by Mike Ounsworth's version",
+      "url": "https://github.com/davidben/turducken-certs/pull/20",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This rewrites the introduction to be shorter and follow the flow in Mike Ounsworth's PR #11.\n\nMy old introduction tried to motivate things super generally, and then interleaved a detailed story of the post-quantum transition. Mike's is much improved in that it gets to the point and just describes the post-quantum problem and the specific constraints that lead to this version. I adapted that structure in this one.\n\nMike's version also leads with some other requirments, which I applied here too.\n\nSome changes from the PR:\n\n- Keep the terminology \"alternate\". Also avoid \"hybrid\" because that term is very overloaded and usually means something else.\n\n- Keep some note that this could be useful for non-PQC stuff too, but it's just an offhand sentence now.\n\n- Expand a little bit more on the PQC story, but not as verbosely as before. I think it's important to note that this is actually a downgrade-protected state, and that we're in this state because the legacy servers can't dispatch certificates.\n\n- Not attached to it, but this does give a good place to go define PQ opt-out certificate.\n\n- Didn't seem the extra requirements needed their own section since they could just fit in a couple bullet lists + forward refs",
+      "createdAt": "2026-10-30T21:41:24Z",
+      "updatedAt": "2026-10-31T14:14:56Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "fa5429f20ddb1c0dbba0d2390313a13f4cd291fb",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "intro",
+      "headRefOid": "5b7f63d6e9dda00a863193a2d7b59769fc1b2f77",
+      "closedAt": "2026-10-31T14:14:53Z",
+      "mergedAt": "2026-10-31T14:14:53Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "372799cbdb0fbfe8b4181d9ec89c759d9442f4d7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVOC_Vw",
+          "commit": {
+            "abbreviatedOid": "ab94afc"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T21:43:01Z",
+          "updatedAt": "2026-10-30T21:43:01Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "@johngray-dev This one is for you. :-)",
+              "createdAt": "2026-10-30T21:43:01Z",
+              "updatedAt": "2026-10-30T21:43:01Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVPv0zA",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T03:06:37Z",
+          "updatedAt": "2026-10-31T03:06:37Z",
+          "comments": [
+            {
+              "originalPosition": 14,
+              "body": "Thanks!  That makes it clear.   ",
+              "createdAt": "2026-10-31T03:06:37Z",
+              "updatedAt": "2026-10-31T03:06:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVP3fUQ",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Just a few comments.   They could be fixed up after publication deadline as well.   ",
+          "createdAt": "2026-10-31T03:25:24Z",
+          "updatedAt": "2026-10-31T03:31:28Z",
+          "comments": [
+            {
+              "originalPosition": 79,
+              "body": "The note is about the description.\r\nWould one of these work stand-alone?  Saying \"it can be embedded\" to me implies it doesn't have to be embedded...  is it optional?  Is that what we want to convey here?   If not embedded, it would require clients to have out-of-scope processing instructions.   It also makes me thing it could be a related certificate in certificate discovery.   For instance, with discovery you can use a URI, which needs to be fetched and there can be proof it is tied to the original certificate. However then you would need to follow those processing rules to fetch and check the binding.  Maybe we say something like, \"in this specification, the certificate is embedded as an alternate certificate in a fully traditional outer certificate\" unless we want to leave it ambiguous.  ",
+              "createdAt": "2026-10-31T03:25:24Z",
+              "updatedAt": "2026-10-31T03:33:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVP6dsw",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T03:34:32Z",
+          "updatedAt": "2026-10-31T03:35:04Z",
+          "comments": [
+            {
+              "originalPosition": 80,
+              "body": "Would one of these work stand-alone? Saying \"it can be embedded\" to me implies it doesn't have to be embedded... is it optional? Is that what we want to convey here? If not embedded, it would require clients to have out-of-scope processing instructions. It also makes me thing it could be a related certificate in certificate discovery. For instance, with discovery you can use a URI, which needs to be fetched and there can be proof it is tied to the original certificate. However then you would need to follow those processing rules to fetch and check the binding. Maybe we say something like, \"in this specification, the certificate is embedded as an alternate certificate in a fully traditional outer certificate\" unless we want to leave it ambiguous.",
+              "createdAt": "2026-10-31T03:34:33Z",
+              "updatedAt": "2026-10-31T03:35:04Z"
+            },
+            {
+              "originalPosition": 102,
+              "body": "Does it avoid the size increase because it uses Landmark MTC certificates?   Wouldn't there be a difference based on whether it was a landmark certificate or standalone certificate in the MTC world?",
+              "createdAt": "2026-10-31T03:34:49Z",
+              "updatedAt": "2026-10-31T03:35:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVQOYnw",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T04:34:44Z",
+          "updatedAt": "2026-10-31T04:34:45Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "It avoids the size increase because the log entries hash the keys down and don't contain any per-entry signatures. (Slide 8 from [these BoF slides](https://datatracker.ietf.org/meeting/124/materials/slides-124-plants-solution-space-and-dispatched-work-00).)",
+              "createdAt": "2026-10-31T04:34:44Z",
+              "updatedAt": "2026-10-31T04:34:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVQPUYQ",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T04:37:55Z",
+          "updatedAt": "2026-10-31T04:37:56Z",
+          "comments": [
+            {
+              "originalPosition": 80,
+              "body": "There's no reason it couldn't work standalone. You'd do that if:\r\n\r\n* You have no legacy relying parties and so there's no need for an outer certificate, OR\r\n* Your legacy authenticating parties are still able to deploy two certificates (T\u2192T and PQ\u2192T), in which case they don't need to be embedded.\r\n\r\nBut in that case, you don't need the binding or certificate discovery or any of this. Just deploy both certificates in the TLS server and use some negotiation mechanism (like [trust anchor IDs](https://datatracker.ietf.org/doc/draft-ietf-tls-trust-anchor-ids/)) and move on with life.",
+              "createdAt": "2026-10-31T04:37:55Z",
+              "updatedAt": "2026-10-31T04:37:56Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVQRPdA",
+          "commit": {
+            "abbreviatedOid": "352950d"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T04:44:24Z",
+          "updatedAt": "2026-10-31T04:44:24Z",
+          "comments": [
+            {
+              "originalPosition": 80,
+              "body": "(That is, the binding is _only_ relevant because we're having to hide one certificate inside another and that carries some extra risks.)\r\n\r\nReworded a bit to say explicitly that they're separate. This is just one use case for embedding.",
+              "createdAt": "2026-10-31T04:44:24Z",
+              "updatedAt": "2026-10-31T04:44:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRQ_FQ",
+          "commit": {
+            "abbreviatedOid": "edae596"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T10:27:55Z",
+          "updatedAt": "2026-10-31T10:27:55Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "I think \"Legacy services\" is a bit confusing here, because a legacy service is legacy because it hasn't been updated, not through some explicit action.\n\n```suggestion\n* Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.\n```",
+              "createdAt": "2026-10-31T10:27:55Z",
+              "updatedAt": "2026-10-31T10:27:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRSbLQ",
+          "commit": {
+            "abbreviatedOid": "edae596"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T10:38:04Z",
+          "updatedAt": "2026-10-31T10:38:04Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "```suggestion\n* It aims to mitigate security risks if some components consume alternate certificates without awareness of other components, as described in {{certificate-mismatch}}.\n```",
+              "createdAt": "2026-10-31T10:38:04Z",
+              "updatedAt": "2026-10-31T10:38:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRSeIg",
+          "commit": {
+            "abbreviatedOid": "edae596"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Overall LGTM",
+          "createdAt": "2026-10-31T10:38:18Z",
+          "updatedAt": "2026-10-31T10:38:18Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 21,
+      "id": "PR_kwDOTGW8t88AAAABL3yy9Q",
+      "title": "Encode each alternate issuer as a separate SCT",
+      "url": "https://github.com/davidben/turducken-certs/pull/21",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "They're already multiple-valued and now that we've made a new SCT version, we don't have to worry about multiplicity problems.\n\nAlso switch to a 16-bit length prefix because SCTs are contained in 16-bit length-prefix structures anyway. 24-bit is just wasting a byte.\n\nCC @bob-beck. Turns out even if we do nothing, you're allowed to encode multiple of these. :-)",
+      "createdAt": "2026-10-30T22:09:05Z",
+      "updatedAt": "2026-10-31T15:11:12Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "229196f02255a4ee3b288292f5bbf911a83fa70b",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "flatten-scts",
+      "headRefOid": "5d928244b677da7898cc99a418531535e5106fbb",
+      "closedAt": "2026-10-31T14:11:24Z",
+      "mergedAt": "2026-10-31T14:11:24Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "5cb67b40194ad37fad5daef924118b85c578d0a5"
+      },
+      "comments": [
+        {
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "body": "@johngray-dev Ah, good call. (Real) SCTs were meant to be optional. Tweaked the PR to hopefully make that clearer. Does that work better?",
+          "createdAt": "2026-10-31T04:32:51Z",
+          "updatedAt": "2026-10-31T04:32:51Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVQGjKg",
+          "commit": {
+            "abbreviatedOid": "92ec96d"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Created issue #25 - Draft seems to be inconsistent on whether SCT's are required or not required.  Since this important extension is embedded as a TransItem SCT structure, I guess it implies SCT's are required.   ",
+          "createdAt": "2026-10-31T04:08:52Z",
+          "updatedAt": "2026-10-31T04:08:52Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRTYcA",
+          "commit": {
+            "abbreviatedOid": "5d92824"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T10:43:30Z",
+          "updatedAt": "2026-10-31T10:43:31Z",
+          "comments": [
+            {
+              "originalPosition": 59,
+              "body": "IIRC, this exact topic came up last month for MTCProof signature size.\n\nIt would be good to keep the upper bound as 16 MB, otherwise PKIs that use SLH-DSA may have issues.",
+              "createdAt": "2026-10-31T10:43:30Z",
+              "updatedAt": "2026-10-31T10:43:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRUQxA",
+          "commit": {
+            "abbreviatedOid": "5d92824"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T10:48:08Z",
+          "updatedAt": "2026-10-31T10:48:08Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRUdEw",
+          "commit": {
+            "abbreviatedOid": "5d92824"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T10:49:03Z",
+          "updatedAt": "2026-10-31T10:49:03Z",
+          "comments": [
+            {
+              "originalPosition": 59,
+              "body": "Never mind, I see your comment about SCT size.",
+              "createdAt": "2026-10-31T10:49:03Z",
+              "updatedAt": "2026-10-31T10:49:03Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVSVgWw",
+          "commit": {
+            "abbreviatedOid": "5d92824"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T15:11:12Z",
+          "updatedAt": "2026-10-31T15:11:12Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOTGW8t88AAAABL4G_Lg",
+      "title": "Various minor fixes",
+      "url": "https://github.com/davidben/turducken-certs/pull/22",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "While robots are terrible at writing documents, they're pretty good at reviewing them nowadays.",
+      "createdAt": "2026-10-30T22:44:37Z",
+      "updatedAt": "2026-10-31T15:36:05Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "5cb67b40194ad37fad5daef924118b85c578d0a5",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "editorial",
+      "headRefOid": "5981b33ce76f7c7eae2a33e5f7f45bfd7d5a9246",
+      "closedAt": "2026-10-31T14:11:59Z",
+      "mergedAt": "2026-10-31T14:11:59Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "e326eea5bddee1a2b3fb23497fdafc4d854f479c"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVP9jJg",
+          "commit": {
+            "abbreviatedOid": "7fb6cce"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T03:43:33Z",
+          "updatedAt": "2026-10-31T03:43:33Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRWiig",
+          "commit": {
+            "abbreviatedOid": "0867626"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T11:00:29Z",
+          "updatedAt": "2026-10-31T11:00:29Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVSbyOA",
+          "commit": {
+            "abbreviatedOid": "5981b33"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T15:36:05Z",
+          "updatedAt": "2026-10-31T15:36:05Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOTGW8t88AAAABL4TRWg",
+      "title": "Discuss the implications of two certificates a bit further",
+      "url": "https://github.com/davidben/turducken-certs/pull/24",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #14",
+      "createdAt": "2026-10-30T23:07:22Z",
+      "updatedAt": "2026-10-31T14:46:11Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "e326eea5bddee1a2b3fb23497fdafc4d854f479c",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "expand-considerations",
+      "headRefOid": "89c8d8825d5ea5d8b8ffba781d6291a09c310542",
+      "closedAt": "2026-10-31T14:12:19Z",
+      "mergedAt": "2026-10-31T14:12:19Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "fa5429f20ddb1c0dbba0d2390313a13f4cd291fb"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVOzIGA",
+          "commit": {
+            "abbreviatedOid": "e1e162c"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T23:29:53Z",
+          "updatedAt": "2026-10-30T23:29:53Z",
+          "comments": [
+            {
+              "originalPosition": 36,
+              "body": "```suggestion\nWhen relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.\n```",
+              "createdAt": "2026-10-30T23:29:53Z",
+              "updatedAt": "2026-10-30T23:29:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVP74sA",
+          "commit": {
+            "abbreviatedOid": "5549ed1"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "This looks good.",
+          "createdAt": "2026-10-31T03:38:43Z",
+          "updatedAt": "2026-10-31T03:38:43Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVRW7_Q",
+          "commit": {
+            "abbreviatedOid": "c0d5bb4"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T11:03:09Z",
+          "updatedAt": "2026-10-31T11:03:09Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOTGW8t88AAAABL-9n2w",
+      "title": "mikeo inner-outer-tweaks",
+      "url": "https://github.com/davidben/turducken-certs/pull/28",
+      "state": "MERGED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Just starting some musings. Not ready for review.",
+      "createdAt": "2026-10-31T16:00:47Z",
+      "updatedAt": "2026-11-01T02:48:44Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "372799cbdb0fbfe8b4181d9ec89c759d9442f4d7",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "mikeo/inner-outer-tweaks",
+      "headRefOid": "423853ee261129d2c70c2408d477bd5257cc22c2",
+      "closedAt": "2026-11-01T02:48:44Z",
+      "mergedAt": "2026-11-01T02:48:44Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "3d4696800b9b526cc8e3da71069d6e8bdcf5bc7d"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVShk_w",
+          "commit": {
+            "abbreviatedOid": "5850b0f"
+          },
+          "author": "github-actions",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T16:01:12Z",
+          "updatedAt": "2026-10-31T16:01:13Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "````suggestion\nSimilar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.\n````",
+              "createdAt": "2026-10-31T16:01:12Z",
+              "updatedAt": "2026-10-31T16:01:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVT1A6A",
+          "commit": {
+            "abbreviatedOid": "c633b35"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T21:45:20Z",
+          "updatedAt": "2026-10-31T22:03:44Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\nFor the section, we define the input certificate to be the entire certificate being processed (typically the outer certificate), and the validated certificate to be the one for which the certification path was checked, which may be the outer certificate or an alternate certificate.\n```",
+              "createdAt": "2026-10-31T21:45:20Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 17,
+              "body": "Hmm, this sentence seems to not totally fit in. In the bullet points we're clarifying how it's actually just correct for you to use the input certificate in the transcript hash (it's defined relative to the Certificate message) and the channel binding (client and server have to agree).\n\nWhereas this seems to be just cautioning that weird stuff can happen, which feels more like stuff for the Certificate Mismatch section. Could perhaps just punt this paragraph? I think it's saying the same thing as other sections.",
+              "createdAt": "2026-10-31T21:47:35Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 31,
+              "body": "This is an existing issue, but reading it again, it's very hard to follow what the \"the above measure\" refers to. Perhaps...\n\n```suggestion\nHowever, this breaks an application invariant: previously, the target certificate would never change as a result of path building; which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, it may inadvertently use the wrong certificate, which could carry security implications if the content of the alternate and outer certificate differ.\n```",
+              "createdAt": "2026-10-31T21:49:44Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 40,
+              "body": "Nit: Don't even need a bad outer CA because the RP isn't bothering to check it anyway. Think we can probably punt that clause? You've already specifically called it out as unverified.\n\nAlso noticed an issue in the existing text where \"This\" refers to too many different things.\n\n```suggestion\nIf a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unverified public key in the outer certificate. This could allow an attacker to bypass certificate-based authentication. However, alternate certificates cannot replace the `subjectPublicKeyInfo` field in this document, so a public key mismatch is not possible.\n```",
+              "createdAt": "2026-10-31T21:51:35Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 43,
+              "body": "```suggestion\nX.509 extensions complicate this mitigation. X.509 does not structurally distinguish between subject and issuer extensions, in a way that would allow a relying party to classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on being the same between the alternate and outer certificate.\n```",
+              "createdAt": "2026-10-31T21:53:22Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 48,
+              "body": "Nit: s/inner/alternate/\n\nAlthough it's a little odd because the next paragraph now contradicts the \"*final* responsibility\". It's also really just the alternate CA because the RP isn't trusting the outer CA in all scenarios where this comes up. Perhaps:\n\n```suggestion\nUltimately, the alternate CA is responsible for ensuring that any extensions removed or modified will not cause interoperability or security problems among the target relying party base.\n```\n",
+              "createdAt": "2026-10-31T21:54:02Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            },
+            {
+              "originalPosition": 50,
+              "body": "\"not be known to the issuing CA\" is a bit odd in that the threat model for a CA constraint is that the CA is not totally trusted. I.e. if it were possible for a CA to knowingly bypass a name constraint, that would still be bad. Suggest just dropping that clause.\n\n```suggestion\nHowever, there are some cases where this is complicated by relying-party-imposed constraints on the CA. If the alternate CA were under, say, a name constraint ({{Section 4.2.1.10 of !RFC5280}}), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. {{checking-issuer-specific-extensions}} recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.\n```",
+              "createdAt": "2026-10-31T21:58:08Z",
+              "updatedAt": "2026-10-31T22:03:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVU3_Cg",
+          "commit": {
+            "abbreviatedOid": "3bc1800"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T02:45:31Z",
+          "updatedAt": "2026-11-01T02:45:31Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "(Moved the note about APIs return success status to security considerations. Hopefully that still captures what you were going for. LMK if not!)",
+              "createdAt": "2026-11-01T02:45:31Z",
+              "updatedAt": "2026-11-01T02:45:31Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOTGW8t88AAAABMBc-6w",
+      "title": "MikeO top-to-bottom for -00",
+      "url": "https://github.com/davidben/turducken-certs/pull/29",
+      "state": "MERGED",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-10-31T21:43:51Z",
+      "updatedAt": "2026-11-01T02:35:17Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "372799cbdb0fbfe8b4181d9ec89c759d9442f4d7",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "mikeo/00-top-to-bottom",
+      "headRefOid": "7d960b3232ea3b7efefb84f8d94f5515ddf8d486",
+      "closedAt": "2026-11-01T02:35:17Z",
+      "mergedAt": "2026-11-01T02:35:17Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "4d7e6f5700df9a7e24a4d2268eb2e14670bae924"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVT-94g",
+          "commit": {
+            "abbreviatedOid": "3235c09"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-31T22:14:28Z",
+          "updatedAt": "2026-10-31T22:49:23Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "Hmm. This could be read as \"adding PQ trust anchors to the RP\" or \"adding a certificate from a PQ trust anchor to the service\". The former doesn't apply (_adding_ anchors to an RP is easy). Guessing you meant the latter.\n\nWhat if we instead took a page from the new intro and wrote something like...\n\n```suggestion\nThis document defines a mechanism to embed one or more alternate certificates within a single outer certificate. The outer certificate remains parseable to a legacy relying party that is unaware of this specification. Each alternate certificate certifies the same subject information, but with a different issuer. This can be used to help TLS on the Web transition securely to post-quantum authentication, as well as other PKI transitions with similar constraints.\n```\n\nMy thinking: having the abstract spell out the whole story is probably too much. Skimming https://authors.ietf.org/en/required-content, it says the abstract's purpose is to help a technically knowledgeable reader decide whether reading the document will be useful. I suspect trying to spell out the whole story on the Web's PQ transition will be too many words, but saying \"this is for this PQ transition, and stuff that is similar\" is probably enough breadcrumbs to help you decide if you should read the introduction or not?\n\nAnd then I said \"TLS on the Web\" instead of \"Web TLS\" just because \"Web TLS\" sounds like a formal name for a Thing, and it's not really so named. (I said the Web to just refer to the application, but I suppose the Web is really big, so specifying TLS seems a good idea.)",
+              "createdAt": "2026-10-31T22:14:28Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 22,
+              "body": "Perhaps, for similar reasons as above...\n\n```suggestion\nSome applications, such as TLS on the Web, have constraints that make this particularly challenging:\n```\n",
+              "createdAt": "2026-10-31T22:16:25Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 33,
+              "body": "This ends up saying something different from the original one. I think the original one is what we want? Throughout this story, it's the legacy servers that we're considering jamming an opt-out cert into. If those legacy servers could dispatch between two certs, we wouldn't need this.\n\nGood point though that we should answer needing to just fix that.\n\n```suggestion\n* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates. Waiting for this to be fixed would introduce further latency into the migration.\n```",
+              "createdAt": "2026-10-31T22:19:41Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 38,
+              "body": "I think \"continuing to use a traditional algorithm\" is a little ambiguous because a PQ-capable server may still use traditional algorithms to talk to legacy RPs, and that's fine. It's that you *only* have traditional algorithms that's a problem. How about...\n\n```suggestion\n1. Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service still requires traditional algorithms.\n```",
+              "createdAt": "2026-10-31T22:21:13Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 51,
+              "body": "```suggestion\n* It aims to mitigate security risks of mismatched certificate contents between the outer and alternate certificates, as described in {{certificate-mismatch}}.\n```\n\nFewer words and more general. (In theory you could use this for something other than the PQ transition.)",
+              "createdAt": "2026-10-31T22:22:39Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 69,
+              "body": "Eh, I'd probably omit this sentence for brevity (not sure if it's carrying its weight here and we already discuss this later), but I don't feel strongly. \ud83e\udd37 ",
+              "createdAt": "2026-10-31T22:23:50Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 78,
+              "body": "I mean, this doesn't *necessarily* has to imply the CAs *trust* each other. It depends on exactly how the validation methods work. Certainly being operated by the same entity will help, and is probably quite common, I don't think we need to *mandate* it.\n\n(As a minor terminology nitpick, even though colloquially people are a bit looser, RFC 5280 seems to pretty consistently refer to the \"CA\" as the particular (name, key) tuple, not the operator.)\n\nHow about...\n\n```suggestion\nWhile these are two distinct CAs, their policies and certificate issuance have to be sufficiently aligned to issue these closely related certificates. Often the two CAs will be operated by the same entity.\n\n{{certification-authorities}} discusses certificate issuance in more detail.\n```\n\n(Or we could just punt this text because a few sections up we already say \"Outer and alternate certificates are closely related and issued in an integrated process\". Whichever.)",
+              "createdAt": "2026-10-31T22:28:56Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 105,
+              "body": "```suggestion\nNote that the design of this mechanism precludes nested alternate certificates since both the outer certificate's `id-ce-embeddedSCT-CTv1` extension, and the alternate certificate's `id-pe-outerCertificateBinding` extension must be last, thereby precluding a certificate from simultaneously being both an outer and alternate certificate. This does not preclude the alternate certificate from embedding SCTs because {{?RFC6962}} does not have an ordering requirement.\n```",
+              "createdAt": "2026-10-31T22:31:27Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 111,
+              "body": "Eh, this is a little odd to me because really we're just one of many, many parts of certificate processing that are sequenced before certificate validation. What if we simply said...\n\n```suggestion\nBefore building candidate certification paths and validating them, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for SCTs formatted as in {{signed-certificate-timestamp-encoding}}. For each such SCT, it decodes the AlternateIssuerInfo structure.\n```\n\nThat is shorter, makes it clear when you do this, and implies everything you said I think pretty directly.",
+              "createdAt": "2026-10-31T22:34:21Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 118,
+              "body": "I don't know if I'd go so far as to say it's *trivial*. Probably depends a bit on what is scaling with what, and what you're comparing to. (Path building is itself pretty horrific.) The number of alternate certificates *is* still linear in the input the peer provided. Although I suppose the sum of the sizes of the alternate certificates is quadratic. How about simply...\n\n```suggestion\nAn outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process. This avoids a denial-of-service vector when processing untrusted outer certificates. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit.\n```",
+              "createdAt": "2026-10-31T22:36:25Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 127,
+              "body": "Ah, I wrote \"will\" because if you get this far, the Relying Parties section above will already have done this check anyway. How about:\n\n```suggestion\n6. Remove the TBSCertificate's final extension. The processing steps in {{relying-parties}} ensure this extension has type `id-ce-embeddedSCT-CTv1` and contains the AlternateIssuerInfo, formatted as described in {{signed-certificate-timestamp-encoding}}.\n```",
+              "createdAt": "2026-10-31T22:39:42Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 136,
+              "body": "Well, could be CertificateRequest instead. Also it'll probably be based on a lot of things, so I was trying not to opine here. (Not using some kind of trust anchor negotiation seems pretty non-viable to me, but that's a whole separate discussion.) How about:\n\n```suggestion\nFor example, in a post-quantum transition for TLS, embedded alternate issuers are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities ({{Section 4.5.1.2 of ?RFC9846}}) to select between its supported relying parties. Such a service would have no need for embedded alternate issuers. Accordingly, in a TLS deployment using embedded alternate issuers for a post-quantum transition:\n```",
+              "createdAt": "2026-10-31T22:41:34Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 3,
+              "body": "Name change SGTM but you might need to search around for other instances of \"embedded alternate issuers\" in the document and change them to either \"embedded alternate issuer certificates\", or some other shorter phrasing. (\"This mechanism\" or \"this document\" are my usual gotos.)",
+              "createdAt": "2026-10-31T22:44:12Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 146,
+              "body": "```suggestion\nThe primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type `alternate_issuer_info` and continue processing the rest of the certificate as usual.\n```\n\n(Just tightening the language slightly.)",
+              "createdAt": "2026-10-31T22:45:40Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 148,
+              "body": "```suggestion\nThis is believed to be the behavior of all existing parsers, and is supported by both {{?RFC6962}} and {{?RFC9162}}:\n```\n\n(Looks like the [style guide](https://www.rfc-editor.org/info/rfc7322/#section-3.1) says either American or British spelling is OK, but to be internally consistent. I do not care which but am just assuming that the rest of the document probably uses American spelling because that's the one I know. \ud83d\ude43 )",
+              "createdAt": "2026-10-31T22:48:04Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 153,
+              "body": "```suggestion\n{{Section 3.3 of ?RFC6962}} says:\n\n> This encoding ensures that TLS clients can\n> decode each SCT individually (i.e., if there is a version upgrade,\n> out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand).\n```",
+              "createdAt": "2026-10-31T22:48:44Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            },
+            {
+              "originalPosition": 156,
+              "body": "```suggestion\n{{Section 6.3 of ?RFC9162}} says:\n\n> This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand).\n```",
+              "createdAt": "2026-10-31T22:49:03Z",
+              "updatedAt": "2026-10-31T22:49:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUP_nA",
+          "commit": {
+            "abbreviatedOid": "3235c09"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T23:43:42Z",
+          "updatedAt": "2026-10-31T23:43:42Z",
+          "comments": [
+            {
+              "originalPosition": 3,
+              "body": "Done.",
+              "createdAt": "2026-10-31T23:43:42Z",
+              "updatedAt": "2026-10-31T23:43:42Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUQLSA",
+          "commit": {
+            "abbreviatedOid": "3235c09"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T23:44:53Z",
+          "updatedAt": "2026-10-31T23:44:53Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "Okay.",
+              "createdAt": "2026-10-31T23:44:53Z",
+              "updatedAt": "2026-10-31T23:44:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUSIQQ",
+          "commit": {
+            "abbreviatedOid": "a004a75"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-31T23:56:40Z",
+          "updatedAt": "2026-10-31T23:56:41Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "Then I completely don't understand the point of the original sentence.\n\nI think the point you're trying to make is: Why don't you upgrade the servers, and then give them one traditional and one PQ cert? And the answer is because a lot of server stacks don't do multiple certs for the same SNI well.\n\nBut the wording\n\n\"In addition to lacking post-quantum algorithms, ...\"\n\nis confusing because if it doesn't support PQ, then there's an even easier answer to \"Why can't you give it a traditional and a PQ cert\" which is that it doesn't support PQ.\n\nSo unless I'm totally missing the point, I think the point you're making is \"Even after you upgrade a server, there's still a reason why this might be useful\".\n\nIn other words, you give one of these to a server _either_ if it doesn't support PQ algs, _or_ if it doesn't support multiple certs. Right?\n",
+              "createdAt": "2026-10-31T23:56:41Z",
+              "updatedAt": "2026-10-31T23:56:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUS4cA",
+          "commit": {
+            "abbreviatedOid": "3235c09"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:01:55Z",
+          "updatedAt": "2026-11-01T00:01:55Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "Ah that's the mismatch. The point I was going for was instead that we cannot give the server a T->T and PQ->T pair to solve the legacy RP problem. In principle this:\r\n* Does not require updating the server to support PQ\r\n* Gives the server something it can send to both legacy and updated RPs\r\n\r\nBut since the Web did not, 10 years ago, work out the multiple certificate story when we should have, we don't have that option and have to somehow jam both certificates together.",
+              "createdAt": "2026-11-01T00:01:55Z",
+              "updatedAt": "2026-11-01T00:01:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUWYqQ",
+          "commit": {
+            "abbreviatedOid": "a004a75"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:20:11Z",
+          "updatedAt": "2026-11-01T00:20:11Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "The load-bearing part of the sentence is **It provides a quantum-resistant proof**.\n\nIt's the word \"proof\" that I'm trying to fix here. \"Proof\" is a very strong word. If we're going to use it, then we should be clear about what we're proving.\n\nIt is not proving that this server is incapable of using an ML-DSA key. It is not proving that this server doesn't also have an ML-DSA cert from a different CA. It is not proving that this service still has legacy clients. It's maybe implying those things, but it's not proving them.\n\nIt is proving that it possess a traditional key and is allowed to use it. Nothing more, nothing less.\n\n(this is getting very nit picky, I almost didn't reply to this one because I'm not really convinced it was worth the time to think this comment through, but here we are lol)",
+              "createdAt": "2026-11-01T00:20:11Z",
+              "updatedAt": "2026-11-01T00:21:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUW8Lg",
+          "commit": {
+            "abbreviatedOid": "cab32fd"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:23:51Z",
+          "updatedAt": "2026-11-01T00:23:52Z",
+          "comments": [
+            {
+              "originalPosition": 69,
+              "body": "Okay.",
+              "createdAt": "2026-11-01T00:23:51Z",
+              "updatedAt": "2026-11-01T00:23:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUZtHQ",
+          "commit": {
+            "abbreviatedOid": "3f41c39"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:33:55Z",
+          "updatedAt": "2026-11-01T00:33:55Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "Umm. I see now where you're coming from, but I'm still not convinced that that's the right motivation.\n\nWhat we should have done 10 years ago was get good support for\n\nRSA -> RSA\nECDSA -> ECDSA\n\nswitched on ClientHello.SigAlgs.\n\nBut what you're talking about would have required getting support for\n\nRSA -> RSA\nECDSA -> RSA\n\nswitched on ClientHello.SigAlgCerts. Which I don't think is a thing that we had a good reason to sort out 10 years ago.\n\nBut now that I see where you're coming from, how about:\n\n> * In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are issued separate traditional and PQ-rooted-traditional certificate chains.\n\n?",
+              "createdAt": "2026-11-01T00:33:55Z",
+              "updatedAt": "2026-11-01T00:33:55Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUadnA",
+          "commit": {
+            "abbreviatedOid": "3f41c39"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:36:53Z",
+          "updatedAt": "2026-11-01T00:36:53Z",
+          "comments": [
+            {
+              "originalPosition": 78,
+              "body": "> (As a minor terminology nitpick, even though colloquially people are a bit looser, RFC 5280 seems to pretty consistently refer to the \"CA\" as the particular (name, key) tuple, not the operator.)\n\nThat's a good point. If that's how we're using the word, then I'm gonna throw it into the terminology section.\n\nAlthough I don't actually see that definition in 5280. Could you point to it so I can reference, rather that making up a new def'n?",
+              "createdAt": "2026-11-01T00:36:53Z",
+              "updatedAt": "2026-11-01T00:38:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUehzA",
+          "commit": {
+            "abbreviatedOid": "6863927"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:48:28Z",
+          "updatedAt": "2026-11-01T00:48:29Z",
+          "comments": [
+            {
+              "originalPosition": 111,
+              "body": "\"Before\", \"As part of\", \"After path building of outer fails\", \"Preferentially instead of attempting to build a path for outer\".\n\nI think we are allowed to make a suggestion here. In my mind, a client could try to build Outer first, and only go to alternate if that fails. But fair point that maybe we should suggest that you check for and go to alternate first / preferentially.\n\n---\n\nThe thing I had that you removed that I think was important is:\n\n> MAY be processed regardless of the trust, revocation, or expiry status of the outer certificate.\n\nI think that sentence (or one like it) needs to be in there because that is the load-bearing sentence that ensures that this is implemented as an OR mode. Make it abundantly clear that you're still allowed to extract and use alternate regardless of the validity status of outer.",
+              "createdAt": "2026-11-01T00:48:28Z",
+              "updatedAt": "2026-11-01T00:49:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUgBTw",
+          "commit": {
+            "abbreviatedOid": "6863927"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:52:29Z",
+          "updatedAt": "2026-11-01T00:52:30Z",
+          "comments": [
+            {
+              "originalPosition": 118,
+              "body": "What I meant by \"trivial\" is that the attack is trivial to construct.\n\nIf you don't trust outer, then you don't have a public key with which to verify outer.signature, so I can literally just jam 700 SCTs into outer.\n\nThis attack doesn't require a CRQC, it doesn't even require a crypto library, it just requires a hex editor.\n\nThat said, if you think the word \"trivial\" is loaded and want to remove it, ok.",
+              "createdAt": "2026-11-01T00:52:30Z",
+              "updatedAt": "2026-11-01T00:53:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUiHVg",
+          "commit": {
+            "abbreviatedOid": "98edbf2"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T00:57:32Z",
+          "updatedAt": "2026-11-01T00:57:32Z",
+          "comments": [
+            {
+              "originalPosition": 148,
+              "body": "Sorry, It should be American. Canada uses British spellings consistently, so I don't always even know what the differences are. Good.",
+              "createdAt": "2026-11-01T00:57:32Z",
+              "updatedAt": "2026-11-01T00:57:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUsV9g",
+          "commit": {
+            "abbreviatedOid": "3235c09"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T01:56:05Z",
+          "updatedAt": "2026-11-01T01:56:05Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "This is probably a longer discussion, but I think the thing we should have sorted out a while ago is that the CA hands you multiple certs and then server sorts it out. To use the ECDSA example, yes RSA -> RSA and ECDSA -> ECDSA definitely would have been the ideal end state. But for the same reasons we're running into on the PQ side, that requires manual server action. Splitting it into two steps would have allowed servers to get half of the byte size savings faster, because we could have had the PKI half switch to ECDSA immediately.\r\n\r\nNow, we didn't have strong motivation for it then because it was just shaving a several hundred bytes. We have the motivation now because it's needed for security. But, for example, when FN-DSA comes around, it sure would be nice if we could quickly transition the PKI half from ML-DSA to FN-DSA and get the size wins! (And with FN-DSA, maybe FN-DSA EEs aren't even right anyway. FN-DSA is odd.)\r\n\r\n> In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are issued separate traditional and PQ-rooted-traditional certificate chains.\r\n\r\nI like that. I'll toss in the word \"automatically\" and put that in!",
+              "createdAt": "2026-11-01T01:56:05Z",
+              "updatedAt": "2026-11-01T01:56:05Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUshsA",
+          "commit": {
+            "abbreviatedOid": "2184ca5"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T01:57:10Z",
+          "updatedAt": "2026-11-01T01:57:10Z",
+          "comments": [
+            {
+              "originalPosition": 33,
+              "body": "```suggestion\n* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.\n```",
+              "createdAt": "2026-11-01T01:57:10Z",
+              "updatedAt": "2026-11-01T01:57:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUukuA",
+          "commit": {
+            "abbreviatedOid": "71077c6"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T02:11:19Z",
+          "updatedAt": "2026-11-01T02:11:20Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "Aha! Good call. I'm glad you pointed this out. That is a subtle distinction that I'd inadvertently been glossing over all this time.\n\nI'll tug on this phrasing slightly, which will maybe help draw a finer line here:\n\n> It is proving that it possess a traditional key and is allowed to use it. Nothing more, nothing less.\n\nIt's proving something slightly more. It's proving that the service owner both possesses a traditional key *and has authorized the PQ CA to sign it*. By doing that, the service owner is saying \"I would like modern clients to trust this traditional key for my service\".\n\nYou're right that the service owner _could_ have a PQ key and still say that. Though that's a dumb thing to do because it enables downgrade. We _expect_ that service owners will stop doing that once they're PQ-capable.\n\nWhile we still expect a PQ-capable service to have both a traditional key and a PQ key, we _expect_ them to _only_ authorize the PQ CA to sign over PQ keys. The traditional key is only authorized to the traditional CAs. That way the service does not make up-to-date clients vulnerable to its traditional key.\n\nAnd so specifically this is a quantum-resistant proof that the service is in the first category and not the second. Put another way, our goal is to give the service owners the tools to make themselves PQ-secure. As long as the PQ CA faithfully signs only what was authorized, those tools exist.\n\nLet's try this. Probably could do with wordsmithing, but I think this captures the goal and also your point:\n\n```suggestion\n1. Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service has authorized a traditional end entity key for upgraded relying parties. (It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.)\n```\n\n(Also TIL it's \"end entity\" not \"end-entity\". I've been writing it wrong all this time!)",
+              "createdAt": "2026-11-01T02:11:19Z",
+              "updatedAt": "2026-11-01T02:12:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUvzbQ",
+          "commit": {
+            "abbreviatedOid": "f5d5abc"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T02:20:11Z",
+          "updatedAt": "2026-11-01T02:20:11Z",
+          "comments": [
+            {
+              "originalPosition": 118,
+              "body": "Hehe, this is probably the former math contest kid in me. It was drilled into me to not call problems \"trivial\" in that context, so I see the term as pretty loaded. Not the situation here, but probably where my tendencies come from.\n\nHow about we just spell out the trivializing factor then, so people don't have to read between the lines?\n\n```suggestion\nAn outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit. An attacker can inject arbitrarily many AlternateIssuerInfo structures into an unverified outer certificate, so this avoids a denial of service vector.\n```",
+              "createdAt": "2026-11-01T02:20:11Z",
+              "updatedAt": "2026-11-01T02:20:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABVUz0Ow",
+          "commit": {
+            "abbreviatedOid": "7d960b3"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-01T02:33:20Z",
+          "updatedAt": "2026-11-01T02:33:21Z",
+          "comments": [
+            {
+              "originalPosition": 111,
+              "body": "Ah good point. I hadn't thought about that aspect of ordering. Focusing on that, I now agree with you it's important to call this detail out.\n\nIt was a much more involved surgery but I've pushed an update that I think captures this. It avoids opining on the order, and picks up a version of your sentence.",
+              "createdAt": "2026-11-01T02:33:20Z",
+              "updatedAt": "2026-11-01T02:33:21Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
