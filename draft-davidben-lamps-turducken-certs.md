@@ -381,7 +381,7 @@ While collecting candidate certification paths, a relying party checks if the ou
 
 If successful, the alternate certificate is used as an alternate target certificate. The relying party then considers certification paths that end at the alternate certificate. If certification path validation ({{Section 6 of !RFC5280}}) succeeds for some path, the relying party proceeds with this path, as if it had found a valid path ending at the outer certificate.
 
-Certification paths for outer and alternate certificates are processed independently. This entire process happens regardless of the trust, revocation, or expiry status of the outer certificate.
+Certification paths for outer and alternate certificates are processed independently. Relying parties MAY extract and consider alternate certificates regardless of the trust, revocation, or expiry status of the outer certificate.
 
 An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit. An attacker can inject arbitrarily many AlternateIssuerInfo structures into an unverified outer certificate, so this avoids a denial of service vector.
 
