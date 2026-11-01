@@ -404,7 +404,7 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 5. Replace the TBSCertificate's `issuer` field with the AlternateIssuerInfo's `issuer`. Let `outerIssuer` be the replaced value.
 
-6. Remove the TBSCertificate's final extension, which MUST be `id-ce-embeddedSCT-CTv1` formatted as described in {{signed-certificate-timestamp-encoding}}.
+6. Remove the TBSCertificate's final extension. The processing steps in {{relying-parties}} ensure this extension has type `id-ce-embeddedSCT-CTv1` and contains the AlternateIssuerInfo, formatted as described in {{signed-certificate-timestamp-encoding}}.
 
 7. Remove all but the first `commonExtensionCount` extensions in the TBSCertificate. Let `outerIssuerExtensions` be the removed extensions.
 
