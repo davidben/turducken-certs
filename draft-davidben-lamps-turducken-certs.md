@@ -460,7 +460,7 @@ A given deployment SHOULD only deploy embedded alternate issuer certificates onc
 
 ## Legacy Relying Parties
 
-The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This makes an assumption that existing certificate parsers will treat an un-recognized SCT of type `alternate_issuer_info` as non-fatal and continue processing the outer certificate as usual.
+The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type `alternate_issuer_info` and continue processing the rest of the certificate as usual.
 
 This is believed to be the behaviour of all existing parsers, and is supported by the specifications of both CT and CTv2.
 
