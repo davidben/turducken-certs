@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 4 May 2027                            TurboLight Solutions, LLC
+Expires: 5 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         31 October 2026
+                                                         1 November 2026
 
 
                        Embedded Alternate Issuers
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 May 2027.
+   This Internet-Draft will expire on 5 May 2027.
 
 Copyright Notice
 
@@ -701,11 +701,11 @@ Table of Contents
    For the section, we define the input certificate to be the entire
    certificate being processed (typically the outer certificate), and
    the validated certificate to be the one for which the certification
-   path was checked, which may be the inner or outer certificate.  Note
-   that the input certificate will always contain the validated target
-   certificate, but does not specify which one it is.  This section
-   considers potential impacts of the input certificate and the
-   validated certificate being different.
+   path was checked, which may be the outer certificate or an alternate
+   certificate.  Note that the input certificate will always contain the
+   validated target certificate, but does not specify which one it is.
+   This section considers potential impacts of the input certificate and
+   the validated certificate being different.
 
    In contexts that are defined based on the certificate that was sent
    over the wire, the input certificate is used.  For example:
@@ -836,9 +836,10 @@ Table of Contents
    end entity certificate would not.  An existing application might
    assume this invariant and inspect the original target certificate for
    some access check.  If the application's X.509 implementation is
-   updated independently from the rest of the application, the above
-   measure might fail, which could carry security implications if the
-   content of the inner and outer certificate differ.
+   updated independently from the rest of the application, it may
+   inadvertently use the wrong certificate, which could carry security
+   implications if the content of the alternate and outer certificate
+   differ.
 
    X.509 implementations MAY further mitigate the risk by limiting
    alternate certificate support to applications that opt in.  However,
@@ -863,10 +864,10 @@ Table of Contents
    validation might, for example, authenticate an alternate
    certificate's public key, while the rest of the application acts on a
    different, unverified public key in the outer certificate.  This
-   could allow an attacker to bypass certificate-based authentication,
-   especially in the case of a malicious or compromised outer CA.  This
-   is not possible here because alternate certificates cannot replace
-   the subjectPublicKeyInfo field.
+   could allow an attacker to bypass certificate-based authentication.
+   However, alternate certificates cannot replace the
+   subjectPublicKeyInfo field in this document, so a public key mismatch
+   is not possible.
 
    X.509 extensions complicate this mitigation.  X.509 does not
    structurally distinguish between subject and issuer extensions, in a
@@ -875,7 +876,7 @@ Table of Contents
    specific extensions, it is not possible to define new such
    extensions.  However, if it accepts unknown extensions, it could
    allow an extension that downstream components depend on being the
-   same between the inner and outer certificate.
+   same between the alternate and outer certificate.
 
    Instead, the outer certificate binding extension mitigates this risk
    more generally.  Except for id-ce-embeddedSCT-CTv1, extensions
@@ -887,23 +888,21 @@ Table of Contents
    itself from enabling an attack.  CAs are expected to not sign unknown
    extensions, so this does not conflict with extensibility.
 
-   Ultimately, final responsibility lies with both the inner and outer
-   CA to ensure that any extensions removed or modified will not cause
-   interoperability or security problems among the target relying party
-   base.
+   Ultimately, the alternate CA is responsible for ensuring that any
+   extensions removed or modified will not cause interoperability or
+   security problems among the target relying party base.
 
    However, there are some cases where this is complicated by relying-
-   party-imposed constraints on the CA that may not be known to the
-   issuing CAs.  If the alternate CA were under, say, a name constraint
-   (Section 4.2.1.10 of [RFC5280]), the relying party could not rely on
-   the alternate CA alone to mitigate subjectAltName mismatches.  If the
-   alternate certificate contained a permitted subjectAltName, while the
-   outer certificate contained an excluded one, a mismatch could bypass
-   the name constraint.  Section 5.2 recommends that the relying party
-   check replaced extensions in a more limited way.  Though the relying
-   party might not recognize all extensions, its path validator
-   necessarily recognizes all extensions that it incorporates into path
-   validation.
+   party-imposed constraints on the CA.  If the alternate CA were under,
+   say, a name constraint (Section 4.2.1.10 of [RFC5280]), the relying
+   party could not rely on the alternate CA alone to mitigate
+   subjectAltName mismatches.  If the alternate certificate contained a
+   permitted subjectAltName, while the outer certificate contained an
+   excluded one, a mismatch could bypass the name constraint.
+   Section 5.2 recommends that the relying party check replaced
+   extensions in a more limited way.  Though the relying party might not
+   recognize all extensions, its path validator necessarily recognizes
+   all extensions that it incorporates into path validation.
 
 8.  IANA Considerations
 
