@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 4 May 2027                            TurboLight Solutions, LLC
+Expires: 5 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         31 October 2026
+                                                         1 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 May 2027.
+   This Internet-Draft will expire on 5 May 2027.
 
 Copyright Notice
 
@@ -180,8 +180,8 @@ Table of Contents
       Certificate Transparency (CT), as described in Section 6.3.
 
    *  It aims to mitigate security risks of mismatched certificate
-      contents between the outer traditional and alternate post-quantum
-      opt-out certificates, as described in Section 7.2.
+      contents between the outer and alternate certificates, as
+      described in Section 7.2.
 
    While the Web PKI is the primary motivator, this mechanism may be
    appropriate for other PKIs with similar post-quantum migration
