@@ -462,7 +462,7 @@ A given deployment SHOULD only deploy embedded alternate issuer certificates onc
 
 The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type `alternate_issuer_info` and continue processing the rest of the certificate as usual.
 
-This is believed to be the behaviour of all existing parsers, and is supported by the specifications of both CT and CTv2.
+This is believed to be the behavior of all existing parsers, and is supported by both {{?RFC6962}} and {{?RFC9162}}:
 
 [Section 3.3 of RFC6962] says:
 "This encoding ensures that TLS clients can
