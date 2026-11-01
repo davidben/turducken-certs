@@ -652,11 +652,12 @@ Table of Contents
    to path building itself [RFC4158], X.509 policy validation [RFC9618],
    certification path length, and other factors that contribute to X.509
    scaling.  Relying parties SHOULD limit the number of alternate
-   certificates in a single outer certificate they will process, as this
-   could become a trivial denial-of-service vector when processing
-   untrusted outer certificates.  For example, if the relying party has
-   a path building iteration limit, considering an alternate certificate
-   can contribute to that limit.
+   certificates in a single outer certificate they will process.  For
+   example, if the relying party has a path building iteration limit,
+   considering an alternate certificate can contribute to that limit.
+   An attacker can inject arbitrarily many AlternateIssuerInfo
+   structures into an unverified outer certificate, so this avoids a
+   denial of service vector.
 
 5.1.  Reconstructing the Alternate Certificate
 
