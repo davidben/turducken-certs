@@ -1298,7 +1298,7 @@ svg {
 <p id="section-1-4"><span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss how, for these applications, it is sufficient to migrate to a state where:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1-5">
 <li id="section-1-5.1">
-          <p id="section-1-5.1.1">Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a <em>post-quantum opt-out certificate</em>. It provides a quantum-resistant proof to the relying party that the service is continuing to use a traditional algorithm.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
+          <p id="section-1-5.1.1">Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a <em>post-quantum opt-out certificate</em>. It provides a quantum-resistant proof to the relying party that the service has authorized a traditional end entity key for upgraded relying parties. (It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.)<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-1-5.2">
           <p id="section-1-5.2.1">Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
