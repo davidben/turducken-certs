@@ -813,8 +813,8 @@ Table of Contents
    unrecognized SCTs of type alternate_issuer_info and continue
    processing the rest of the certificate as usual.
 
-   This is believed to be the behaviour of all existing parsers, and is
-   supported by the specifications of both CT and CTv2.
+   This is believed to be the behavior of all existing parsers, and is
+   supported by both [RFC6962] and [RFC9162]:
 
    [Section 3.3 of RFC6962] says: "This encoding ensures that TLS
    clients can decode each SCT individually (i.e., if there is a version
