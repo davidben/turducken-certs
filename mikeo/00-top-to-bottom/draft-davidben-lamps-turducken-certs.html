@@ -1835,7 +1835,7 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-5.1-2.5.1">Replace the TBSCertificate's <code>issuer</code> field with the AlternateIssuerInfo's <code>issuer</code>. Let <code>outerIssuer</code> be the replaced value.<a href="#section-5.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.6">
-            <p id="section-5.1-2.6.1">Remove the TBSCertificate's final extension, which <span class="bcp14">MUST</span> be <code>id-ce-embeddedSCT-CTv1</code> formatted as described in <a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a>.<a href="#section-5.1-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-2.6.1">Remove the TBSCertificate's final extension. The processing steps in <a href="#relying-parties" class="auto internal xref">Section 5</a> ensure this extension has type <code>id-ce-embeddedSCT-CTv1</code> and contains the AlternateIssuerInfo, formatted as described in <a href="#signed-certificate-timestamp-encoding" class="auto internal xref">Section 4.2.1</a>.<a href="#section-5.1-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.7">
             <p id="section-5.1-2.7.1">Remove all but the first <code>commonExtensionCount</code> extensions in the TBSCertificate. Let <code>outerIssuerExtensions</code> be the removed extensions.<a href="#section-5.1-2.7.1" class="pilcrow">¶</a></p>
