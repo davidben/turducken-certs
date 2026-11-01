@@ -375,13 +375,13 @@ Note that the design of this mechanism precludes nested alternate certificates s
 
 # Relying Parties
 
-Typically, when a certificate is untrusted -s I.E. a valid certification path cannot be established -- processing should stop and no further contents of the certificate should be processed. A `id-ce-embeddedSCT-CTv1` extension as the final extension as described below is an exception and MAY be processed regardless of the trust, revocation, or expiry status of the outer certificate.
+Relying parties process alternate certificates as an extension of X.509 path building {{?RFC4158}}.
 
-When verifying a certificate, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for SCTs formatted as in {{signed-certificate-timestamp-encoding}}. For each such SCT, it decodes the AlternateIssuerInfo structure.
+While collecting candidate certification paths, a relying party checks if the outer certificate's final extension is `id-ce-embeddedSCT-CTv1`. If so, it looks for SCTs formatted as in {{signed-certificate-timestamp-encoding}}. For each such SCT, it decodes the AlternateIssuerInfo structure. For each successfully-decoded AlternateIssuerInfo, the relying party then reconstructs the alternate certificate as described in {{reconstructing-the-alternate-certificate}}.
 
-For each successfully-decoded AlternateIssuerInfo, the relying party then reconstructs the alternate certificate as described in {{reconstructing-the-alternate-certificate}}. If successful, the alternate certificate is used as a candidate target certificate when building certification paths {{?RFC4158}}.
+If successful, the alternate certificate is used as an alternate target certificate. The relying party then considers certification paths that end at the alternate certificate. If certification path validation ({{Section 6 of !RFC5280}}) succeeds for some path, the relying party proceeds with this path, as if it had found a valid path ending at the outer certificate.
 
-If certification path validation ({{Section 6 of !RFC5280}}) succeeds for any path ending at an alternate certificate, the relying party proceeds with this certification path, even if it would otherwise reject the outer certificate.
+Certification paths for outer and alternate certificates are processed independently. This entire process happens regardless of the trust, revocation, or expiry status of the outer certificate.
 
 An outer certificate with many AlternateIssuerInfo structures can require more processing time in the relying party. This is similar to path building itself {{?RFC4158}}, X.509 policy validation {{?RFC9618}}, certification path length, and other factors that contribute to X.509 scaling. Relying parties SHOULD limit the number of alternate certificates in a single outer certificate they will process. For example, if the relying party has a path building iteration limit, considering an alternate certificate can contribute to that limit. An attacker can inject arbitrarily many AlternateIssuerInfo structures into an unverified outer certificate, so this avoids a denial of service vector.
 
