@@ -464,10 +464,11 @@ The primary backwards compatibility goal if this specification is that a relying
 
 This is believed to be the behavior of all existing parsers, and is supported by both {{?RFC6962}} and {{?RFC9162}}:
 
-[Section 3.3 of RFC6962] says:
-"This encoding ensures that TLS clients can
-decode each SCT individually (i.e., if there is a version upgrade,
-out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand)."
+{{Section 3.3 of ?RFC6962}} says:
+
+> This encoding ensures that TLS clients can
+> decode each SCT individually (i.e., if there is a version upgrade,
+> out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand).
 
 [Section 6.3 of RFC9162] says:
 "This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand)."
