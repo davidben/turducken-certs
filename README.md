@@ -1,8 +1,8 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# Embedded Alternate Issuers
+# Embedded Alternate Issuer Certificates
 
-This is the working area for the individual Internet-Draft, "Embedded Alternate Issuers".
+This is the working area for the individual Internet-Draft, "Embedded Alternate Issuer Certificates".
 
 * [Editor's Copy](https://davidben.github.io/turducken-certs/#go.draft-davidben-lamps-turducken-certs.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-davidben-lamps-turducken-certs)
