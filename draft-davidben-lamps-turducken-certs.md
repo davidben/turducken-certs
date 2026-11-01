@@ -87,7 +87,7 @@ This document defines a mechanism to embed one or more alternate certificates wi
 
 # Introduction
 
-In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificates does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
+In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificate does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
 
 Some applications, such as TLS on the Web, have constraints that make this particularly challenging:
 
@@ -146,7 +146,7 @@ Alternate CA:
 : A CA that issues one of the alternate certificates.
 
 Post-quantum opt-out certificate:
-: An end-entity certificate with a traditional subject key and post-quantum issuer. {{PQ-AUTH-ROADMAP}} embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deployed them independently, without using this specification.
+: An end-entity certificate with a traditional subject key and post-quantum issuer. {{PQ-AUTH-ROADMAP}} embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deploy them independently, without using this specification.
 
 # Overview
 
@@ -255,7 +255,7 @@ The outer and alternate certificates MUST have a `version` of v3 and MUST omit `
 
 The outer and alternate certificates MUST have the same `validity`, `subject`, and `subjectPublicKeyInfo` values.
 
-The outer and alternate certificates' `extensions` lists MUST be dividable into, in order, some number of *common extensions*, some number of *issuer-specific extensions*, and a single *final extension*. These MUST satisfy the following:
+The outer and alternate certificates' `extensions` lists MUST each consist of, in order, zero or more *common extensions*, zero or more *issuer-specific extensions*, and a single *final extension*. These MUST satisfy the following:
 
 * The common extensions across all certificates MUST be equal and appear in the same order.
 
@@ -432,7 +432,7 @@ The relying party SHOULD check for and reject the forbidden issuer-specific exte
 
 ## Input Certificates and Validated Certificates
 
-For the section, we define the input certificate to be the entire certificate being processed (typically the outer certificate), and the validated certificate to be the one for which the certification path was checked, which may be the outer certificate or an alternate certificate.
+For this section, we define the input certificate to be the entire certificate being processed (typically the outer certificate), and the validated certificate to be the one for which the certification path was checked, which may be the outer certificate or an alternate certificate.
 Note that the input certificate will always contain the validated target certificate, but does not specify which one it is.
 This section considers potential impacts of the input certificate and the validated certificate being different.
 
@@ -462,7 +462,7 @@ A given deployment SHOULD only deploy this mechanism once, for only one transiti
 
 ## Legacy Relying Parties
 
-The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type `alternate_issuer_info` and continue processing the rest of the certificate as usual.
+The primary backwards compatibility goal of this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type `alternate_issuer_info` and continue processing the rest of the certificate as usual.
 
 This is believed to be the behavior of all existing parsers, and is supported by both {{?RFC6962}} and {{?RFC9162}}:
 
@@ -496,7 +496,7 @@ Although each alternate certificate is ultimately encoded relative to the outer 
 
 * Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.
 
-When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.
+When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify the outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.
 
 ## Certificate Mismatch
 
