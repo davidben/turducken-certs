@@ -371,7 +371,7 @@ The outer certificate binding extension MUST be the final extension in the alter
 
 This binding mitigates the security risks described in {{certificate-mismatch}} by authenticating most of the replaced outer certificate by the alternate CA.
 
-Note that the design of this mechanism precludes nested alternate certificates since both the outer certificate's `id-ce-embeddedSCT-CTv1` extension, and the alternate certificate's `id-pe-outerCertificateBinding` extension must be last, thereby precluding a certificate from simultaneously being both an outer and alternate certificate. This does not preclude the alternate certificate from embedding SCTs because RFC6962 does not have an ordering requirement.
+Note that the design of this mechanism precludes nested alternate certificates since both the outer certificate's `id-ce-embeddedSCT-CTv1` extension, and the alternate certificate's `id-pe-outerCertificateBinding` extension must be last, thereby precluding a certificate from simultaneously being both an outer and alternate certificate. This does not preclude the alternate certificate from embedding SCTs because {{?RFC6962}} does not have an ordering requirement.
 
 # Relying Parties
 
