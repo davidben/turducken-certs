@@ -643,8 +643,9 @@ Table of Contents
    path ending at the outer certificate.
 
    Certification paths for outer and alternate certificates are
-   processed independently.  This entire process happens regardless of
-   the trust, revocation, or expiry status of the outer certificate.
+   processed independently.  Relying parties MAY extract and consider
+   alternate certificates regardless of the trust, revocation, or expiry
+   status of the outer certificate.
 
    An outer certificate with many AlternateIssuerInfo structures can
    require more processing time in the relying party.  This is similar
