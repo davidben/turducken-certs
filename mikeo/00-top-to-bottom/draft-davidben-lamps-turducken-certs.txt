@@ -287,10 +287,7 @@ Table of Contents
 
        a.  The outer CA signs a precertificate for its initial
            TBSCertificate, including the critical poison extension, as
-           described in Section 3.1 of [RFC6962].  Note that this does
-           not include any evidence of the alternate certificate(s),
-           which is by design to reduce the size of the logged
-           precertificates.
+           described in Section 3.1 of [RFC6962].
 
        b.  The outer CA then requests Signed Certificate Timestamps
            (SCTs) from CT logs.
