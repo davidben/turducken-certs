@@ -1292,7 +1292,7 @@ svg {
           <p id="section-1-3.3.1">Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.4">
-          <p id="section-1-3.4.1">Even if they do support post-quantum algorithms, some services' technology stacks are unable to configure and select between multiple certificates based on advertised client algorithm support. While this could in theory be fixed, it would introduce further latency into the migration.<a href="#section-1-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-1-3.4.1">In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are issued separate traditional and PQ-rooted-traditional certificate chains.<a href="#section-1-3.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-1-4"><span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss how, for these applications, it is sufficient to migrate to a state where:<a href="#section-1-4" class="pilcrow">¶</a></p>
