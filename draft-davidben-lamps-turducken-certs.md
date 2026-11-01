@@ -312,11 +312,19 @@ An AlternateIssuerInfo's fields are defined as follows:
 
 ### Signed Certificate Timestamp Encoding
 
-The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a new type of SCT in the outer certificate's `id-ce-embeddedSCT-CTv1` extension, as defined in {{Section 3.3 of !RFC6962}}. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding the alternate certificates as SCTs.
+The AlternateIssuerInfos for each alternate certificate are embedded in the outer certificate. Instead of a custom extension, this document embeds each AlternateIssuerInfo as a new type of SCT in the outer certificate's `id-ce-embeddedSCT-CTv1` (OID 1.3.6.1.4.1.11129.2.4.2) extension. This extension MUST be the final extension in the outer certificate. {{certificate-transparency-log-sizes}} discusses the motivation for embedding the alternate certificates as SCTs.
 
-Note: {{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses some definitions from {{!RFC6962}} for compatibility with existing deployments.
+The contents of this extension are defined in {{Section 3.3 of !RFC6962}}, but the definition is replicated here for clarity. The `extnValue` OCTET STRING field itself contains a DER-encoded OCTET STRING. This OCTET STRING's contents are SignedCertificateTimestampList defined using the TLS presentation language below. Note there are two layers of OCTET STRING encoding.
 
-Each AlternateIssuerInfo is formatted as an SCT using the TransItem ({{Section 4.5 of !RFC9162}}) structure with a `versioned_type` of `alternate_issuer_info`, defined below:
+~~~ tls-presentation
+opaque SerializedSCT<1..2^16-1>;
+
+struct {
+    SerializedSCT sct_list<1..2^16-1>;
+} SignedCertificateTimestampList;
+~~~
+
+Each AlternateIssuerInfo is formated as a TransItem structure ({{Section 4.5 of !RFC9162}}) with a `versioned_type` of `alternate_issuer_info`, defined below:
 
 ~~~ tls-presentation
 enum {
@@ -334,7 +342,9 @@ struct {
 
 The `contents` field contains the DER encoding of the AlternateIssuerInfo.
 
-Note: This structure uses a two-byte version, while SignedCertificateTimestamp ({{Section 3.2 of ?RFC6962}}) uses a one-byte version. The VersionedTransType type from {{?RFC9162}} reserves 0x0000..0x00FF to avoid overlapping with SignedCertificateTimestamp's `v1(0)` version value. The above structure is defined using {{?RFC9162}} to preserve this property and to make use of the registry defined in {{Section 10.2.3 of ?RFC9162}}, but it is still used in place of a SignedCertificateTimestamp and not the protocols defined in {{?RFC9162}}.
+The serialized TransItem is then placed in the SignedCertificateTimestampList as an opaque SerializedSCT. The SignedCertificateTimestampList MAY contain other SCT constructions, notably the SignedCertificateTimestamp structure defined in {{Section 3.2 of !RFC6962}} if the outer CA participates in CT. Per {{legacy-relying-parties}}, relying parties are expected to ignore unrecognized SCT versions.
+
+Note: {{?RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols use separate extensions. AlternateIssuerInfos are embedded in the extension from {{?RFC6962}} for compatibility with existing deployments. They extend the structure from {{?RFC9162}} to make use of the registry defined in {{Section 10.2.3 of ?RFC9162}}. This can be embedded in the extension from {{?RFC6962}} because the two-byte VersionedTransType type reserves 0x0000..0x00FF to avoid overlapping with SignedCertificateTimestamp's one-byte `v1(0)` version value. Allocating new values from VersionedTransType preserves this separation.
 
 ## Outer Certificate Binding
 
@@ -478,7 +488,7 @@ This is believed to be the behavior of all existing parsers, and is supported by
 
 ## Certificate Transparency Log Sizes
 
-In deployments that use CT {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
+In deployments that use CT {{?RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
 
 Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when post-quantum Merkle Tree Certificates are embedded as alternate certificates, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
 
