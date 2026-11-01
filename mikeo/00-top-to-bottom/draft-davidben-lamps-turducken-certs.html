@@ -1348,24 +1348,29 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-2.1-1.6.1">A certificate that embeds one or more alternate certificates using the mechanism defined in this document.<a href="#section-2.1-1.6.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-2.1-1.7">Outer CA:</dt>
+<dt id="section-2.1-1.7">Certification Authority (CA):</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.8">
-            <p id="section-2.1-1.8.1">The CA that issues the outer certificate.<a href="#section-2.1-1.8.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-1.8.1">The (name, key) tuple representing a certificate issuer.<a href="#section-2.1-1.8.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-2.1-1.9">Alternate certificate:</dt>
+<dt id="section-2.1-1.9">Outer CA:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.10">
-            <p id="section-2.1-1.10.1">One of the certificates embedded in the outer certificate. An alternate certificate certifies the same subject information as the outer certificate, but via a different issuer.<a href="#section-2.1-1.10.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-1.10.1">The CA that issues the outer certificate.<a href="#section-2.1-1.10.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-2.1-1.11">Alternate CA:</dt>
+<dt id="section-2.1-1.11">Alternate certificate:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.12">
-            <p id="section-2.1-1.12.1">A CA that issues one of the alternate certificates.<a href="#section-2.1-1.12.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-1.12.1">One of the certificates embedded in the outer certificate. An alternate certificate certifies the same subject information as the outer certificate, but via a different issuer.<a href="#section-2.1-1.12.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-2.1-1.13">Post-quantum opt-out certificate:</dt>
+<dt id="section-2.1-1.13">Alternate CA:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.14">
-            <p id="section-2.1-1.14.1">An end-entity certificate with a traditional subject key and post-quantum issuer. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deployed them independently, without using this specification.<a href="#section-2.1-1.14.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-1.14.1">A CA that issues one of the alternate certificates.<a href="#section-2.1-1.14.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.15">Post-quantum opt-out certificate:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.16">
+            <p id="section-2.1-1.16.1">An end-entity certificate with a traditional subject key and post-quantum issuer. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deployed them independently, without using this specification.<a href="#section-2.1-1.16.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
