@@ -430,9 +430,7 @@ In contexts that are defined based on the certificate that was sent over the wir
 * The TLS transcript hash ({{Section 4.1 of ?RFC9846}}) is computed from the Certificate message and thus the bytes of the input certificate.
 * The tls-server-end-point channel binding ({{Section 4 of ?RFC5929}}) is computed from the bytes of the input certificate.
 
-Similar situations can also arise in custom certificate-processing software if the X.509 validator returns a success result that is ambiguous about which certificate was validated, and then the application proceeds to parse content out of the outer certificate.
-
-In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate is used. {{certificate-mismatch}} discusses this case in more detail.
+In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate SHOULD be used. {{certificate-mismatch}} discusses this case in more detail.
 
 This distinction is a generalization of an existing distinction in path-building X.509 applications. The input list of certificates may differ from the final certification path that was built. Applications are already expected to separate these cases, but they were not previously required to consider different target certificates.
 
@@ -477,7 +475,7 @@ When relying parties evaluate candidate certification paths, they likewise treat
 
 Access checks in the relying party SHOULD act on the certification path that was ultimately validated, failing to do so can result in access control bypass vulnerabilities. In support of this, APIs that return the validated certification path SHOULD reflect the correct target certificate.
 
-However, this breaks an application invariant: previously, the target certificate would never change as a result of path building; which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, it may inadvertently use the wrong certificate, which could carry security implications if the content of the alternate and outer certificate differ.
+However, this breaks an application invariant. Previously, the target certificate would never change as a result of path building. Which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, it may inadvertently use the wrong certificate, which could carry security implications if the content of the alternate and outer certificate differ. In some cases, the X.509 implementation's existing API might not even the validated certification path, only a success or failure status.
 
 X.509 implementations MAY further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt in, yet forget to update some component.
 
