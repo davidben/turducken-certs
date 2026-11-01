@@ -118,7 +118,7 @@ Table of Contents
    cryptography, it is necessary to reconfigure relying parties to
    reject legacy trust anchors before cryptographically-relevant quantum
    computers (CRQCs) become readily available.  Otherwise, provisioning
-   a service with a post-quantum certificates does not prevent downgrade
+   a service with a post-quantum certificate does not prevent downgrade
    attacks since an attacker equipped with a CRQC can attack any trust
    anchor that the relying party still trusts in order to forge a
    trusted certificate, not necessarily the one that issued the
@@ -231,7 +231,7 @@ Table of Contents
       traditional subject key and post-quantum issuer.
       [PQ-AUTH-ROADMAP] embeds post-quantum opt-out certificates as
       alternate certificates in a fully traditional outer certificate.
-      Other applications might issue and deployed them independently,
+      Other applications might issue and deploy them independently,
       without using this specification.
 
 3.  Overview
@@ -413,10 +413,10 @@ Table of Contents
    The outer and alternate certificates MUST have the same validity,
    subject, and subjectPublicKeyInfo values.
 
-   The outer and alternate certificates' extensions lists MUST be
-   dividable into, in order, some number of _common extensions_, some
-   number of _issuer-specific extensions_, and a single _final
-   extension_. These MUST satisfy the following:
+   The outer and alternate certificates' extensions lists MUST each
+   consist of, in order, zero or more _common extensions_, zero or more
+   _issuer-specific extensions_, and a single _final extension_. These
+   MUST satisfy the following:
 
    *  The common extensions across all certificates MUST be equal and
       appear in the same order.
@@ -747,7 +747,7 @@ Table of Contents
 
 5.3.  Input Certificates and Validated Certificates
 
-   For the section, we define the input certificate to be the entire
+   For this section, we define the input certificate to be the entire
    certificate being processed (typically the outer certificate), and
    the validated certificate to be the one for which the certification
    path was checked, which may be the outer certificate or an alternate
@@ -815,7 +815,7 @@ Table of Contents
 
 6.2.  Legacy Relying Parties
 
-   The primary backwards compatibility goal if this specification is
+   The primary backwards compatibility goal of this specification is
    that a relying party that is unaware of this specification will
    process the outer certificate as if the alternate was not present.
    This assumes that existing certificate parsers will ignore
@@ -891,7 +891,7 @@ Table of Contents
    When relying parties evaluate candidate certification paths, they
    likewise treat each possible target certificate separately.  If the
    relying party accepts an alternate certificate, it does not verify
-   outer certificate or even necessarily trust the outer CA.  In
+   the outer certificate or even necessarily trust the outer CA.  In
    particular, in the post-quantum transition, the outer CA is a
    traditional CA, so its key could be compromised by a CRQC.
 
