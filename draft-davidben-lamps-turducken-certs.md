@@ -173,7 +173,7 @@ After subject information is validated according to the policies of each CA invo
 3. If the outer CA participates in CT, run the following steps. These steps MAY run in parallel with step 2. If the outer CA does not participate in CT, skip these steps.
 
    {:type="a"}
-   1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}. Note that this does not include any evidence of the alternate certificate(s), which is by design to reduce the size of the logged precertificates.
+   1. The outer CA signs a precertificate for its initial TBSCertificate, including the critical poison extension, as described in {{Section 3.1 of !RFC6962}}.
 
    2. The outer CA then requests Signed Certificate Timestamps (SCTs) from CT logs.
 
