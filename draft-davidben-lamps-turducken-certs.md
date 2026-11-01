@@ -101,11 +101,13 @@ Some applications, such as TLS on the Web, have constraints that make this parti
 
 {{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
 
-1. Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service has authorized a traditional end entity key for upgraded relying parties. (It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.)
+1. Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a *post-quantum opt-out certificate*.
 
 2. Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.
 
-This issuer-side transition protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.
+A post-quantum opt-out certificate is a quantum-resistant proof that the service has authorized a traditional end entity key for upgraded relying parties. It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.
+
+This issuer-side transition thus protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.
 
 This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy clients unaware of this specification. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
 
@@ -447,16 +449,16 @@ This distinction is a generalization of an existing distinction in path-building
 
 ## Legacy Services
 
-Embedded alternate issuers are a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly SHOULD NOT use this mechanism. Deployments are RECOMMENDED to enforce this in CAs and relying parties.
+This document defines a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly SHOULD NOT use this mechanism. Deployments are RECOMMENDED to enforce this in CAs and relying parties.
 
-For example, in a post-quantum transition for TLS, embedded alternate issuer certificates are only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties, switching which is served based on `ClientHello.SignatureScheme` {{?RFC9846}}. Such a service would have no need for embedded alternate issuer certificates. Accordingly, in a TLS deployment using embedded alternate issuer certificates for a post-quantum transition:
+For example, in a post-quantum transition for TLS, this mechanism is only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities ({{Section 4.5.1.2 of ?RFC9846}}) to select between its supported relying parties. Such a service would have no need for this document. Accordingly, in a TLS deployment using this mechanism for a post-quantum transition:
 
-* CAs SHOULD NOT issue embedded alternate issuer certificates if the end-entity key is post-quantum.
-* Relying parties SHOULD ignore embedded alternate issuer certificates if the end-entity key is post-quantum.
+* CAs SHOULD NOT embed alternate certificates if the end-entity key is post-quantum.
+* Relying parties SHOULD ignore alternate certificates if the end-entity key is post-quantum.
 
-This ensures that, when the post-quantum transition is completed, there will be no embedded alternate issuer certificates remaining and implementations can remove the supporting logic.
+This ensures that, when the post-quantum transition is completed, services will no longer rely on this mechanism and implementations can remove the supporting logic.
 
-A given deployment SHOULD only deploy embedded alternate issuer certificates once, for only one transition. After that transition has completed, the deployment SHOULD have transitioned to a state where certificate holders support multiple certificates.
+A given deployment SHOULD only deploy this mechanism once, for only one transition. After that transition has completed, the deployment SHOULD have transitioned to a state where certificate holders support multiple certificates.
 
 ## Legacy Relying Parties
 
@@ -478,11 +480,11 @@ This is believed to be the behavior of all existing parsers, and is supported by
 
 In deployments that use CT {{!RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. ({{!RFC6962}} was obsoleted by {{?RFC9162}}, but the two protocols are incompatible. This document uses the definitions from {{!RFC6962}} for compatibility with existing deployments.) {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
 
-Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when Merkle Tree Certificates are combined with embedded alternate issuer certificates, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
+Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantum-resistant transparency construction that avoids this size increase. However, when post-quantum Merkle Tree Certificates are embedded as alternate certificates, the resulting large AlternateIssuerInfo structures will instead be logged with the outer certificate. The traditional CT logs would increase in size during the transition to Merkle Tree Certificates.
 
 {{signed-certificate-timestamp-encoding}} partially mitigates this new increase by embedding AlternateIssuerInfo structures in SCTs. When the outer certificate's precertificate is logged, the precertificate will omit these SCTs and thus the added structures.
 
-This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using embedded alternate issuer certificates to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
+This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using this document to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
 
