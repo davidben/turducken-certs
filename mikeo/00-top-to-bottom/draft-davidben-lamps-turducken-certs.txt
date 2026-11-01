@@ -613,7 +613,8 @@ Table of Contents
    outerCertificateBinding extension must be last, thereby precluding a
    certificate from simultaneously being both an outer and alternate
    certificate.  This does not preclude the alternate certificate from
-   embedding SCTs because RFC6962 does not have an ordering requirement.
+   embedding SCTs because [RFC6962] does not have an ordering
+   requirement.
 
 5.  Relying Parties
 
