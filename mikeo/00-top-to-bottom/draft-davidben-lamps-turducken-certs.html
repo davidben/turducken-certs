@@ -1934,12 +1934,16 @@ ext-outerCertificateBinding EXTENSION ::= {
         </h3>
 <p id="section-6.2-1">The primary backwards compatibility goal if this specification is that a relying party that is unaware of this specification will process the outer certificate as if the alternate was not present. This assumes that existing certificate parsers will ignore unrecognized SCTs of type <code>alternate_issuer_info</code> and continue processing the rest of the certificate as usual.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
 <p id="section-6.2-2">This is believed to be the behavior of all existing parsers, and is supported by both <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> and <span>[<a href="#RFC9162" class="cite xref">RFC9162</a>]</span>:<a href="#section-6.2-2" class="pilcrow">¶</a></p>
-<p id="section-6.2-3">[Section 3.3 of RFC6962] says:
-"This encoding ensures that TLS clients can
+<p id="section-6.2-3"><span><a href="https://rfc-editor.org/rfc/rfc6962#section-3.3" class="relref">Section 3.3</a> of [<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> says:<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-6.2-4.1">
+            <p id="section-6.2-4.1.1">This encoding ensures that TLS clients can
 decode each SCT individually (i.e., if there is a version upgrade,
-out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand)."<a href="#section-6.2-3" class="pilcrow">¶</a></p>
-<p id="section-6.2-4">[Section 6.3 of RFC9162] says:
-"This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand)."<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+out-of-date clients can still parse old SCTs while skipping over new SCTs whose versions they don't understand).<a href="#section-6.2-4.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-6.2-5">[Section 6.3 of RFC9162] says:
+"This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand)."<a href="#section-6.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-transparency-log-sizes">
