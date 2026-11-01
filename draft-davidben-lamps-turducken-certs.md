@@ -131,6 +131,9 @@ Issuer:
 Outer certificate:
 : A certificate that embeds one or more alternate certificates using the mechanism defined in this document.
 
+Certification Authority (CA):
+: The (name, key) tuple representing a certificate issuer.
+
 Outer CA:
 : The CA that issues the outer certificate.
 
