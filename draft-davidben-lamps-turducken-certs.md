@@ -101,7 +101,7 @@ Some applications, such as TLS on the Web, have constraints that make this parti
 
 {{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
 
-1. Legacy services serve certificates with post-quantum issuers, even if the end-entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service is continuing to use a traditional algorithm.
+1. Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a *post-quantum opt-out certificate*. It provides a quantum-resistant proof to the relying party that the service has authorized a traditional end entity key for upgraded relying parties. (It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.)
 
 2. Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.
 
