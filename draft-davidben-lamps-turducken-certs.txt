@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 5 May 2027                            TurboLight Solutions, LLC
+Expires: 9 May 2027                            TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         1 November 2026
+                                                         5 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 May 2027.
+   This Internet-Draft will expire on 9 May 2027.
 
 Copyright Notice
 
@@ -593,7 +593,7 @@ Table of Contents
    ext-outerCertificateBinding EXTENSION ::= {
        SYNTAX OuterCertificateBinding
        IDENTIFIED BY id-pe-outerCertificateBinding
-       CRITICALITY FALSE
+       CRITICALITY {FALSE}
    }
 
    The OuterCertificateBinding structure is similar to the
@@ -1091,17 +1091,17 @@ Table of Contents
               Okubo, T., Bonnell, C., Gray, J., Ounsworth, M., and J.
               Mandel, "A Mechanism for X.509 Certificate Discovery",
               Work in Progress, Internet-Draft, draft-ietf-lamps-
-              certdiscovery-05, 1 November 2026,
+              certdiscovery-06, 2 November 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-lamps-
-              certdiscovery-05>.
+              certdiscovery-06>.
 
    [I-D.ietf-plants-merkle-tree-certs]
               Benjamin, D., O'Brien, D., Westerbaan, B., Valenta, L.,
               and F. Valsorda, "Merkle Tree Certificates", Work in
               Progress, Internet-Draft, draft-ietf-plants-merkle-tree-
-              certs-07, 7 October 2026,
+              certs-08, 1 November 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-plants-
-              merkle-tree-certs-07>.
+              merkle-tree-certs-08>.
 
    [IETF124-PLANTS]
               Benjamin, D., "PLANTS BoF: Solution Space and Dispatched
@@ -1207,7 +1207,7 @@ Appendix A.  ASN.1 Module
    ext-outerCertificateBinding EXTENSION ::= {
        SYNTAX OuterCertificateBinding
        IDENTIFIED BY id-pe-outerCertificateBinding
-       CRITICALITY FALSE
+       CRITICALITY {FALSE}
    }
 
    END
