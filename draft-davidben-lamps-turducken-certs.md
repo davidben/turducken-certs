@@ -486,6 +486,26 @@ This is believed to be the behavior of all existing parsers, and is supported by
 
 > This encoding ensures that TLS clients can decode each TransItem individually (so, for example, if there is a version upgrade, out-of-date clients can still parse old TransItem structures while skipping over new TransItem structures whose versions they don't understand).
 
+A PKI deployment can verify broad compatibility by experimentally deploying an AlternateIssuerInfo in some widely-accessed test certificate. For example, this test certificate could be served from a background request on a widely-accessed webpage. This AlternateIssuerInfo MAY be a fixed placeholder value if no alternate CA is yet available, provided the `issuer` field does not match the name of a real CA. Relying parties will ignore alternate certificates issued by CAs they do not trust, so this placeholder will not impact relying parties that implement this document.
+
+Such experiments could miss more specialized non-compliant relying parties that only talks to a few services. Should such a relying party exist, a PKI deployment can stil use this mechanism if they first prioritize upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.
+
+## Certificate Sizes
+
+Embedding alternate certificates into an outer certificate increases the overall certificate size. In particular, embedding a post-quantum opt-out certificate adds large post-quantum signatures to the otherwise traditional outer certificate.
+
+While Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} aim to decrease post-quantum certificate sizes with landmark-relative certificates, this optimization is not available here. This mechanism targets legacy, single-certificate-only services, so the alternate certificate needs to be standalone for compatibility with all supporting relying parties. This means:
+
+* Legacy services connecting to post-quantum relying parties serve standalone certificates, when landmark-relative certificates might have been possible.
+* Legacy services connecting to legacy relying parties serve extra post-quantum signatures, when legacy relying parties ignores them anyway.
+
+This size increase could increase latency for those connections. However, the impact is limited to legacy services. Any given service can mitigate the latency cost by upgrading to be fully post-quantum-capable and multi-certificate-capable. This gives optimal behavior for the service:
+
+* Upgraded services connecting to post-quantum relying parties can select between landmark-relative and standalone certificates.
+* Upgraded services connecting to legacy relying parties can serve traditional certificates, with no extra certificates embedded.
+
+A PKI can thus mitigate this size cost in two steps: First, upgrade widely-accessed, faster-moving services to post-quantum. Then, deploy embedded post-quantum opt-out certificates to any remaining services that have not yet upgraded. The size costs will be limited to those legacy services. As legacy services then upgrade, they simultaneously become quantum-resistant and decrease certificate sizes.
+
 ## Certificate Transparency Log Sizes
 
 In deployments that use CT {{?RFC6962}}, a direct post-quantum transition risks significantly increasing the sizes of CT logs. {{IETF124-PLANTS}} estimated an 8.3x size increase from migrating to ML-DSA-44.
