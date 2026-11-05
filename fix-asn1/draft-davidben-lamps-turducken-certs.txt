@@ -593,7 +593,7 @@ Table of Contents
    ext-outerCertificateBinding EXTENSION ::= {
        SYNTAX OuterCertificateBinding
        IDENTIFIED BY id-pe-outerCertificateBinding
-       CRITICALITY FALSE
+       CRITICALITY {FALSE}
    }
 
    The OuterCertificateBinding structure is similar to the
