@@ -871,8 +871,8 @@ Table of Contents
 
    Such experiments could miss more specialized non-compliant relying
    parties that only talks to a few services.  Should such a relying
-   party exist, a PKI deployment can stil use this mechanism if they
-   first prioritize upgrading those services to support multiple
+   party exist, a PKI deployment can still use this mechanism if it
+   first prioritizes upgrading those services to support multiple
    certificates directly.  This document is only needed for legacy,
    single-certificate-only services.
 
@@ -884,8 +884,8 @@ Table of Contents
    otherwise traditional outer certificate.
 
    While Merkle Tree Certificates [I-D.ietf-plants-merkle-tree-certs]
-   aims to decrease post-quantum certificate sizes with landmark-
-   relative certificates, this optimization is not available here.  This
+   aim to decrease post-quantum certificate sizes with landmark-relative
+   certificates, this optimization is not available here.  This
    mechanism targets legacy, single-certificate-only services, so the
    alternate certificate needs to be standalone for compatibility with
    all supporting relying parties.  This means:
