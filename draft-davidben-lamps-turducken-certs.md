@@ -623,7 +623,7 @@ id-pe-outerCertificateBinding OBJECT IDENTIFIER ::= {
 ext-outerCertificateBinding EXTENSION ::= {
     SYNTAX OuterCertificateBinding
     IDENTIFIED BY id-pe-outerCertificateBinding
-    CRITICALITY FALSE
+    CRITICALITY {FALSE}
 }
 
 END
