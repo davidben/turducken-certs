@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 9 May 2027                            TurboLight Solutions, LLC
+Expires: 10 May 2027                           TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         5 November 2026
+                                                         6 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 May 2027.
+   This Internet-Draft will expire on 10 May 2027.
 
 Copyright Notice
 
@@ -887,12 +887,12 @@ Table of Contents
    aim to decrease post-quantum certificate sizes with landmark-relative
    certificates, this optimization is not available here.  This
    mechanism targets legacy, single-certificate-only services, so the
-   alternate certificate needs to be standalone for compatibility with
-   all supporting relying parties.  This means:
+   alternate certificate needs to be a standalone MTC for compatibility
+   with all supporting relying parties.  This means:
 
    *  Legacy services connecting to post-quantum relying parties serve
-      standalone certificates, when landmark-relative certificates might
-      have been possible.
+      standalone MTC certificates, when landmark-relative certificates
+      might have been possible.
 
    *  Legacy services connecting to legacy relying parties serve extra
       post-quantum signatures, when legacy relying parties ignores them
