@@ -488,7 +488,7 @@ This is believed to be the behavior of all existing parsers, and is supported by
 
 A PKI deployment can verify broad compatibility by experimentally deploying an AlternateIssuerInfo in some widely-accessed test certificate. For example, this test certificate could be served from a background request on a widely-accessed webpage. This AlternateIssuerInfo MAY be a fixed placeholder value if no alternate CA is yet available, provided the `issuer` field does not match the name of a real CA. Relying parties will ignore alternate certificates issued by CAs they do not trust, so this placeholder will not impact relying parties that implement this document.
 
-Such experiments could miss more specialized non-compliant relying parties that only talks to a few services. Should such a relying party exist, a PKI deployment can still use this mechanism if it first prioritizes upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.
+Such experiments could miss more specialized non-compliant relying parties that only talk to a few services. Should such a relying party exist, a PKI deployment can still use this mechanism if it first prioritizes upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.
 
 ## Certificate Sizes
 
