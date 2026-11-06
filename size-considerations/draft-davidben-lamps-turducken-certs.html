@@ -1964,7 +1964,7 @@ out-of-date clients can still parse old SCTs while skipping over new SCTs whose 
 </li>
         </ul>
 <p id="section-6.2-7">A PKI deployment can verify broad compatibility by experimentally deploying an AlternateIssuerInfo in some widely-accessed test certificate. For example, this test certificate could be served from a background request on a widely-accessed webpage. This AlternateIssuerInfo <span class="bcp14">MAY</span> be a fixed placeholder value if no alternate CA is yet available, provided the <code>issuer</code> field does not match the name of a real CA. Relying parties will ignore alternate certificates issued by CAs they do not trust, so this placeholder will not impact relying parties that implement this document.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
-<p id="section-6.2-8">Such experiments could miss more specialized non-compliant relying parties that only talks to a few services. Should such a relying party exist, a PKI deployment can still use this mechanism if it first prioritizes upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.<a href="#section-6.2-8" class="pilcrow">¶</a></p>
+<p id="section-6.2-8">Such experiments could miss more specialized non-compliant relying parties that only talk to a few services. Should such a relying party exist, a PKI deployment can still use this mechanism if it first prioritizes upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.<a href="#section-6.2-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-sizes">

@@ -870,7 +870,7 @@ Table of Contents
    will not impact relying parties that implement this document.
 
    Such experiments could miss more specialized non-compliant relying
-   parties that only talks to a few services.  Should such a relying
+   parties that only talk to a few services.  Should such a relying
    party exist, a PKI deployment can still use this mechanism if it
    first prioritizes upgrading those services to support multiple
    certificates directly.  This document is only needed for legacy,
