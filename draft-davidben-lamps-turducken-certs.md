@@ -494,9 +494,9 @@ Such experiments could miss more specialized non-compliant relying parties that 
 
 Embedding alternate certificates into an outer certificate increases the overall certificate size. In particular, embedding a post-quantum opt-out certificate adds large post-quantum signatures to the otherwise traditional outer certificate.
 
-While Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} aim to decrease post-quantum certificate sizes with landmark-relative certificates, this optimization is not available here. This mechanism targets legacy, single-certificate-only services, so the alternate certificate needs to be standalone for compatibility with all supporting relying parties. This means:
+While Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} aim to decrease post-quantum certificate sizes with landmark-relative certificates, this optimization is not available here. This mechanism targets legacy, single-certificate-only services, so the alternate certificate needs to be a standalone MTC for compatibility with all supporting relying parties. This means:
 
-* Legacy services connecting to post-quantum relying parties serve standalone certificates, when landmark-relative certificates might have been possible.
+* Legacy services connecting to post-quantum relying parties serve standalone MTC certificates, when landmark-relative certificates might have been possible.
 * Legacy services connecting to legacy relying parties serve extra post-quantum signatures, when legacy relying parties ignores them anyway.
 
 This size increase could increase latency for those connections. However, the impact is limited to legacy services. Any given service can mitigate the latency cost by upgrading to be fully post-quantum-capable and multi-certificate-capable. This gives optimal behavior for the service:
