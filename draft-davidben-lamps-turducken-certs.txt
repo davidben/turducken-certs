@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 9 May 2027                            TurboLight Solutions, LLC
+Expires: 10 May 2027                           TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         5 November 2026
+                                                         6 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 May 2027.
+   This Internet-Draft will expire on 10 May 2027.
 
 Copyright Notice
 
@@ -97,7 +97,8 @@ Table of Contents
    6.  Deployment Considerations
      6.1.  Legacy Services
      6.2.  Legacy Relying Parties
-     6.3.  Certificate Transparency Log Sizes
+     6.3.  Certificate Sizes
+     6.4.  Certificate Transparency Log Sizes
    7.  Security Considerations
      7.1.  Separate Certificates
      7.2.  Certificate Mismatch
@@ -183,7 +184,7 @@ Table of Contents
    requirements:
 
    *  It avoids increasing the size of logged precertificates in
-      Certificate Transparency (CT), as described in Section 6.3.
+      Certificate Transparency (CT), as described in Section 6.4.
 
    *  It aims to mitigate security risks of mismatched certificate
       contents between the outer and alternate certificates, as
@@ -518,7 +519,7 @@ Table of Contents
    document embeds each AlternateIssuerInfo as a new type of SCT in the
    outer certificate's id-ce-embeddedSCT-CTv1 (OID
    1.3.6.1.4.1.11129.2.4.2) extension.  This extension MUST be the final
-   extension in the outer certificate.  Section 6.3 discusses the
+   extension in the outer certificate.  Section 6.4 discusses the
    motivation for embedding the alternate certificates as SCTs.
 
    The contents of this extension are defined in Section 3.3 of
@@ -858,7 +859,66 @@ Table of Contents
       skipping over new TransItem structures whose versions they don't
       understand).
 
-6.3.  Certificate Transparency Log Sizes
+   A PKI deployment can verify broad compatibility by experimentally
+   deploying an AlternateIssuerInfo in some widely-accessed test
+   certificate.  For example, this test certificate could be served from
+   a background request on a widely-accessed webpage.  This
+   AlternateIssuerInfo MAY be a fixed placeholder value if no alternate
+   CA is yet available, provided the issuer field does not match the
+   name of a real CA.  Relying parties will ignore alternate
+   certificates issued by CAs they do not trust, so this placeholder
+   will not impact relying parties that implement this document.
+
+   Such experiments could miss more specialized non-compliant relying
+   parties that only talk to a few services.  Should such a relying
+   party exist, a PKI deployment can still use this mechanism if it
+   first prioritizes upgrading those services to support multiple
+   certificates directly.  This document is only needed for legacy,
+   single-certificate-only services.
+
+6.3.  Certificate Sizes
+
+   Embedding alternate certificates into an outer certificate increases
+   the overall certificate size.  In particular, embedding a post-
+   quantum opt-out certificate adds large post-quantum signatures to the
+   otherwise traditional outer certificate.
+
+   While Merkle Tree Certificates [I-D.ietf-plants-merkle-tree-certs]
+   aim to decrease post-quantum certificate sizes with landmark-relative
+   certificates, this optimization is not available here.  This
+   mechanism targets legacy, single-certificate-only services, so the
+   alternate certificate needs to be a standalone MTC for compatibility
+   with all supporting relying parties.  This means:
+
+   *  Legacy services connecting to post-quantum relying parties serve
+      standalone MTC certificates, when landmark-relative certificates
+      might have been possible.
+
+   *  Legacy services connecting to legacy relying parties serve extra
+      post-quantum signatures, when legacy relying parties ignores them
+      anyway.
+
+   This size increase could increase latency for those connections.
+   However, the impact is limited to legacy services.  Any given service
+   can mitigate the latency cost by upgrading to be fully post-quantum-
+   capable and multi-certificate-capable.  This gives optimal behavior
+   for the service:
+
+   *  Upgraded services connecting to post-quantum relying parties can
+      select between landmark-relative and standalone certificates.
+
+   *  Upgraded services connecting to legacy relying parties can serve
+      traditional certificates, with no extra certificates embedded.
+
+   A PKI can thus mitigate this size cost in two steps: First, upgrade
+   widely-accessed, faster-moving services to post-quantum.  Then,
+   deploy embedded post-quantum opt-out certificates to any remaining
+   services that have not yet upgraded.  The size costs will be limited
+   to those legacy services.  As legacy services then upgrade, they
+   simultaneously become quantum-resistant and decrease certificate
+   sizes.
+
+6.4.  Certificate Transparency Log Sizes
 
    In deployments that use CT [RFC6962], a direct post-quantum
    transition risks significantly increasing the sizes of CT logs.
