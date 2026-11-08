@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-01T05:29:06.702000+00:00",
+  "timestamp": "2026-11-08T05:30:56.931112+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -250,6 +250,22 @@
       "body": "In inspected the source of folks' SCT validators and it seems to be fine, but later in the process we will need to test it for sure. (To test it, we need an actual CA to start embedding a new SCT version.)",
       "createdAt": "2026-10-31T15:29:53Z",
       "updatedAt": "2026-10-31T15:29:53Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 30,
+      "id": "I_kwDOTGW8t88AAAABcvnw6w",
+      "title": "Clarify Interop / Security Model",
+      "url": "https://github.com/davidben/turducken-certs/issues/30",
+      "state": "OPEN",
+      "author": "ounsworth",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "This LAMPS thread asked for a clearer statement of the Interop and Security Model. I quickly penned:\n\n\n> Interop and security model: \"TLS clients must be able to remove all legacy CAs from their trust stores without compromising their ability to talk to any publicly-trusted server, including those that continue to use a legacy TLS signing server key. TLS servers that fail to upgrade their stacks to be able to use a PQ TLS signing key must only be compromising their own traffic, and not forcing any TLS clients or other TLS servers to assume any risks associated with maintaining support for legacy CAs\".",
+      "createdAt": "2026-11-05T13:17:13Z",
+      "updatedAt": "2026-11-05T13:17:13Z",
       "closedAt": null,
       "comments": []
     }
@@ -2427,6 +2443,156 @@
           ]
         }
       ]
+    },
+    {
+      "number": 31,
+      "id": "PR_kwDOTGW8t88AAAABNHDeHw",
+      "title": "Expand on deployment considerations",
+      "url": "https://github.com/davidben/turducken-certs/pull/31",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Inspired by some of the LAMPS discussion.",
+      "createdAt": "2026-11-05T16:14:26Z",
+      "updatedAt": "2026-11-06T18:24:01Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "65955f2e6980df6958ae80fc4f1a7746b75c0721",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "size-considerations",
+      "headRefOid": "c03f62a1e742aeb39cb4ee4b44bdc74d6e2ec6b1",
+      "closedAt": "2026-11-06T18:23:58Z",
+      "mergedAt": "2026-11-06T18:23:58Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "843c19a5a6ce7e1489e7b9c79b6bc89ae448a3a7"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABWe0hpw",
+          "commit": {
+            "abbreviatedOid": "0778cbe"
+          },
+          "author": "csosto-pk",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "Looks good. I proposed a simple editorial change. ",
+          "createdAt": "2026-11-06T16:44:43Z",
+          "updatedAt": "2026-11-06T16:46:49Z",
+          "comments": [
+            {
+              "originalPosition": 12,
+              "body": "\"be a Standalone MTC for compatibility ...\"",
+              "createdAt": "2026-11-06T16:44:43Z",
+              "updatedAt": "2026-11-06T16:46:49Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABWfp9Sg",
+          "commit": {
+            "abbreviatedOid": "85eb5ed"
+          },
+          "author": "johngray-dev",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "This makes sense.  I was thinking adding some text around the larger sizes and how that impacts legacy clients should be mentioned.  The additional reference to MTC is useful as well. ",
+          "createdAt": "2026-11-06T17:49:52Z",
+          "updatedAt": "2026-11-06T17:49:52Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABWgCVbQ",
+          "commit": {
+            "abbreviatedOid": "85eb5ed"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-06T18:23:33Z",
+          "updatedAt": "2026-11-06T18:23:34Z",
+          "comments": [
+            {
+              "originalPosition": 6,
+              "body": "Minor grammar issue.\n\n```suggestion\nSuch experiments could miss more specialized non-compliant relying parties that only talk to a few services. Should such a relying party exist, a PKI deployment can still use this mechanism if it first prioritizes upgrading those services to support multiple certificates directly. This document is only needed for legacy, single-certificate-only services.\n```",
+              "createdAt": "2026-11-06T18:23:34Z",
+              "updatedAt": "2026-11-06T18:23:34Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOTGW8t88AAAABNHZd8g",
+      "title": "Fix the ASN.1 module",
+      "url": "https://github.com/davidben/turducken-certs/pull/32",
+      "state": "MERGED",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Apparently you need curly braces around the FALSE, as in RFC 8649.",
+      "createdAt": "2026-11-05T16:38:54Z",
+      "updatedAt": "2026-11-05T21:23:15Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "65955f2e6980df6958ae80fc4f1a7746b75c0721",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "fix-asn1",
+      "headRefOid": "73dd1b9e375d809d31035d23f4f4b4856930b635",
+      "closedAt": "2026-11-05T21:23:11Z",
+      "mergedAt": "2026-11-05T21:23:11Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "22ee0ed76cdd7b547394942d6570f52c89350c80"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABWT9Lfw",
+          "commit": {
+            "abbreviatedOid": "73dd1b9"
+          },
+          "author": "CBonnell",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-11-05T21:19:21Z",
+          "updatedAt": "2026-11-05T21:19:21Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "PR_kwDOTGW8t88AAAABNYU6sA",
+      "title": "Add Panos to acknowledgments",
+      "url": "https://github.com/davidben/turducken-certs/pull/33",
+      "state": "OPEN",
+      "author": "davidben",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "@csosto-pk",
+      "createdAt": "2026-11-06T18:44:31Z",
+      "updatedAt": "2026-11-06T18:44:31Z",
+      "baseRepository": "davidben/turducken-certs",
+      "baseRefName": "main",
+      "baseRefOid": "843c19a5a6ce7e1489e7b9c79b6bc89ae448a3a7",
+      "headRepository": "davidben/turducken-certs",
+      "headRefName": "ack-panos",
+      "headRefOid": "9562a6ee0b33050a91ee86d8428617f13d592be9",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
