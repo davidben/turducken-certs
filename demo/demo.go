@@ -3,7 +3,6 @@ package main
 import (
 	"crypto/x509"
 	"encoding/asn1"
-	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"flag"
@@ -16,16 +15,15 @@ import (
 )
 
 const (
-	// Not actually assigned, just a prediction.
-	embeddedAlternateIssuersSCTVersion = 0x0107
+	// Placeholder value, to match https://github.com/IETF-Hackathon/pqc-certificates/blob/master/providers/carl-redhound/turducken_pkits_ml_dsa_65.zip
+	embeddedAlternateIssuersSCTVersion = 0xe000
 )
 
 var (
 	oidEmbeddedSCTV1 = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11129, 2, 4, 2}
-	// Just a placeholder for now from https://davidben.net/oid. Don't *actually* deploy this.
-	oidOuterCertificateBinding = asn1.ObjectIdentifier{1, 2, 840, 113554, 4, 1, 72585, 123456}
-
-	altInfoListLogID = mustDecodeHex("abdcf1b6ca6af3c91f37f54fbafdbd17e711780d5197d15d0e1e71106d8cb6c5")
+	// Just a placeholder for now, to match https://github.com/IETF-Hackathon/pqc-certificates/blob/master/providers/carl-redhound/turducken_pkits_ml_dsa_65.zip
+	// Don't *actually* deploy this.
+	oidOuterCertificateBinding = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 1, 99}
 
 	tagVersion    = cbasn1.Tag(0).Constructed().ContextSpecific()
 	tagExtensions = cbasn1.Tag(3).Constructed().ContextSpecific()
@@ -37,20 +35,9 @@ var (
 	oidExtensionSubjectAltName             = asn1.ObjectIdentifier{2, 5, 29, 17}
 	oidExtensionBasicConstraints           = asn1.ObjectIdentifier{2, 5, 29, 19}
 	oidExtensionNameConstraints            = asn1.ObjectIdentifier{2, 5, 29, 30}
-	oidExtensionCertificatePolicies        = asn1.ObjectIdentifier{2, 5, 29, 32}
-	oidExtensionPolicyMappings             = asn1.ObjectIdentifier{2, 5, 29, 33}
-	oidExtensionPolicyConstraints          = asn1.ObjectIdentifier{2, 5, 29, 36}
 	oidExtensionExtendedKeyUsage           = asn1.ObjectIdentifier{2, 5, 29, 37}
-	oidExtensionInhibitAnyPolicy           = asn1.ObjectIdentifier{2, 5, 29, 54}
+	oidExtensionCABFOrganizationIdentifier = asn1.ObjectIdentifier{2, 23, 140, 3, 1}
 )
-
-func mustDecodeHex(s string) []byte {
-	b, err := hex.DecodeString(s)
-	if err != nil {
-		panic(err)
-	}
-	return b
-}
 
 func copyAndSaveASN1Element(out *cryptobyte.Builder, in *cryptobyte.String, saveElem *cryptobyte.String, tag cbasn1.Tag) bool {
 	var elem cryptobyte.String
@@ -94,8 +81,7 @@ func extractAlternateCertificates(outer *x509.Certificate) ([]*x509.Certificate,
 		return nil, errors.New("could not parse embedded SCT extension")
 	}
 
-	var altInfoList cryptobyte.String
-	var foundAltInfoList bool
+	var certs []*x509.Certificate
 	for !sctList.Empty() {
 		var sct cryptobyte.String
 		if !sctList.ReadUint16LengthPrefixed(&sct) || sct.Empty() {
@@ -105,28 +91,9 @@ func extractAlternateCertificates(outer *x509.Certificate) ([]*x509.Certificate,
 		if !sct.ReadUint16(&version) || version != embeddedAlternateIssuersSCTVersion {
 			continue
 		}
-		if !sct.ReadUint24LengthPrefixed(&altInfoList) || !sct.Empty() {
-			return nil, errors.New("could not parse SCT")
-		}
-		if foundAltInfoList {
-			return nil, errors.New("duplicate AlternateIssuerInfoList SCT")
-		}
-		foundAltInfoList = true
-	}
-	if !foundAltInfoList {
-		return nil, errors.New("AlternateIssuerInfoList SCT not found")
-	}
-
-	var altInfos cryptobyte.String
-	if !altInfoList.ReadASN1(&altInfos, cbasn1.SEQUENCE) || !altInfoList.Empty() {
-		return nil, errors.New("could not parse AlternateIssuerInfoList")
-	}
-
-	var certs []*x509.Certificate
-	for !altInfos.Empty() {
 		var altInfo cryptobyte.String
-		if !altInfos.ReadASN1(&altInfo, cbasn1.SEQUENCE) {
-			return nil, errors.New("could not parse AlternateIssuerInfo")
+		if !sct.ReadUint16LengthPrefixed(&altInfo) || !sct.Empty() {
+			return nil, errors.New("could not parse SCT")
 		}
 		cert, err := extractAlternateCertificate(outer, altInfo)
 		if err != nil {
@@ -134,6 +101,11 @@ func extractAlternateCertificates(outer *x509.Certificate) ([]*x509.Certificate,
 		}
 		certs = append(certs, cert)
 	}
+
+	if len(certs) == 0 {
+		return nil, errors.New("no alternate certificates found")
+	}
+
 	return certs, nil
 }
 
@@ -158,22 +130,24 @@ func readX509Extension(s *cryptobyte.String) (ext cryptobyte.String, oid asn1.Ob
 	return
 }
 
-func isKnownSubjectExtension(oid asn1.ObjectIdentifier) bool {
-	return oid.Equal(oidExtensionSubjectInfoAccess) ||
-		oid.Equal(oidExtensionSubjectDirectoryAttributes) ||
-		oid.Equal(oidExtensionSubjectKeyId) ||
+func isInvalidIssuerExtension(oid asn1.ObjectIdentifier) bool {
+	return oid.Equal(oidExtensionSubjectKeyId) ||
 		oid.Equal(oidExtensionKeyUsage) ||
 		oid.Equal(oidExtensionSubjectAltName) ||
+		oid.Equal(oidExtensionSubjectDirectoryAttributes) ||
 		oid.Equal(oidExtensionBasicConstraints) ||
 		oid.Equal(oidExtensionNameConstraints) ||
-		oid.Equal(oidExtensionCertificatePolicies) ||
-		oid.Equal(oidExtensionPolicyMappings) ||
-		oid.Equal(oidExtensionPolicyConstraints) ||
 		oid.Equal(oidExtensionExtendedKeyUsage) ||
-		oid.Equal(oidExtensionInhibitAnyPolicy)
+		oid.Equal(oidExtensionSubjectInfoAccess) ||
+		oid.Equal(oidExtensionCABFOrganizationIdentifier)
 }
 
 func extractAlternateCertificate(outer *x509.Certificate, altInfo cryptobyte.String) (*x509.Certificate, error) {
+	var altInfoSeq cryptobyte.String
+	if !altInfo.ReadASN1(&altInfoSeq, cbasn1.SEQUENCE) || !altInfo.Empty() {
+		return nil, errors.New("could not parse AlternateIssuerInfo")
+	}
+
 	outerTBSElem := cryptobyte.String(outer.RawTBSCertificate)
 	var outerTBS cryptobyte.String
 	if !outerTBSElem.ReadASN1(&outerTBS, cbasn1.SEQUENCE) || !outerTBSElem.Empty() {
@@ -202,11 +176,11 @@ func extractAlternateCertificate(outer *x509.Certificate, altInfo cryptobyte.Str
 			}
 			var commonExts uint64
 			var appendExts cryptobyte.String
-			if !copyASN1Element(altTBS, &altInfo, cbasn1.INTEGER) || // serial
-				!copyAndSaveASN1Element(altTBS, &altInfo, &altSigAlg, cbasn1.SEQUENCE) || // sigalg
-				!copyASN1Element(altTBS, &altInfo, cbasn1.SEQUENCE) || // issuer
-				!altInfo.ReadASN1Integer(&commonExts) ||
-				!altInfo.ReadASN1(&appendExts, cbasn1.SEQUENCE) {
+			if !copyASN1Element(altTBS, &altInfoSeq, cbasn1.INTEGER) || // serial
+				!copyAndSaveASN1Element(altTBS, &altInfoSeq, &altSigAlg, cbasn1.SEQUENCE) || // sigalg
+				!copyASN1Element(altTBS, &altInfoSeq, cbasn1.SEQUENCE) || // issuer
+				!altInfoSeq.ReadASN1Integer(&commonExts) ||
+				!altInfoSeq.ReadASN1(&appendExts, cbasn1.SEQUENCE) {
 				return errors.New("could not parse AlternateIssuerInfo")
 			}
 			outerBinding.AddASN1Uint64(commonExts)
@@ -236,7 +210,7 @@ func extractAlternateCertificate(outer *x509.Certificate, altInfo cryptobyte.Str
 						if !ok {
 							return errors.New("could not parse AlternateIssuerInfo")
 						}
-						if isKnownSubjectExtension(oid) {
+						if isInvalidIssuerExtension(oid) {
 							return fmt.Errorf("invalid extension %s added in AlternateIssuerInfo", oid)
 						}
 						altExts.AddBytes(ext)
@@ -248,7 +222,7 @@ func extractAlternateCertificate(outer *x509.Certificate, altInfo cryptobyte.Str
 							if !ok {
 								return errors.New("could not parse outer TBSCertificate")
 							}
-							if isKnownSubjectExtension(oid) {
+							if isInvalidIssuerExtension(oid) {
 								return fmt.Errorf("invalid extension %s removed from outer TBSCertificate", oid)
 							}
 							if oid.Equal(oidEmbeddedSCTV1) {
@@ -280,7 +254,7 @@ func extractAlternateCertificate(outer *x509.Certificate, altInfo cryptobyte.Str
 			return nil
 		}))
 		altCert.AddBytes(altSigAlg)
-		if !copyASN1Element(altCert, &altInfo, cbasn1.BIT_STRING) || !altInfo.Empty() {
+		if !copyASN1Element(altCert, &altInfoSeq, cbasn1.BIT_STRING) || !altInfoSeq.Empty() {
 			return errors.New("could not parse AlternateIssuerInfo")
 		}
 		return nil
