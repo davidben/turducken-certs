@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 10 May 2027                           TurboLight Solutions, LLC
+Expires: 21 May 2027                           TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         6 November 2026
+                                                        17 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 May 2027.
+   This Internet-Draft will expire on 21 May 2027.
 
 Copyright Notice
 
