@@ -291,7 +291,7 @@ Each alternate certificate is described as differences from the outer certificat
 
 ~~~ asn.1
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                              {SignatureAlgorithms}},
     issuer               Name,
@@ -303,7 +303,7 @@ AlternateIssuerInfo ::= SEQUENCE {
 
 An AlternateIssuerInfo's fields are defined as follows:
 
-* `serialNumber` is the alternate certificate's serial number.
+* `certSerialNumber` is the alternate certificate's serial number.
 * `signatureAlgorithm` is the alternate certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.
 * `issuer` is the alternate certificate's issuer name.
 * `commonExtensionCount` is the number of common extensions, as defined in {{certificate-constraints}}. This value MUST be strictly less than the number of extensions in the outer certificate, to exclude the outer certificate's final extension.
@@ -352,7 +352,7 @@ Each alternate certificate contains an outer certificate binding extension, defi
 
 ~~~ asn.1
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                             {SignatureAlgorithms}},
     issuer               Name,
@@ -373,7 +373,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 
 The OuterCertificateBinding structure is similar to the AlternateIssuerInfo, except that it does not contain a `signatureValue` field. It describes the outer certificate, relative to the alternate certificate.
 
-* `serialNumber` is the outer certificate's serial number.
+* `certSerialNumber` is the outer certificate's serial number.
 * `signatureAlgorithm` is the outer certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.
 * `issuer` is the outer certificate's issuer name.
 * `commonExtensionCount` is the number of common extensions, as defined in {{certificate-constraints}}. This value MUST be strictly less than the number of extensions in the alternate certificate, to exclude the outer certificate binding extension itself.
@@ -410,7 +410,7 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 2. Make a copy of the outer certificate as a Certificate structure.
 
-3. Replace the TBSCertificate's `serialNumber` field with the AlternateIssuerInfo's `serialNumber`. Let `outerSerialNumber` be the replaced value.
+3. Replace the TBSCertificate's `serialNumber` field with the AlternateIssuerInfo's `certSerialNumber`. Let `outerSerialNumber` be the replaced value.
 
 4. Replace the Certificate's `signatureAlgorithm` field and the TBSCertificate's `signature` field with the AlternateIssuerInfo's `signatureAlgorithm`. Let `outerSignatureAlgorithm` be the replaced value.
 
@@ -426,7 +426,7 @@ The following procedure reconstructs an alternate certificate from the outer cer
 
 10. Append a non-critical outer certificate binding extension ({{outer-certificate-binding}}) to the TBSCertificate such that:
 
-    * `serialNumber` is `outerSerialNumber`.
+    * `certSerialNumber` is `outerSerialNumber`.
     * `signatureAlgorithm` is `outerSignatureAlgorithm`.
     * `issuer` is `outerIssuer`.
     * `commonExtensionCount` is the AlternateIssuerInfo's `commonExtensionCount` value.
@@ -618,7 +618,7 @@ IMPORTS
 ;
 
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                              {SignatureAlgorithms}},
     issuer               Name,
@@ -628,7 +628,7 @@ AlternateIssuerInfo ::= SEQUENCE {
 }
 
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                             {SignatureAlgorithms}},
     issuer               Name,
@@ -654,4 +654,4 @@ END
 
 Thanks to the authors of {{?I-D.bonnell-lamps-chameleon-certs}} and {{?I-D.ietf-lamps-certdiscovery}} for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.
 
-Thanks also to Bob Beck for reviewing the document and providing feedback.
+Thanks also to Bob Beck and Michael Richardson for reviewing the document and providing feedback.
