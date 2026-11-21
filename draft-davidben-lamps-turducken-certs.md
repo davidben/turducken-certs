@@ -285,6 +285,8 @@ The outer and alternate certificates' `extensions` lists MUST each consist of, i
 
 * Each alternate certificate's final extension MUST have type `id-pe-outerCertificateBinding`, with contents as described in {{outer-certificate-binding}}. This authenticates most of the outer certificate from the alternate certificate.
 
+The above constraints apply to the CA when issuing certificates. They do not directly apply to relying parties. {{reconstructing-the-alternate-certificate}} and {{checking-issuer-specific-extensions}} define how relying parties reconstruct the alternate certificate, which explicitly checks some requirements and implicitly guarantees others.
+
 ## Alternate Certificate Information
 
 Each alternate certificate is described as differences from the outer certificate in an AlternateIssuerInfo structure. An AlternateIssuerInfo is defined as follows:
