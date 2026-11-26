@@ -87,29 +87,29 @@ This document defines a mechanism to embed one or more alternate certificates wi
 
 # Introduction
 
-In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificate does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.
+In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificate does not prevent downgrade attacks. An attacker equipped with a CRQC can attack any still-trusted legacy trust anchor in order to forge a trusted certificate for the service. The service's choice of CA does not impact this attack. Any CA which the relying party trusts for the service can be an attack vector.
 
-Some applications, such as TLS on the Web, have constraints that make this particularly challenging:
+In some applications, such as TLS on the Web, removing legacy trust anchors is particularly challenging:
 
-* Upgraded relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
+* Upgraded relying parties must continue to support legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.
 
 * Relying parties support enough services that out-of-band configuration of which services have migrated to post-quantum is impractical.
 
 * Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.
 
-* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.
+* In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature. This precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.
 
-{{PQ-AUTH-ROADMAP}} and {{IETF126-PQ-AUTH}} discuss how, for these applications, it is sufficient to migrate to a state where:
+To satisfy these constraints, upgraded relying parties must be able to remove all legacy trust anchors while remaining compatible with supported services, including those that continue to use a traditional end entity key. Services that fail to upgrade must only compromise their own traffic, and not traffic between upgraded relying parties and upgraded services. Migrating to the following state achieves this:
 
 1. Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a *post-quantum opt-out certificate*.
 
-2. Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.
+2. Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end entity keys.
 
-A post-quantum opt-out certificate is a quantum-resistant proof that the service has authorized a traditional end entity key for upgraded relying parties. It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.
+A post-quantum opt-out certificate serves as a quantum-resistant proof that the service has authorized a traditional end entity key for upgraded relying parties. {{post-quantum-transition}}, {{PQ-AUTH-ROADMAP}}, and {{IETF126-PQ-AUTH}} discuss how, by requiring legacy services to present opt-out certificates, post-quantum services can be protected from downgrade, while legacy services can continue to work.
 
-This issuer-side transition thus protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.
+However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal. The legacy services would lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.
 
-This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy clients unaware of this specification. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
+This document addresses this final hurdle: it defines a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy relying parties unaware of this specification. This delivers the post-quantum opt-out signal to upgraded relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:
 
 * It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in {{certificate-transparency-log-sizes}}.
 * It aims to mitigate security risks of mismatched certificate contents between the outer and alternate certificates, as described in {{certificate-mismatch}}.
@@ -146,7 +146,7 @@ Alternate CA:
 : A CA that issues one of the alternate certificates.
 
 Post-quantum opt-out certificate:
-: An end-entity certificate with a traditional subject key and post-quantum issuer. {{PQ-AUTH-ROADMAP}} embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deploy them independently, without using this specification.
+: An end entity certificate with a traditional subject key and post-quantum issuer. {{PQ-AUTH-ROADMAP}} embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deploy them independently, without using this specification.
 
 # Overview
 
@@ -463,10 +463,10 @@ This distinction is a generalization of an existing distinction in path-building
 
 This document defines a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly SHOULD NOT use this mechanism. Deployments are RECOMMENDED to enforce this in CAs and relying parties.
 
-For example, in a post-quantum transition for TLS, this mechanism is only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities ({{Section 4.5.1.2 of ?RFC9846}}) to select between its supported relying parties. Such a service would have no need for this document. Accordingly, in a TLS deployment using this mechanism for a post-quantum transition:
+For example, in a post-quantum transition for TLS, this mechanism is only applicable to unmodified legacy services that only have traditional end entity keys. Once a service has a post-quantum end entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities ({{Section 4.5.1.2 of ?RFC9846}}) to select between its supported relying parties. Such a service would have no need for this document. Accordingly, in a TLS deployment using this mechanism for a post-quantum transition:
 
-* CAs SHOULD NOT embed alternate certificates if the end-entity key is post-quantum.
-* Relying parties SHOULD ignore alternate certificates if the end-entity key is post-quantum.
+* CAs SHOULD NOT embed alternate certificates if the end entity key is post-quantum.
+* Relying parties SHOULD ignore alternate certificates if the end entity key is post-quantum.
 
 This ensures that, when the post-quantum transition is completed, services will no longer rely on this mechanism and implementations can remove the supporting logic.
 
@@ -519,6 +519,53 @@ Merkle Tree Certificates {{?I-D.ietf-plants-merkle-tree-certs}} provide a quantu
 This is only a partial mitigation because the AlternateIssuerInfo will still be logged when the final certificate with embedded SCTs is logged. Deployments using this document to transition away from a CT-based PKI thus SHOULD permit CT logs to reject logging of any certificates with embedded SCTs of type `alternate_issuer_info`. This will not impact other embedded SCTs, which refer to logged precertificates rather than logged final certificates.
 
 # Security Considerations
+
+## Post-Quantum Transition
+
+{{introduction}} discusses how this mechanism can be applied to transitioning a PKI to post-quantum cryptography. It targets a transition state where:
+
+* Upgraded services serve true post-quantum certificates, with post-quantum issuer and end entity key.
+
+* Legacy services serve post-quantum opt-out certificates, with post-quantum issuer but traditional end entity key.
+
+* Upgraded relying parties accept either, by requiring post-quantum issuers, but allowing traditional end entity keys.
+
+Connections between upgraded relying parties and legacy services remain quantum-vulnerable. Until a legacy service upgrades and stops being a legacy service, relying parties have no choice but to refuse to connect to it or somehow support it in a quantum-vulnerable way.
+
+However, despite remaining compatible with legacy services, this transition state makes it possible to protect connections between upgraded relying parties and upgraded services.
+
+### Security of Upgraded Services
+
+To impersonate an upgraded service with a CRQC, an attacker must forge or find some accepted certificate that covers the target service but has a quantum-vulnerable end entity key. That is, it must forge or find a post-quantum opt-out certificate. This is not possible provided:
+
+1. Upgraded relying parties only accept post-quantum issuers, so forging an unauthorized certificate is not possible.
+
+2. CAs trusted by upgraded relying parties only issue authorized certificates. This is the underlying assumption for all PKI security.
+
+3. The target service has no active, authorized post-quantum opt-out certificates.
+
+A service MAY temporarily authorize both post-quantum and post-quantum opt-out certificates if it is in the middle of this upgrade. For example, it might have only upgraded some of its serving instances. However, it remains quantum-vulnerable in this state. To complete the transition, the service must:
+
+* No longer request or authorize post-quantum opt-out certificates from post-quantum CAs
+* Either wait for all previous post-quantum opt-out certificates to expire or revoke them
+
+Upgraded services MAY continue to request traditional certificates from traditional CAs. This does not impact the security of upgraded relying parties, who do not trust these CAs, and will typically be necessary for compatibility with legacy relying parties, who *only* trust these CAs.
+
+In transparent PKIs, such as {{?RFC6962}} and {{?I-D.ietf-plants-merkle-tree-certs}}, monitors can detect services with simultaneous post-quantum and post-quantum opt-out certificates. This can be used to detect misconfigured services that have not completed the upgrade.
+
+### Handling Legacy Services
+
+The transition state described in {{post-quantum-transition}} does not prevent quantum-vulnerable connections. Instead, it allows an application to prioritize and upgrade to quantum-resistance on a per-service basis instead of all at once. In many applications, different services are handled in different contexts and can be considered separately. For example:
+
+* In an application that connects to one service for one function and a different service for a different function, different parts of the application can be protected separately.
+
+* In an application that authenticates individual users with certificates, one user's state can be protected without waiting for every other user to upgrade.
+
+* In a web browser, different services represent different web origins {{?RFC6454}}. Browser state is isolated by the same-origin policy, so distinct quantum-vulnerable and quantum-resistant web origins can coexist in the same browsing session without the quantum-resistant origin's state being vulnerable to the quantum-vulnerable origin.
+
+In some cases, applications can also choose to treat legacy services differently, such as presenting the user with a warning or refusing to use the connection for sensitive content.
+
+Additionally, while a legacy trust anchor allows an attacker with a CRQC to compromise one trust anchor key for the entire PKI, moving to post-quantum opt-out certificates scopes the attacker to compromise each legacy service's end entity key individually. In both cases, this compromise must occur during the lifetime of the key to be useful, and end entity keys are typically much shorter-lived than trust anchor keys.
 
 ## Separate Certificates
 
