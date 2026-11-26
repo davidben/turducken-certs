@@ -17,13 +17,13 @@
 <!-- Generator version information:
   xml2rfc 3.35.0
     Python 3.14.10
-    ConfigArgParse 1.9.0
+    ConfigArgParse 1.10.1
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.14.3
+    platformdirs 4.14.7
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
@@ -1047,7 +1047,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Benjamin, et al.</td>
-<td class="center">Expires 21 May 2027</td>
+<td class="center">Expires 30 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1060,12 +1060,12 @@ svg {
 <dd class="internet-draft">draft-davidben-lamps-turducken-certs-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-17" class="published">17 November 2026</time>
+<time datetime="2026-11-26" class="published">26 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-21">21 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-30">30 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1127,7 +1127,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 21 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1668,6 +1668,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             <p id="section-4.1-6.5.1">Each alternate certificate's final extension <span class="bcp14">MUST</span> have type <code>id-pe-outerCertificateBinding</code>, with contents as described in <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a>. This authenticates most of the outer certificate from the alternate certificate.<a href="#section-4.1-6.5.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
+<p id="section-4.1-7">The above constraints apply to the CA when issuing certificates. They do not directly apply to relying parties. <a href="#reconstructing-the-alternate-certificate" class="auto internal xref">Section 5.1</a> and <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a> define how relying parties reconstruct the alternate certificate, which explicitly checks some requirements and implicitly guarantees others.<a href="#section-4.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="alternate-certificate-information">
@@ -1679,7 +1680,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <div class="lang-asn.1 sourcecode" id="section-4.2-2">
 <pre>
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                              {SignatureAlgorithms}},
     issuer               Name,
@@ -1692,7 +1693,7 @@ AlternateIssuerInfo ::= SEQUENCE {
 <p id="section-4.2-3">An AlternateIssuerInfo's fields are defined as follows:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.2-4.1">
-            <p id="section-4.2-4.1.1"><code>serialNumber</code> is the alternate certificate's serial number.<a href="#section-4.2-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-4.1.1"><code>certSerialNumber</code> is the alternate certificate's serial number.<a href="#section-4.2-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.2-4.2">
             <p id="section-4.2-4.2.1"><code>signatureAlgorithm</code> is the alternate certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.<a href="#section-4.2-4.2.1" class="pilcrow">¶</a></p>
@@ -1758,7 +1759,7 @@ struct {
 <div class="lang-asn.1 sourcecode" id="section-4.3-2">
 <pre>
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                             {SignatureAlgorithms}},
     issuer               Name,
@@ -1780,7 +1781,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 <p id="section-4.3-3">The OuterCertificateBinding structure is similar to the AlternateIssuerInfo, except that it does not contain a <code>signatureValue</code> field. It describes the outer certificate, relative to the alternate certificate.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.3-4.1">
-            <p id="section-4.3-4.1.1"><code>serialNumber</code> is the outer certificate's serial number.<a href="#section-4.3-4.1.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-4.1.1"><code>certSerialNumber</code> is the outer certificate's serial number.<a href="#section-4.3-4.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-4.3-4.2">
             <p id="section-4.3-4.2.1"><code>signatureAlgorithm</code> is the outer certificate's signature algorithm. This value appears in both the TBSCertificate and Certificate structures.<a href="#section-4.3-4.2.1" class="pilcrow">¶</a></p>
@@ -1840,7 +1841,7 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-5.1-2.2.1">Make a copy of the outer certificate as a Certificate structure.<a href="#section-5.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.3">
-            <p id="section-5.1-2.3.1">Replace the TBSCertificate's <code>serialNumber</code> field with the AlternateIssuerInfo's <code>serialNumber</code>. Let <code>outerSerialNumber</code> be the replaced value.<a href="#section-5.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-5.1-2.3.1">Replace the TBSCertificate's <code>serialNumber</code> field with the AlternateIssuerInfo's <code>certSerialNumber</code>. Let <code>outerSerialNumber</code> be the replaced value.<a href="#section-5.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.1-2.4">
             <p id="section-5.1-2.4.1">Replace the Certificate's <code>signatureAlgorithm</code> field and the TBSCertificate's <code>signature</code> field with the AlternateIssuerInfo's <code>signatureAlgorithm</code>. Let <code>outerSignatureAlgorithm</code> be the replaced value.<a href="#section-5.1-2.4.1" class="pilcrow">¶</a></p>
@@ -1864,7 +1865,7 @@ ext-outerCertificateBinding EXTENSION ::= {
             <p id="section-5.1-2.10.1">Append a non-critical outer certificate binding extension (<a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a>) to the TBSCertificate such that:<a href="#section-5.1-2.10.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-5.1-2.10.2.1">
-                <p id="section-5.1-2.10.2.1.1"><code>serialNumber</code> is <code>outerSerialNumber</code>.<a href="#section-5.1-2.10.2.1.1" class="pilcrow">¶</a></p>
+                <p id="section-5.1-2.10.2.1.1"><code>certSerialNumber</code> is <code>outerSerialNumber</code>.<a href="#section-5.1-2.10.2.1.1" class="pilcrow">¶</a></p>
 </li>
               <li class="normal" id="section-5.1-2.10.2.2">
                 <p id="section-5.1-2.10.2.2.1"><code>signatureAlgorithm</code> is <code>outerSignatureAlgorithm</code>.<a href="#section-5.1-2.10.2.2.1" class="pilcrow">¶</a></p>
@@ -2279,7 +2280,7 @@ IMPORTS
 ;
 
 AlternateIssuerInfo ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                              {SignatureAlgorithms}},
     issuer               Name,
@@ -2289,7 +2290,7 @@ AlternateIssuerInfo ::= SEQUENCE {
 }
 
 OuterCertificateBinding ::= SEQUENCE {
-    serialNumber         CertificateSerialNumber,
+    certSerialNumber     CertificateSerialNumber,
     signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                             {SignatureAlgorithms}},
     issuer               Name,
@@ -2318,7 +2319,7 @@ END
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
 <p id="appendix-B-1">Thanks to the authors of <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span> for exploring the space of how to represent related certificates. While this document is intentionally more specialized, it has benefited significantly from their work.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
-<p id="appendix-B-2">Thanks also to Bob Beck for reviewing the document and providing feedback.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
+<p id="appendix-B-2">Thanks also to Bob Beck and Michael Richardson for reviewing the document and providing feedback.<a href="#appendix-B-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
