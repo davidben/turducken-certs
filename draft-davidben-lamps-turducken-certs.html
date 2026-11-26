@@ -1232,10 +1232,21 @@ svg {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-separate-certificates" class="internal xref">Separate Certificates</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-post-quantum-transition" class="internal xref">Post-Quantum Transition</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.1">
+                    <p id="section-toc.1-1.7.2.1.2.1.1"><a href="#section-7.1.1" class="auto internal xref">7.1.1</a>.  <a href="#name-security-of-upgraded-servic" class="internal xref">Security of Upgraded Services</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1.2.2">
+                    <p id="section-toc.1-1.7.2.1.2.2.1"><a href="#section-7.1.2" class="auto internal xref">7.1.2</a>.  <a href="#name-handling-legacy-services" class="internal xref">Handling Legacy Services</a></p>
+</li>
+                </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-certificate-mismatch" class="internal xref">Certificate Mismatch</a></p>
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-separate-certificates" class="internal xref">Separate Certificates</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-certificate-mismatch" class="internal xref">Certificate Mismatch</a></p>
 </li>
             </ul>
 </li>
@@ -1282,11 +1293,11 @@ svg {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificate does not prevent downgrade attacks since an attacker equipped with a CRQC can attack any trust anchor that the relying party still trusts in order to forge a trusted certificate, not necessarily the one that issued the legitimate certificate. The service's choice of CA does not impact this attack, only the relying party's trust anchors.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Some applications, such as TLS on the Web, have constraints that make this particularly challenging:<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-1">In transitioning a Public Key Infrastructure (PKI) to post-quantum cryptography, it is necessary to reconfigure relying parties to reject legacy trust anchors before cryptographically-relevant quantum computers (CRQCs) become readily available. Otherwise, provisioning a service with a post-quantum certificate does not prevent downgrade attacks. An attacker equipped with a CRQC can attack any still-trusted legacy trust anchor in order to forge a trusted certificate for the service. The service's choice of CA does not impact this attack. Any CA which the relying party trusts for the service can be an attack vector.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">In some applications, such as TLS on the Web, removing legacy trust anchors is particularly challenging:<a href="#section-1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-3.1">
-          <p id="section-1-3.1.1">Upgraded relying parties must continue to connect to legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-1-3.1.1">Upgraded relying parties must continue to support legacy services that do not yet support post-quantum algorithms. Waiting for services to universally become post-quantum-capable will take time.<a href="#section-1-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.2">
           <p id="section-1-3.2.1">Relying parties support enough services that out-of-band configuration of which services have migrated to post-quantum is impractical.<a href="#section-1-3.2.1" class="pilcrow">¶</a></p>
@@ -1295,27 +1306,27 @@ svg {
           <p id="section-1-3.3.1">Services must themselves continue to support legacy relying parties that do not support post-quantum algorithms or trust anchors.<a href="#section-1-3.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-3.4">
-          <p id="section-1-3.4.1">In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature, which precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.<a href="#section-1-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-1-3.4.1">In addition to lacking post-quantum algorithms, some legacy services are also unable to configure and select between multiple certificates based on trust anchor or CA signature. This precludes a solution whereby services are automatically issued separate traditional and PQ-rooted-traditional certificate chains.<a href="#section-1-3.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-1-4"><span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss how, for these applications, it is sufficient to migrate to a state where:<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">To satisfy these constraints, upgraded relying parties must be able to remove all legacy trust anchors while remaining compatible with supported services, including those that continue to use a traditional end entity key. Services that fail to upgrade must only compromise their own traffic, and not traffic between upgraded relying parties and upgraded services. Migrating to the following state achieves this:<a href="#section-1-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1-5">
 <li id="section-1-5.1">
           <p id="section-1-5.1.1">Legacy services serve certificates with post-quantum issuers, even if the end entity keys are still traditional. This is known as a <em>post-quantum opt-out certificate</em>.<a href="#section-1-5.1.1" class="pilcrow">¶</a></p>
 </li>
         <li id="section-1-5.2">
-          <p id="section-1-5.2.1">Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end-entity keys.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-5.2.1">Upgraded relying parties only accept post-quantum issuers, but accept both post-quantum and traditional end entity keys.<a href="#section-1-5.2.1" class="pilcrow">¶</a></p>
 </li>
       </ol>
-<p id="section-1-6">A post-quantum opt-out certificate is a quantum-resistant proof that the service has authorized a traditional end entity key for upgraded relying parties. It is expected that only services that are not yet post-quantum-capable will authorize such certificates. A securely-configured post-quantum-capable service would authorize only its post-quantum key with post-quantum issuers, leaving its traditional key for traditional issuers and legacy relying parties.<a href="#section-1-6" class="pilcrow">¶</a></p>
-<p id="section-1-7">This issuer-side transition thus protects post-quantum services from downgrade, while remaining compatible with legacy services. However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal, because the legacy services will lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.<a href="#section-1-7" class="pilcrow">¶</a></p>
-<p id="section-1-8">This document solves this by providing a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy clients unaware of this specification. This meets the security goals of delivering the post-quantum opt-out signal to updated relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:<a href="#section-1-8" class="pilcrow">¶</a></p>
+<p id="section-1-6">A post-quantum opt-out certificate serves as a quantum-resistant proof that the service has authorized a traditional end entity key for upgraded relying parties. <a href="#post-quantum-transition" class="auto internal xref">Section 7.1</a>, <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span>, and <span>[<a href="#IETF126-PQ-AUTH" class="cite xref">IETF126-PQ-AUTH</a>]</span> discuss how, by requiring legacy services to present opt-out certificates, post-quantum services can be protected from downgrade, while legacy services can continue to work.<a href="#section-1-6" class="pilcrow">¶</a></p>
+<p id="section-1-7">However, the final two constraints prevent one from simply replacing every legacy service's certificate on renewal. The legacy services would lose compatibility with legacy relying parties who do not have, or are incapable of processing, a post-quantum certification path and trust anchor.<a href="#section-1-7" class="pilcrow">¶</a></p>
+<p id="section-1-8">This document addresses this final hurdle: it defines a mechanism to embed the post-quantum opt-out certificate into a legacy certificate in a way that will be ignored by legacy relying parties unaware of this specification. This delivers the post-quantum opt-out signal to upgraded relying parties, while still presenting a compatible certificate to unmodified legacy relying parties. The embedding construction is also designed to meet two other requirements:<a href="#section-1-8" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1-9.1">
           <p id="section-1-9.1.1">It avoids increasing the size of logged precertificates in Certificate Transparency (CT), as described in <a href="#certificate-transparency-log-sizes" class="auto internal xref">Section 6.4</a>.<a href="#section-1-9.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-1-9.2">
-          <p id="section-1-9.2.1">It aims to mitigate security risks of mismatched certificate contents between the outer and alternate certificates, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-1-9.2.1" class="pilcrow">¶</a></p>
+          <p id="section-1-9.2.1">It aims to mitigate security risks of mismatched certificate contents between the outer and alternate certificates, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a>.<a href="#section-1-9.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-1-10">While the Web PKI is the primary motivator, this mechanism may be appropriate for other PKIs with similar post-quantum migration constraints, as well as other similarly-constrained issuer-side PKI transitions. In all cases, however, this is a temporary transitionary tool until services can deploy multiple certificates directly. <a href="#legacy-services" class="auto internal xref">Section 6.1</a> discusses this in more detail.<a href="#section-1-10" class="pilcrow">¶</a></p>
@@ -1374,7 +1385,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
           <dd class="break"></dd>
 <dt id="section-2.1-1.15">Post-quantum opt-out certificate:</dt>
           <dd style="margin-left: 1.5em" id="section-2.1-1.16">
-            <p id="section-2.1-1.16.1">An end-entity certificate with a traditional subject key and post-quantum issuer. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deploy them independently, without using this specification.<a href="#section-2.1-1.16.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-1.16.1">An end entity certificate with a traditional subject key and post-quantum issuer. <span>[<a href="#PQ-AUTH-ROADMAP" class="cite xref">PQ-AUTH-ROADMAP</a>]</span> embeds post-quantum opt-out certificates as alternate certificates in a fully traditional outer certificate. Other applications might issue and deploy them independently, without using this specification.<a href="#section-2.1-1.16.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1594,7 +1605,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
         <h3 id="name-certificate-constraints">
 <a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-certificate-constraints" class="section-name selfRef">Certificate Constraints</a>
         </h3>
-<p id="section-4.1-1">Although outer and alternate certificates are conceptually separate, with relying parties accepting one or the other, they are constrained to both share subject information and incorporate parts of each other. Alternate certificates are incorporated into the outer certificate to transmit them. The outer certificate is also partially incorporated into the alternate certificate to mitigate a class of security risks in relying parties. These are described in more detail in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-1">Although outer and alternate certificates are conceptually separate, with relying parties accepting one or the other, they are constrained to both share subject information and incorporate parts of each other. Alternate certificates are incorporated into the outer certificate to transmit them. The outer certificate is also partially incorporated into the alternate certificate to mitigate a class of security risks in relying parties. These are described in more detail in <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
 <p id="section-4.1-2">This means outer and alternate CAs are expected to coordinate their certificate profiles and issuance processes, as outlined in <a href="#issuing-certificates" class="auto internal xref">Section 3.1</a>. Concretely, the certificates are constrained as follows:<a href="#section-4.1-2" class="pilcrow">¶</a></p>
 <p id="section-4.1-3">The outer and alternate certificates <span class="bcp14">MUST</span> have a <code>version</code> of v3 and <span class="bcp14">MUST</span> omit <code>issuerUniqueID</code> and <code>subjectUniqueID</code>. These are preexisting requirements from Sections <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.1" class="relref">4.1.2.1</a> and <a href="https://rfc-editor.org/rfc/rfc5280#section-4.1.2.8" class="relref">4.1.2.8</a> of <span>[<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
 <p id="section-4.1-4">The outer and alternate certificates <span class="bcp14">MUST</span> have the same <code>validity</code>, <code>subject</code>, and <code>subjectPublicKeyInfo</code> values.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
@@ -1636,7 +1647,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
             </ul>
 </li>
           <li class="normal" id="section-4.1-6.3">
-            <p id="section-4.1-6.3.1">PKI deployments <span class="bcp14">MAY</span> impose additional restrictions on issuer-specific extensions by policy. In particular, deployments <span class="bcp14">SHOULD</span> forbid extensions which would change the certificate's subject information in ways which would risk the issues described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>. The following is a non-exhaustive list of extensions which would be safe to permit as issuer-specific in most applications:<a href="#section-4.1-6.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.1-6.3.1">PKI deployments <span class="bcp14">MAY</span> impose additional restrictions on issuer-specific extensions by policy. In particular, deployments <span class="bcp14">SHOULD</span> forbid extensions which would change the certificate's subject information in ways which would risk the issues described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a>. The following is a non-exhaustive list of extensions which would be safe to permit as issuer-specific in most applications:<a href="#section-4.1-6.3.1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4.1-6.3.2.1">
                 <p id="section-4.1-6.3.2.1.1"><code>id-ce-authorityKeyIdentifier</code>, <span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.1" class="relref">Section 4.2.1.1</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span><a href="#section-4.1-6.3.2.1.1" class="pilcrow">¶</a></p>
@@ -1797,7 +1808,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 </li>
         </ul>
 <p id="section-4.3-5">The outer certificate binding extension <span class="bcp14">MUST</span> be the final extension in the alternate certificate and <span class="bcp14">MUST</span> be non-critical. It contains enough information to reconstruct the outer CA's initial TBSCertificate (see <a href="#issuing-certificates" class="auto internal xref">Section 3.1</a>). CAs <span class="bcp14">MUST NOT</span> issue an outer certificate binding extension if this reconstructed TBSCertificate violates the constraints in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a>, or is otherwise inconsistent with applicable policies. In particular, the <code>issuerExtensions</code> field <span class="bcp14">MUST NOT</span> contain any issuer-specific extensions forbidden by <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> or applicable policies.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
-<p id="section-4.3-6">This binding mitigates the security risks described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> by authenticating most of the replaced outer certificate by the alternate CA.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">This binding mitigates the security risks described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a> by authenticating most of the replaced outer certificate by the alternate CA.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
 <p id="section-4.3-7">Note that the design of this mechanism precludes nested alternate certificates since both the outer certificate's <code>id-ce-embeddedSCT-CTv1</code> extension, and the alternate certificate's <code>id-pe-outerCertificateBinding</code> extension must be last, thereby precluding a certificate from simultaneously being both an outer and alternate certificate. This does not preclude the alternate certificate from embedding SCTs because <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> does not have an ordering requirement.<a href="#section-4.3-7" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1893,7 +1904,7 @@ ext-outerCertificateBinding EXTENSION ::= {
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-checking-issuer-specific-ex" class="section-name selfRef">Checking Issuer-Specific Extensions</a>
         </h3>
 <p id="section-5.2-1"><a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> aims to forbid <code>outerIssuerExtensions</code> and <code>issuerExtensions</code> above from containing any extensions that would change the certificate's subject information. However, X.509 is extensible, so a relying party cannot enforce this restriction in full. In particular, relying parties <span class="bcp14">MUST</span> accept unrecognized issuer-specific extensions in this procedure. (If the unrecognized issuer-specific extension is critical, it will likely be rejected later during path validation.)<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<p id="section-5.2-2">The relying party <span class="bcp14">SHOULD</span> check for and reject the forbidden issuer-specific extensions listed in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other issuer-specific extensions known to be forbidden by local policy. The relying party <span class="bcp14">MAY</span> skip this check for any extension that its path verifier does not recognize. It also <span class="bcp14">MAY</span> skip this check if all subsequent access checks reliably inspect the correct certificate, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a>.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-2">The relying party <span class="bcp14">SHOULD</span> check for and reject the forbidden issuer-specific extensions listed in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other issuer-specific extensions known to be forbidden by local policy. The relying party <span class="bcp14">MAY</span> skip this check for any extension that its path verifier does not recognize. It also <span class="bcp14">MAY</span> skip this check if all subsequent access checks reliably inspect the correct certificate, as described in <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a>.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="input-certificates-and-validated-certificates">
@@ -1913,7 +1924,7 @@ This section considers potential impacts of the input certificate and the valida
             <p id="section-5.3-3.2.1">The tls-server-end-point channel binding (<span><a href="https://rfc-editor.org/rfc/rfc5929#section-4" class="relref">Section 4</a> of [<a href="#RFC5929" class="cite xref">RFC5929</a>]</span>) is computed from the bytes of the input certificate.<a href="#section-5.3-3.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-5.3-4">In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate <span class="bcp14">SHOULD</span> be used. <a href="#certificate-mismatch" class="auto internal xref">Section 7.2</a> discusses this case in more detail.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-4">In contexts that are defined based on the certificate that was validated, notably access control checks, the validated certificate <span class="bcp14">SHOULD</span> be used. <a href="#certificate-mismatch" class="auto internal xref">Section 7.3</a> discusses this case in more detail.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 <p id="section-5.3-5">This distinction is a generalization of an existing distinction in path-building X.509 applications. The input list of certificates may differ from the final certification path that was built. Applications are already expected to separate these cases, but they were not previously required to consider different target certificates.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1930,13 +1941,13 @@ This section considers potential impacts of the input certificate and the valida
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-legacy-services" class="section-name selfRef">Legacy Services</a>
         </h3>
 <p id="section-6.1-1">This document defines a temporary transitionary mechanism for deployments where some legacy services do not support multiple certificates. Services that support multiple certificates directly <span class="bcp14">SHOULD NOT</span> use this mechanism. Deployments are <span class="bcp14">RECOMMENDED</span> to enforce this in CAs and relying parties.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">For example, in a post-quantum transition for TLS, this mechanism is only applicable to unmodified legacy services that only have traditional end-entity keys. Once a service has a post-quantum end-entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end-entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities (<span><a href="https://rfc-editor.org/rfc/rfc9846#section-4.5.1.2" class="relref">Section 4.5.1.2</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>) to select between its supported relying parties. Such a service would have no need for this document. Accordingly, in a TLS deployment using this mechanism for a post-quantum transition:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">For example, in a post-quantum transition for TLS, this mechanism is only applicable to unmodified legacy services that only have traditional end entity keys. Once a service has a post-quantum end entity key, it can be assumed to be relatively up-to-date and necessarily maintains separate end entity keys for both legacy and post-quantum relying parties. The service also necessarily has sufficient certificate selection capabilities (<span><a href="https://rfc-editor.org/rfc/rfc9846#section-4.5.1.2" class="relref">Section 4.5.1.2</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>) to select between its supported relying parties. Such a service would have no need for this document. Accordingly, in a TLS deployment using this mechanism for a post-quantum transition:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6.1-3.1">
-            <p id="section-6.1-3.1.1">CAs <span class="bcp14">SHOULD NOT</span> embed alternate certificates if the end-entity key is post-quantum.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-3.1.1">CAs <span class="bcp14">SHOULD NOT</span> embed alternate certificates if the end entity key is post-quantum.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-6.1-3.2">
-            <p id="section-6.1-3.2.1">Relying parties <span class="bcp14">SHOULD</span> ignore alternate certificates if the end-entity key is post-quantum.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-3.2.1">Relying parties <span class="bcp14">SHOULD</span> ignore alternate certificates if the end entity key is post-quantum.<a href="#section-6.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-6.1-4">This ensures that, when the post-quantum transition is completed, services will no longer rely on this mechanism and implementations can remove the supporting logic.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
@@ -2013,46 +2024,118 @@ out-of-date clients can still parse old SCTs while skipping over new SCTs whose 
       <h2 id="name-security-considerations">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<div id="separate-certificates">
+<div id="post-quantum-transition">
 <section id="section-7.1">
-        <h3 id="name-separate-certificates">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-separate-certificates" class="section-name selfRef">Separate Certificates</a>
+        <h3 id="name-post-quantum-transition">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-post-quantum-transition" class="section-name selfRef">Post-Quantum Transition</a>
         </h3>
-<p id="section-7.1-1">Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have separately issued the reconstructed alternate certificate. In particular:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1"><a href="#introduction" class="auto internal xref">Section 1</a> discusses how this mechanism can be applied to transitioning a PKI to post-quantum cryptography. It targets a transition state where:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-7.1-2.1">
-            <p id="section-7.1-2.1.1">The alternate TBSCertificate <span class="bcp14">MUST</span> satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.<a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.1.1">Upgraded services serve true post-quantum certificates, with post-quantum issuer and end entity key.<a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.1-2.2">
-            <p id="section-7.1-2.2.1">Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-7.1-2.2.1">Legacy services serve post-quantum opt-out certificates, with post-quantum issuer but traditional end entity key.<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.1-2.3">
+            <p id="section-7.1-2.3.1">Upgraded relying parties accept either, by requiring post-quantum issuers, but allowing traditional end entity keys.<a href="#section-7.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-7.1-3">When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify the outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Connections between upgraded relying parties and legacy services remain quantum-vulnerable. Until a legacy service upgrades and stops being a legacy service, relying parties have no choice but to refuse to connect to it or somehow support it in a quantum-vulnerable way.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-4">However, despite remaining compatible with legacy services, this transition state makes it possible to protect connections between upgraded relying parties and upgraded services.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
+<div id="security-of-upgraded-services">
+<section id="section-7.1.1">
+          <h4 id="name-security-of-upgraded-servic">
+<a href="#section-7.1.1" class="section-number selfRef">7.1.1. </a><a href="#name-security-of-upgraded-servic" class="section-name selfRef">Security of Upgraded Services</a>
+          </h4>
+<p id="section-7.1.1-1">To impersonate an upgraded service with a CRQC, an attacker must forge or find some accepted certificate that covers the target service but has a quantum-vulnerable end entity key. That is, it must forge or find a post-quantum opt-out certificate. This is not possible provided:<a href="#section-7.1.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.1.1-2">
+<li id="section-7.1.1-2.1">
+              <p id="section-7.1.1-2.1.1">Upgraded relying parties only accept post-quantum issuers, so forging an unauthorized certificate is not possible.<a href="#section-7.1.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-2.2">
+              <p id="section-7.1.1-2.2.1">CAs trusted by upgraded relying parties only issue authorized certificates. This is the underlying assumption for all PKI security.<a href="#section-7.1.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li id="section-7.1.1-2.3">
+              <p id="section-7.1.1-2.3.1">The target service has no active, authorized post-quantum opt-out certificates.<a href="#section-7.1.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ol>
+<p id="section-7.1.1-3">A service <span class="bcp14">MAY</span> temporarily authorize both post-quantum and post-quantum opt-out certificates if it is in the middle of this upgrade. For example, it might have only upgraded some of its serving instances. However, it remains quantum-vulnerable in this state. To complete the transition, the service must:<a href="#section-7.1.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.1-4.1">
+              <p id="section-7.1.1-4.1.1">No longer request or authorize post-quantum opt-out certificates from post-quantum CAs<a href="#section-7.1.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.1-4.2">
+              <p id="section-7.1.1-4.2.1">Either wait for all previous post-quantum opt-out certificates to expire or revoke them<a href="#section-7.1.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.1-5">Upgraded services <span class="bcp14">MAY</span> continue to request traditional certificates from traditional CAs. This does not impact the security of upgraded relying parties, who do not trust these CAs, and will typically be necessary for compatibility with legacy relying parties, who <em>only</em> trust these CAs.<a href="#section-7.1.1-5" class="pilcrow">¶</a></p>
+<p id="section-7.1.1-6">In transparent PKIs, such as <span>[<a href="#RFC6962" class="cite xref">RFC6962</a>]</span> and <span>[<a href="#I-D.ietf-plants-merkle-tree-certs" class="cite xref">I-D.ietf-plants-merkle-tree-certs</a>]</span>, monitors can detect services with simultaneous post-quantum and post-quantum opt-out certificates. This can be used to detect misconfigured services that have not completed the upgrade.<a href="#section-7.1.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="handling-legacy-services">
+<section id="section-7.1.2">
+          <h4 id="name-handling-legacy-services">
+<a href="#section-7.1.2" class="section-number selfRef">7.1.2. </a><a href="#name-handling-legacy-services" class="section-name selfRef">Handling Legacy Services</a>
+          </h4>
+<p id="section-7.1.2-1">The transition state described in <a href="#post-quantum-transition" class="auto internal xref">Section 7.1</a> does not prevent quantum-vulnerable connections. Instead, it allows an application to prioritize and upgrade to quantum-resistance on a per-service basis instead of all at once. In many applications, different services are handled in different contexts and can be considered separately. For example:<a href="#section-7.1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.1.2-2.1">
+              <p id="section-7.1.2-2.1.1">In an application that connects to one service for one function and a different service for a different function, different parts of the application can be protected separately.<a href="#section-7.1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.2">
+              <p id="section-7.1.2-2.2.1">In an application that authenticates individual users with certificates, one user's state can be protected without waiting for every other user to upgrade.<a href="#section-7.1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+            <li class="normal" id="section-7.1.2-2.3">
+              <p id="section-7.1.2-2.3.1">In a web browser, different services represent different web origins <span>[<a href="#RFC6454" class="cite xref">RFC6454</a>]</span>. Browser state is isolated by the same-origin policy, so distinct quantum-vulnerable and quantum-resistant web origins can coexist in the same browsing session without the quantum-resistant origin's state being vulnerable to the quantum-vulnerable origin.<a href="#section-7.1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          </ul>
+<p id="section-7.1.2-3">In some cases, applications can also choose to treat legacy services differently, such as presenting the user with a warning or refusing to use the connection for sensitive content.<a href="#section-7.1.2-3" class="pilcrow">¶</a></p>
+<p id="section-7.1.2-4">Additionally, while a legacy trust anchor allows an attacker with a CRQC to compromise one trust anchor key for the entire PKI, moving to post-quantum opt-out certificates scopes the attacker to compromise each legacy service's end entity key individually. In both cases, this compromise must occur during the lifetime of the key to be useful, and end entity keys are typically much shorter-lived than trust anchor keys.<a href="#section-7.1.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="separate-certificates">
+<section id="section-7.2">
+        <h3 id="name-separate-certificates">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-separate-certificates" class="section-name selfRef">Separate Certificates</a>
+        </h3>
+<p id="section-7.2-1">Although each alternate certificate is ultimately encoded relative to the outer certificate, the alternate CA's signature is on the reconstructed alternate TBSCertificate, so it is still considered to have separately issued the reconstructed alternate certificate. In particular:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7.2-2.1">
+            <p id="section-7.2-2.1.1">The alternate TBSCertificate <span class="bcp14">MUST</span> satisfy the policies of the alternate CA, including any domain validation. Misissuance of an alternate certificate remains misissuance.<a href="#section-7.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.2-2.2">
+            <p id="section-7.2-2.2.1">Revocation of each certificate is independent. Revoking the outer certificate does not revoke the alternate certificates and vice versa.<a href="#section-7.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-7.2-3">When relying parties evaluate candidate certification paths, they likewise treat each possible target certificate separately. If the relying party accepts an alternate certificate, it does not verify the outer certificate or even necessarily trust the outer CA. In particular, in the post-quantum transition, the outer CA is a traditional CA, so its key could be compromised by a CRQC.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="certificate-mismatch">
-<section id="section-7.2">
+<section id="section-7.3">
         <h3 id="name-certificate-mismatch">
-<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-certificate-mismatch" class="section-name selfRef">Certificate Mismatch</a>
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-certificate-mismatch" class="section-name selfRef">Certificate Mismatch</a>
         </h3>
-<p id="section-7.2-1">Access checks in the relying party <span class="bcp14">SHOULD</span> act on the certification path that was ultimately validated, failing to do so can result in access control bypass vulnerabilities. In support of this, APIs that return the validated certification path <span class="bcp14">SHOULD</span> reflect the correct target certificate.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
-<p id="section-7.2-2">However, this breaks an application invariant. Previously, the target certificate would never change as a result of path building. Which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, it may inadvertently use the wrong certificate, which could carry security implications if the content of the alternate and outer certificate differ. In some cases, the X.509 implementation's APIs might not even return the validated path, only a success or failure status.<a href="#section-7.2-2" class="pilcrow">¶</a></p>
-<p id="section-7.2-3">X.509 implementations <span class="bcp14">MAY</span> further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt in, yet forget to update some component.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
-<p id="section-7.2-4">This document further mitigates this risk in two ways:<a href="#section-7.2-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-7.2-5">
-<li id="section-7.2-5.1">
-            <p id="section-7.2-5.1.1">Where possible, limiting alternate certificates to encoding the same subject information as the outer certificate.<a href="#section-7.2-5.1.1" class="pilcrow">¶</a></p>
+<p id="section-7.3-1">Access checks in the relying party <span class="bcp14">SHOULD</span> act on the certification path that was ultimately validated, failing to do so can result in access control bypass vulnerabilities. In support of this, APIs that return the validated certification path <span class="bcp14">SHOULD</span> reflect the correct target certificate.<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<p id="section-7.3-2">However, this breaks an application invariant. Previously, the target certificate would never change as a result of path building. Which trust anchor it chains to and via which path might change, but the end entity certificate would not. An existing application might assume this invariant and inspect the original target certificate for some access check. If the application's X.509 implementation is updated independently from the rest of the application, it may inadvertently use the wrong certificate, which could carry security implications if the content of the alternate and outer certificate differ. In some cases, the X.509 implementation's APIs might not even return the validated path, only a success or failure status.<a href="#section-7.3-2" class="pilcrow">¶</a></p>
+<p id="section-7.3-3">X.509 implementations <span class="bcp14">MAY</span> further mitigate the risk by limiting alternate certificate support to applications that opt in. However, this might undesirably slow down PKI transitions that depend on alternate certificates. Additionally, a large application might opt in, yet forget to update some component.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-4">This document further mitigates this risk in two ways:<a href="#section-7.3-4" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.3-5">
+<li id="section-7.3-5.1">
+            <p id="section-7.3-5.1.1">Where possible, limiting alternate certificates to encoding the same subject information as the outer certificate.<a href="#section-7.3-5.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.2-5.2">
-            <p id="section-7.2-5.2.1">Requiring the alternate CA to sign over removed or replaced outer certificate fields, via the outer certificate binding extension.<a href="#section-7.2-5.2.1" class="pilcrow">¶</a></p>
+          <li id="section-7.3-5.2">
+            <p id="section-7.3-5.2.1">Requiring the alternate CA to sign over removed or replaced outer certificate fields, via the outer certificate binding extension.<a href="#section-7.3-5.2.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-7.2-6">This contrasts with <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span>, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.<a href="#section-7.2-6" class="pilcrow">¶</a></p>
-<p id="section-7.2-7">If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unverified public key in the outer certificate. This could allow an attacker to bypass certificate-based authentication. However, alternate certificates cannot replace the <code>subjectPublicKeyInfo</code> field in this document, so a public key mismatch is not possible.<a href="#section-7.2-7" class="pilcrow">¶</a></p>
-<p id="section-7.2-8">X.509 extensions complicate this mitigation. X.509 does not structurally distinguish between subject and issuer extensions, in a way that would allow a relying party to classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on being the same between the alternate and outer certificate.<a href="#section-7.2-8" class="pilcrow">¶</a></p>
-<p id="section-7.2-9">Instead, the outer certificate binding extension mitigates this risk more generally. Except for <code>id-ce-embeddedSCT-CTv1</code>, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> additionally holds the alternate CA responsible for meeting the requirements in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other deployment-specific policies, to forbid the alternate CA itself from enabling an attack. CAs are expected to not sign unknown extensions, so this does not conflict with extensibility.<a href="#section-7.2-9" class="pilcrow">¶</a></p>
-<p id="section-7.2-10">Ultimately, the alternate CA is responsible for ensuring that any extensions removed or modified will not cause interoperability or security problems among the target relying party base.<a href="#section-7.2-10" class="pilcrow">¶</a></p>
-<p id="section-7.2-11">However, there are some cases where this is complicated by relying-party-imposed constraints on the CA. If the alternate CA were under, say, a name constraint (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.10" class="relref">Section 4.2.1.10</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a> recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.<a href="#section-7.2-11" class="pilcrow">¶</a></p>
+<p id="section-7.3-6">This contrasts with <span>[<a href="#I-D.bonnell-lamps-chameleon-certs" class="cite xref">I-D.bonnell-lamps-chameleon-certs</a>]</span> and <span>[<a href="#I-D.ietf-lamps-certdiscovery" class="cite xref">I-D.ietf-lamps-certdiscovery</a>]</span>, which allow the second certificate to differ significantly. There, the application is expected to be fully aware of the second certificate.<a href="#section-7.3-6" class="pilcrow">¶</a></p>
+<p id="section-7.3-7">If a more general protocol were instead used in this document, path validation might, for example, authenticate an alternate certificate's public key, while the rest of the application acts on a different, unverified public key in the outer certificate. This could allow an attacker to bypass certificate-based authentication. However, alternate certificates cannot replace the <code>subjectPublicKeyInfo</code> field in this document, so a public key mismatch is not possible.<a href="#section-7.3-7" class="pilcrow">¶</a></p>
+<p id="section-7.3-8">X.509 extensions complicate this mitigation. X.509 does not structurally distinguish between subject and issuer extensions, in a way that would allow a relying party to classify unrecognized extension types. If the relying party rejects unknown issuer-specific extensions, it is not possible to define new such extensions. However, if it accepts unknown extensions, it could allow an extension that downstream components depend on being the same between the alternate and outer certificate.<a href="#section-7.3-8" class="pilcrow">¶</a></p>
+<p id="section-7.3-9">Instead, the outer certificate binding extension mitigates this risk more generally. Except for <code>id-ce-embeddedSCT-CTv1</code>, extensions replaced or removed from the outer certificate are still signed by the alternate CA. This prevents an arbitrary attacker from manipulating those fields. <a href="#outer-certificate-binding" class="auto internal xref">Section 4.3</a> additionally holds the alternate CA responsible for meeting the requirements in <a href="#certificate-constraints" class="auto internal xref">Section 4.1</a> and other deployment-specific policies, to forbid the alternate CA itself from enabling an attack. CAs are expected to not sign unknown extensions, so this does not conflict with extensibility.<a href="#section-7.3-9" class="pilcrow">¶</a></p>
+<p id="section-7.3-10">Ultimately, the alternate CA is responsible for ensuring that any extensions removed or modified will not cause interoperability or security problems among the target relying party base.<a href="#section-7.3-10" class="pilcrow">¶</a></p>
+<p id="section-7.3-11">However, there are some cases where this is complicated by relying-party-imposed constraints on the CA. If the alternate CA were under, say, a name constraint (<span><a href="https://rfc-editor.org/rfc/rfc5280#section-4.2.1.10" class="relref">Section 4.2.1.10</a> of [<a href="#RFC5280" class="cite xref">RFC5280</a>]</span>), the relying party could not rely on the alternate CA alone to mitigate subjectAltName mismatches. If the alternate certificate contained a permitted subjectAltName, while the outer certificate contained an excluded one, a mismatch could bypass the name constraint. <a href="#checking-issuer-specific-extensions" class="auto internal xref">Section 5.2</a> recommends that the relying party check replaced extensions in a more limited way. Though the relying party might not recognize all extensions, its path validator necessarily recognizes all extensions that it incorporates into path validation.<a href="#section-7.3-11" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2226,6 +2309,10 @@ out-of-date clients can still parse old SCTs while skipping over new SCTs whose 
 <dt id="RFC5929">[RFC5929]</dt>
         <dd>
 <span class="refAuthor">Altman, J.</span>, <span class="refAuthor">Williams, N.</span>, and <span class="refAuthor">L. Zhu</span>, <span class="refTitle">"Channel Bindings for TLS"</span>, <span class="seriesInfo">RFC 5929</span>, <span class="seriesInfo">DOI 10.17487/RFC5929</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5929">https://www.rfc-editor.org/rfc/rfc5929</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6454">[RFC6454]</dt>
+        <dd>
+<span class="refAuthor">Barth, A.</span>, <span class="refTitle">"The Web Origin Concept"</span>, <span class="seriesInfo">RFC 6454</span>, <span class="seriesInfo">DOI 10.17487/RFC6454</span>, <time datetime="2011-12" class="refDate">December 2011</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6454">https://www.rfc-editor.org/rfc/rfc6454</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7299">[RFC7299]</dt>
         <dd>
