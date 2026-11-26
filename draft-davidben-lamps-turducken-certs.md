@@ -528,7 +528,7 @@ This is only a partial mitigation because the AlternateIssuerInfo will still be 
 
 * Upgraded relying parties accept either, by requiring post-quantum issuers, but allowing traditional end entity keys.
 
-Connections between upgraded relying parties and legacy services remain quantum-vulnerable. Until a legacy service upgrades and stops being a legacy service, relying parties have no choice but to break it or somehow support it in a quantum-vulnerable way.
+Connections between upgraded relying parties and legacy services remain quantum-vulnerable. Until a legacy service upgrades and stops being a legacy service, relying parties have no choice but to refuse to connect to it or somehow support it in a quantum-vulnerable way.
 
 However, despite remaining compatible with legacy services, this transition state makes it possible to protect connections between upgraded relying parties and upgraded services.
 
@@ -560,6 +560,10 @@ The transition state described in {{post-quantum-transition}} does not prevent q
 * In an application that authenticates individual users with certificates, one user's state can be protected without waiting for every other user to upgrade.
 
 * In a web browser, different services represent different web origins {{?RFC6454}}. Browser state is isolated by the same-origin policy, so distinct quantum-vulnerable and quantum-resistant web origins can coexist in the same browsing session without the quantum-resistant origin's state being vulnerable to the quantum-vulnerable origin.
+
+In some cases, applications can also choose to treat legacy services differently, such as presenting the user with a warning or refusing to use the connection for sensitive content.
+
+Additionally, while a legacy trust anchor allows an attacker with a CRQC to compromise one trust anchor key for the entire PKI, moving to post-quantum opt-out certificates scopes the attacker to compromise each legacy service's end entity key individually. In both cases, this compromise must occur during the lifetime of the key to be useful, and end entity keys are typically much shorter-lived than trust anchor keys.
 
 ## Separate Certificates
 
