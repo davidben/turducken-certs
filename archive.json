@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-22T06:03:48.821907+00:00",
+  "timestamp": "2026-11-26T07:46:52.391099+00:00",
   "repo": "davidben/turducken-certs",
   "labels": [
     {
@@ -258,15 +258,15 @@
       "id": "I_kwDOTGW8t88AAAABcvnw6w",
       "title": "Clarify Interop / Security Model",
       "url": "https://github.com/davidben/turducken-certs/issues/30",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "ounsworth",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This LAMPS thread asked for a clearer statement of the Interop and Security Model. I quickly penned:\n\n\n> Interop and security model: \"TLS clients must be able to remove all legacy CAs from their trust stores without compromising their ability to talk to any publicly-trusted server, including those that continue to use a legacy TLS signing server key. TLS servers that fail to upgrade their stacks to be able to use a PQ TLS signing key must only be compromising their own traffic, and not forcing any TLS clients or other TLS servers to assume any risks associated with maintaining support for legacy CAs\".",
       "createdAt": "2026-11-05T13:17:13Z",
-      "updatedAt": "2026-11-05T13:17:13Z",
-      "closedAt": null,
+      "updatedAt": "2026-11-26T00:35:04Z",
+      "closedAt": "2026-11-26T00:35:04Z",
       "comments": []
     }
   ],
@@ -2573,104 +2573,221 @@
       "id": "PR_kwDOTGW8t88AAAABNYU6sA",
       "title": "Add Panos to acknowledgments",
       "url": "https://github.com/davidben/turducken-certs/pull/33",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "@csosto-pk",
       "createdAt": "2026-11-06T18:44:31Z",
-      "updatedAt": "2026-11-06T18:44:31Z",
+      "updatedAt": "2026-11-26T00:25:06Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
-      "baseRefOid": "843c19a5a6ce7e1489e7b9c79b6bc89ae448a3a7",
+      "baseRefOid": "764c6d9c554d99ab001406a34683bc998d9638b1",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "ack-panos",
-      "headRefOid": "9562a6ee0b33050a91ee86d8428617f13d592be9",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "cf6cc1fbf45e276d05f5a30a7accc99f849512c1",
+      "closedAt": "2026-11-26T00:25:03Z",
+      "mergedAt": "2026-11-26T00:25:03Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "513b52b56754be04cfda69ae123fce28a9a577f4"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZrmqg",
+          "commit": {
+            "abbreviatedOid": "9562a6e"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-11-26T00:03:45Z",
+          "updatedAt": "2026-11-26T00:03:45Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 34,
       "id": "PR_kwDOTGW8t88AAAABQzpnXg",
       "title": "Clarify interop / security model",
       "url": "https://github.com/davidben/turducken-certs/pull/34",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Closes #30.\n\nThis adapts the sentence from Mike in issue #30 and then expands on the security model in more depth under Security Considerations.\n\nAlso consistently write \"end entity\" instead of \"end-entity\" to match RFC 5280.",
       "createdAt": "2026-11-21T01:25:51Z",
-      "updatedAt": "2026-11-21T01:25:51Z",
+      "updatedAt": "2026-11-26T00:35:03Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "a7b4d776e89bb8cc46f660d5e4fdd2ce6b94e7b9",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "security-goals",
-      "headRefOid": "21d641a4d2370f663f9a64730d24dddfd1dc2616",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "b4d86701b365bba2df6e9975e718d0ac2cef89a9",
+      "closedAt": "2026-11-26T00:35:03Z",
+      "mergedAt": "2026-11-26T00:35:03Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "f71001edfffa8f8710b74607b9b97a1893a7aacd"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZwhWg",
+          "commit": {
+            "abbreviatedOid": "21d641a"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-11-26T00:13:52Z",
+          "updatedAt": "2026-11-26T00:18:42Z",
+          "comments": [
+            {
+              "originalPosition": 76,
+              "body": "```suggestion\nConnections between upgraded relying parties and legacy services remain quantum-vulnerable. Until a legacy service upgrades and stops being a legacy service, relying parties have no choice but to refuse to connect to it  or somehow support it in a quantum-vulnerable way. Relying parties could choose to treat services with a post-quantum opt-out certificate differently, such as presenting the user with a warning or refusing to use this connection for sensitive content.\n```",
+              "createdAt": "2026-11-26T00:13:53Z",
+              "updatedAt": "2026-11-26T00:18:43Z"
+            },
+            {
+              "originalPosition": 88,
+              "body": "I wonder if this should make some mention that the CRQC attacker has to be able to break the quantum-vulnerable key within the cert lifetime ... ie keeping lifetime short on pq-opt-out certs helps.",
+              "createdAt": "2026-11-26T00:17:18Z",
+              "updatedAt": "2026-11-26T00:18:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZ5Pqw",
+          "commit": {
+            "abbreviatedOid": "21d641a"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-26T00:34:13Z",
+          "updatedAt": "2026-11-26T00:34:13Z",
+          "comments": [
+            {
+              "originalPosition": 76,
+              "body": "Done. I moved the second sentence to \"Handling Legacy Services\" since that seemed to fit better there.",
+              "createdAt": "2026-11-26T00:34:13Z",
+              "updatedAt": "2026-11-26T00:34:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZ5W3Q",
+          "commit": {
+            "abbreviatedOid": "21d641a"
+          },
+          "author": "davidben",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-26T00:34:27Z",
+          "updatedAt": "2026-11-26T00:34:28Z",
+          "comments": [
+            {
+              "originalPosition": 88,
+              "body": "Good call. Added a paragraph to \"Handling Legacy Services\".",
+              "createdAt": "2026-11-26T00:34:27Z",
+              "updatedAt": "2026-11-26T00:34:28Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 35,
       "id": "PR_kwDOTGW8t88AAAABQz2RkQ",
       "title": "s/serialNumber/certSerialNumber/",
       "url": "https://github.com/davidben/turducken-certs/pull/35",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "As requested by Michael Richardson on the list.",
       "createdAt": "2026-11-21T01:51:30Z",
-      "updatedAt": "2026-11-21T01:51:30Z",
+      "updatedAt": "2026-11-26T00:20:54Z",
       "baseRepository": "davidben/turducken-certs",
       "baseRefName": "main",
       "baseRefOid": "a7b4d776e89bb8cc46f660d5e4fdd2ce6b94e7b9",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "cert-serial-number",
       "headRefOid": "0f9005cc5b4e1a2e15e3dd80adb1091217973345",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-11-26T00:20:44Z",
+      "mergedAt": "2026-11-26T00:20:44Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "2407e713991487ce3d89af5dc36c9b36cf5a018c"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZy1xQ",
+          "commit": {
+            "abbreviatedOid": "0f9005c"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-11-26T00:19:09Z",
+          "updatedAt": "2026-11-26T00:19:09Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 36,
       "id": "PR_kwDOTGW8t88AAAABQz9C8A",
       "title": "Add a forward reference between CA reqs and RP reqs",
       "url": "https://github.com/davidben/turducken-certs/pull/36",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "davidben",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "As requested by Michael Richardson on the list.",
       "createdAt": "2026-11-21T02:05:05Z",
-      "updatedAt": "2026-11-21T02:05:05Z",
+      "updatedAt": "2026-11-26T00:21:11Z",
       "baseRepository": "davidben/turducken-certs",
-      "baseRefName": "cert-serial-number",
-      "baseRefOid": "0f9005cc5b4e1a2e15e3dd80adb1091217973345",
+      "baseRefName": "main",
+      "baseRefOid": "2407e713991487ce3d89af5dc36c9b36cf5a018c",
       "headRepository": "davidben/turducken-certs",
       "headRefName": "forward-ref",
-      "headRefOid": "4bf55cd62556b33ab2bd6bc2816fd50e753483c0",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "73a19a08ef038e2e7f5b3bb49d220914d5d0c63d",
+      "closedAt": "2026-11-26T00:21:04Z",
+      "mergedAt": "2026-11-26T00:21:04Z",
+      "mergedBy": "davidben",
+      "mergeCommit": {
+        "oid": "764c6d9c554d99ab001406a34683bc998d9638b1"
+      },
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOTGW8t88AAAABaZy9Lw",
+          "commit": {
+            "abbreviatedOid": "4bf55cd"
+          },
+          "author": "ounsworth",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-11-26T00:19:25Z",
+          "updatedAt": "2026-11-26T00:19:25Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
