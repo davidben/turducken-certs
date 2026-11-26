@@ -5,12 +5,12 @@
 Limited Additional Mechanisms for PKIX and SMIME             D. Benjamin
 Internet-Draft                                                Google LLC
 Intended status: Standards Track                              C. Bonnell
-Expires: 10 May 2027                           TurboLight Solutions, LLC
+Expires: 30 May 2027                           TurboLight Solutions, LLC
                                                                  J. Gray
                                                                  Entrust
                                                             M. Ounsworth
                                                           Cryptic Forest
-                                                         6 November 2026
+                                                        26 November 2026
 
 
                  Embedded Alternate Issuer Certificates
@@ -61,7 +61,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 May 2027.
+   This Internet-Draft will expire on 30 May 2027.
 
 Copyright Notice
 
@@ -474,6 +474,12 @@ Table of Contents
       Section 4.3.  This authenticates most of the outer certificate
       from the alternate certificate.
 
+   The above constraints apply to the CA when issuing certificates.
+   They do not directly apply to relying parties.  Section 5.1 and
+   Section 5.2 define how relying parties reconstruct the alternate
+   certificate, which explicitly checks some requirements and implicitly
+   guarantees others.
+
 4.2.  Alternate Certificate Information
 
    Each alternate certificate is described as differences from the outer
@@ -481,7 +487,7 @@ Table of Contents
    AlternateIssuerInfo is defined as follows:
 
    AlternateIssuerInfo ::= SEQUENCE {
-       serialNumber         CertificateSerialNumber,
+       certSerialNumber     CertificateSerialNumber,
        signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                                 {SignatureAlgorithms}},
        issuer               Name,
@@ -492,7 +498,7 @@ Table of Contents
 
    An AlternateIssuerInfo's fields are defined as follows:
 
-   *  serialNumber is the alternate certificate's serial number.
+   *  certSerialNumber is the alternate certificate's serial number.
 
    *  signatureAlgorithm is the alternate certificate's signature
       algorithm.  This value appears in both the TBSCertificate and
@@ -579,7 +585,7 @@ Table of Contents
    extension, defined below:
 
    OuterCertificateBinding ::= SEQUENCE {
-       serialNumber         CertificateSerialNumber,
+       certSerialNumber     CertificateSerialNumber,
        signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                                {SignatureAlgorithms}},
        issuer               Name,
@@ -602,7 +608,7 @@ Table of Contents
    field.  It describes the outer certificate, relative to the alternate
    certificate.
 
-   *  serialNumber is the outer certificate's serial number.
+   *  certSerialNumber is the outer certificate's serial number.
 
    *  signatureAlgorithm is the outer certificate's signature algorithm.
       This value appears in both the TBSCertificate and Certificate
@@ -700,8 +706,8 @@ Table of Contents
    2.   Make a copy of the outer certificate as a Certificate structure.
 
    3.   Replace the TBSCertificate's serialNumber field with the
-        AlternateIssuerInfo's serialNumber.  Let outerSerialNumber be
-        the replaced value.
+        AlternateIssuerInfo's certSerialNumber.  Let outerSerialNumber
+        be the replaced value.
 
    4.   Replace the Certificate's signatureAlgorithm field and the
         TBSCertificate's signature field with the AlternateIssuerInfo's
@@ -731,7 +737,7 @@ Table of Contents
    10.  Append a non-critical outer certificate binding extension
         (Section 4.3) to the TBSCertificate such that:
 
-        *  serialNumber is outerSerialNumber.
+        *  certSerialNumber is outerSerialNumber.
 
         *  signatureAlgorithm is outerSignatureAlgorithm.
 
@@ -1242,7 +1248,7 @@ Appendix A.  ASN.1 Module
    ;
 
    AlternateIssuerInfo ::= SEQUENCE {
-       serialNumber         CertificateSerialNumber,
+       certSerialNumber     CertificateSerialNumber,
        signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                                 {SignatureAlgorithms}},
        issuer               Name,
@@ -1252,7 +1258,7 @@ Appendix A.  ASN.1 Module
    }
 
    OuterCertificateBinding ::= SEQUENCE {
-       serialNumber         CertificateSerialNumber,
+       certSerialNumber     CertificateSerialNumber,
        signatureAlgorithm   AlgorithmIdentifier{SIGNATURE-ALGORITHM,
                                {SignatureAlgorithms}},
        issuer               Name,
@@ -1279,8 +1285,8 @@ Acknowledgments
    represent related certificates.  While this document is intentionally
    more specialized, it has benefited significantly from their work.
 
-   Thanks also to Bob Beck and Panos Kampanakis for reviewing the
-   document and providing feedback.
+   Thanks also to Bob Beck, Panos Kampanakis, and Michael Richardson for
+   reviewing the document and providing feedback.
 
 Authors' Addresses
 
